@@ -79,6 +79,7 @@ class RecruiterCommand implements RobustCommand
     public function execute(): bool
     {
         $this->rollbackLockedJobs();
+        $assignment = $this->scheduleRepeatableJobs();
         $assignment = $this->assignJobsToWorkers();
         $this->retireDeadWorkers();
 
@@ -114,6 +115,23 @@ class RecruiterCommand implements RobustCommand
         $this->memoryLimit->ensure($memoryUsage);
 
         return $assignment;
+    }
+
+    private function scheduleRepeatableJobs(): void
+    {
+        $creationStartAt = microtime(true);
+        $this->recruiter->scheduleRepeatableJobs();
+        $creationEndAt = microtime(true);
+
+        //FIXME:! log every job created?
+        /* foreach ($assignment as $worker => $job) { */
+        /*     $this->log(sprintf(' tried to assign job `%s` to worker `%s`', $job, $worker)); */
+        /* } */
+
+        $this->log(sprintf(
+            'creation of jobs from crontab in %fms',
+            ($creationEndAt - $creationStartAt) * 1000
+        ));
     }
 
     private function retireDeadWorkers()
