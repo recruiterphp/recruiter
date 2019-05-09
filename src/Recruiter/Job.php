@@ -109,6 +109,25 @@ class Job
         return $this;
     }
 
+    public function withUrn(string $urn)
+    {
+        $this->status['urn'] = $urn;
+        return $this;
+    }
+
+    public function scheduledBy(string $namespace, string $id, int $executions)
+    {
+        $this->status['scheduled'] = [
+            'by' => [
+                'namespace' => $namespace,
+                'id' => $id,
+            ],
+            'executions' => $executions,
+        ];
+
+        return $this;
+    }
+
     public function methodToCallOnWorkable($method)
     {
         if (!method_exists($this->workable, $method)) {
@@ -147,7 +166,7 @@ class Job
 
     public function save()
     {
-        $this->repository->save($this);
+        return $this->repository->save($this);
     }
 
     public function archive($why)

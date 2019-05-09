@@ -19,6 +19,7 @@ abstract class BaseAcceptanceTest extends TestCase
     protected $scheduled;
     protected $archived;
     protected $roster;
+    protected $schedulers;
 
     public function setUp(): void
     {
@@ -30,6 +31,7 @@ abstract class BaseAcceptanceTest extends TestCase
         $this->roster = $this->recruiterDb->selectCollection('roster');
         $this->scheduled = $this->recruiterDb->selectCollection('scheduled');
         $this->archived = $this->recruiterDb->selectCollection('archived');
+        $this->schedulers = $this->recruiterDb->selectCollection('schedulers');
         $this->recruiter = new Recruiter($this->recruiterDb);
         $this->jobs = 0;
         $this->processRecruiter = null;
