@@ -80,7 +80,6 @@ class Scheduler
     private static function initialize()
     {
         return [
-            '_id' => new ObjectId(),
             'urn' => null,
             'created_at' => T\MongoDate::now(),
             'last_scheduling_at' => null,
@@ -124,7 +123,7 @@ class Scheduler
         $jobToSchedule = (new JobToSchedule(Job::around($this->workable, $jobs)))
             ->scheduleAt($nextScheduling)
             ->retryWithPolicy($this->retryPolicy)
-            ->scheduledBy('scheduler', $this->status['_id'], $this->status['attempts'])
+            ->scheduledBy('scheduler', $this->status['urn'], $this->status['attempts'])
             ->execute()
         ;
     }
@@ -144,11 +143,6 @@ class Scheduler
         $this->status['urn'] = $urn;
 
         return $this;
-    }
-
-    public function id()
-    {
-        return $this->status['_id'];
     }
 
     public function urn()

@@ -21,7 +21,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $expectedScheduleDate = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDate);
 
-        $recurrentJob = $this->scheduleAJob($schedulePolicy);
+        $scheduler = $this->scheduleAJob($schedulePolicy);
         $this->recruiterCreatesJobsFromCrontabNTimes(1);
 
         $jobs = $this->fetchScheduledJobs();
@@ -30,30 +30,30 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $jobData = $jobs[0]->export();
 
         self::assertArraySubset([
-        'done' => false,
-        'locked' => false,
-        'attempts' => 0,
-        'group' => 'generic',
-        'workable' => [
-            'class' => 'Recruiter\\Workable\\SampleRepeatableCommand',
-            'parameters' => [],
-            'method' => 'execute',
-        ],
-        'scheduled_at' => T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
-        'scheduled' => [
-            'by' => [
-                'namespace' => 'scheduler',
-                'id' => $recurrentJob->id(),
+            'done' => false,
+            'locked' => false,
+            'attempts' => 0,
+            'group' => 'generic',
+            'workable' => [
+                'class' => 'Recruiter\\Workable\\SampleRepeatableCommand',
+                'parameters' => [],
+                'method' => 'execute',
             ],
-            'executions' => 1,
-        ],
-        'retry_policy' => [
-            'class' => 'Recruiter\\RetryPolicy\\ExponentialBackoff',
-            'parameters' => [
-                'retry_how_many_times' => 2,
-                'seconds_to_initially_wait_before_retry' => 5,
+            'scheduled_at' => T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
+            'scheduled' => [
+                'by' => [
+                    'namespace' => 'scheduler',
+                    'urn' => $scheduler->urn(),
+                ],
+                'executions' => 1,
             ],
-        ]
+            'retry_policy' => [
+                'class' => 'Recruiter\\RetryPolicy\\ExponentialBackoff',
+                'parameters' => [
+                    'retry_how_many_times' => 2,
+                    'seconds_to_initially_wait_before_retry' => 5,
+                ],
+            ]
         ], $jobData);
     }
 
