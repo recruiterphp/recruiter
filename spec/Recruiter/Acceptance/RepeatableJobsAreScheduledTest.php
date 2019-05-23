@@ -6,6 +6,7 @@ use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\RetryPolicy\ExponentialBackoff;
 use Recruiter\SchedulePolicy;
 use Recruiter\SchedulePolicy\EveryMinutes;
+use Recruiter\Scheduler\Repository as SchedulersRepository;
 use Recruiter\Workable\SampleRepeatableCommand;
 use Symfony\Component\EventDispatcher\Event;
 use Timeless as T;
@@ -29,30 +30,30 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $jobData = $jobs[0]->export();
 
         self::assertArraySubset([
-            'done' => false,
-            'locked' => false,
-            'attempts' => 0,
-            'group' => 'generic',
-            'workable' => [
-                'class' => 'Recruiter\\Workable\\SampleRepeatableCommand',
-                'parameters' => [],
-                'method' => 'execute',
+        'done' => false,
+        'locked' => false,
+        'attempts' => 0,
+        'group' => 'generic',
+        'workable' => [
+            'class' => 'Recruiter\\Workable\\SampleRepeatableCommand',
+            'parameters' => [],
+            'method' => 'execute',
+        ],
+        'scheduled_at' => T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
+        'scheduled' => [
+            'by' => [
+                'namespace' => 'scheduler',
+                'id' => $recurrentJob->id(),
             ],
-            'scheduled_at' => T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
-            'scheduled' => [
-                'by' => [
-                    'namespace' => 'scheduler',
-                    'id' => $recurrentJob->id(),
-                ],
-                'executions' => 1,
+            'executions' => 1,
+        ],
+        'retry_policy' => [
+            'class' => 'Recruiter\\RetryPolicy\\ExponentialBackoff',
+            'parameters' => [
+                'retry_how_many_times' => 2,
+                'seconds_to_initially_wait_before_retry' => 5,
             ],
-            'retry_policy' => [
-                'class' => 'Recruiter\\RetryPolicy\\ExponentialBackoff',
-                'parameters' => [
-                    'retry_how_many_times' => 2,
-                    'seconds_to_initially_wait_before_retry' => 5,
-                ],
-            ]
+        ]
         ], $jobData);
     }
 
@@ -89,19 +90,43 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $jobs = $this->fetchScheduledJobs();
 
         $this->assertEquals(2, count($jobs));
-        $this->assertEquals(2, $jobs[0]->export()['with_parent']['child_nth']);
-        $this->assertEquals(1, $jobs[1]->export()['with_parent']['child_nth']);
+        $this->assertEquals(2, $jobs[0]->export()['scheduled']['executions']);
+        $this->assertEquals(1, $jobs[1]->export()['scheduled']['executions']);
     }
 
-    private function scheduleAJob($schedulePolicy, $urn = null)
+    public function testSchedulersAreUniqueOnUrn()
     {
-        $cronJob = (new SampleRepeatableCommand())
+        $firstScheduling = strtotime('2019-05-16T14:00:00');
+        $schedulePolicy = new FixedSchedulePolicy($firstScheduling);
+        $this->scheduleAJob($schedulePolicy, 'my-urn');
+
+        $schedulers = $this->fetchSchedulers();
+        $this->assertEquals(1, count($schedulers));
+        $this->assertEquals($firstScheduling, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
+
+
+        $secondScheduling = strtotime('2023-02-18T17:00:00');
+        $schedulePolicy = new FixedSchedulePolicy($secondScheduling);
+        $this->scheduleAJob($schedulePolicy, 'my-urn');
+
+        $schedulers = $this->fetchSchedulers();
+        $this->assertEquals(1, count($schedulers));
+        $this->assertEquals($secondScheduling, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
+    }
+
+    private function scheduleAJob(SchedulePolicy $schedulePolicy, string $urn = null)
+    {
+        $scheduler = (new SampleRepeatableCommand())
             ->asRepeatableJobOf($this->recruiter)
             ->repeatWithPolicy($schedulePolicy)
             ->retryWithPolicy(ExponentialBackoff::forTimes(2, 5))
         ;
 
-        return $cronJob->create();
+        if ($urn) {
+            $scheduler->withUrn($urn);
+        }
+
+        return $scheduler->create();
     }
 
     private function recruiterCreatesJobsFromCrontabNTimes(int $nth)
@@ -116,6 +141,12 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
     {
         $jobsRepository = new JobsRepository($this->recruiterDb);
         return $jobsRepository->all();
+    }
+
+    private function fetchSchedulers()
+    {
+        $schedulersRepository = new SchedulersRepository($this->recruiterDb);
+        return $schedulersRepository->all();
     }
 }
 

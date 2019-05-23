@@ -28,11 +28,19 @@ class Repository
         );
     }
 
-    public function save(Scheduler $job)
+    public function save(Scheduler $scheduler)
     {
-        $document = $job->export();
+        $document = $scheduler->export();
+
+        if ($scheduler->urn()) {
+            $filter = ['urn' => $document['urn']];
+            unset($document['_id']);
+        } else {
+            $filter = ['_id' => $document['_id']];
+        }
+
         $this->schedulers->replaceOne(
-            ['_id' => $document['_id']],
+            $filter,
             $document,
             ['upsert' => true]
         );
@@ -40,11 +48,11 @@ class Repository
 
     private function map($cursor)
     {
-        $jobs = [];
+        $schedulers = [];
         foreach ($cursor as $document) {
-            $jobs[] = Scheduler::import($document, $this);
+            $schedulers[] = Scheduler::import($document, $this);
         }
 
-        return $jobs;
+        return $schedulers;
     }
 }
