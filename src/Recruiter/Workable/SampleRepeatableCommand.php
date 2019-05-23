@@ -22,4 +22,9 @@ class SampleRepeatableCommand implements Workable, Repeatable
     {
         return 'recruiter:sample:repeatable-job';
     }
+
+    public function unique(): bool
+    {
+        return false;
+    }
 }

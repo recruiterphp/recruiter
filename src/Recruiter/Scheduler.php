@@ -82,7 +82,10 @@ class Scheduler
         return [
             'urn' => null,
             'created_at' => T\MongoDate::now(),
-            'last_scheduling_at' => null,
+            'last_scheduling' => [
+                'scheduled_at' => null,
+                'job_id' => null,
+            ],
             'attempts' => 0,
         ];
     }
@@ -99,14 +102,28 @@ class Scheduler
 
     private function wasAlreadyScheduled()
     {
-        if (!$this->status['last_scheduling_at']) {
+        if (!$this->status['last_scheduling']['scheduled_at']) {
             return false;
         }
 
-        $lastScheduling = T\MongoDate::toMoment($this->status['last_scheduling_at']);
+        $lastScheduling = T\MongoDate::toMoment($this->status['last_scheduling']['scheduled_at']);
         $nextScheduling = $this->schedulePolicy->next();
 
         return $lastScheduling == $nextScheduling;
+    }
+
+    private function aJobIsStillRunning(JobsRepository $jobs)
+    {
+        if (!$this->status['last_scheduling']['job_id']) {
+            return false;
+        }
+
+        try {
+            $alreadyScheduledJob = $jobs->scheduled(new \MongoDB\BSON\ObjectId($this->status['last_scheduling']['job_id']));
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     public function schedule(JobsRepository $jobs)
@@ -115,8 +132,13 @@ class Scheduler
             return;
         }
 
+        if ($this->status['unique'] && $this->aJobIsStillRunning($jobs)) {
+            return;
+        }
+
         $nextScheduling = $this->schedulePolicy->next();
-        $this->status['last_scheduling_at'] = T\MongoDate::from($nextScheduling);
+        $this->status['last_scheduling']['scheduled_at'] = T\MongoDate::from($nextScheduling);
+        $this->status['last_scheduling']['job_id'] = null;
         $this->status['attempts'] = $this->status['attempts'] + 1;
         $this->schedulers->save($this);
 
@@ -126,6 +148,9 @@ class Scheduler
             ->scheduledBy('scheduler', $this->status['urn'], $this->status['attempts'])
             ->execute()
         ;
+
+        $this->status['last_scheduling']['job_id'] = $jobToSchedule;
+        $this->schedulers->save($this);
     }
 
     public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
@@ -141,6 +166,13 @@ class Scheduler
     public function withUrn(string $urn)
     {
         $this->status['urn'] = $urn;
+
+        return $this;
+    }
+
+    public function unique(bool $unique)
+    {
+        $this->status['unique'] = $unique;
 
         return $this;
     }

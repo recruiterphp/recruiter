@@ -94,11 +94,26 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $this->assertEquals(1, $jobs[1]->export()['scheduled']['executions']);
     }
 
+    public function testANewJobIsNotScheduledIfItShouldBeUniqueAndTheOldOneIsStillRunning()
+    {
+        $schedulePolicy = new FixedSchedulePolicy([
+            strtotime('2019-05-16T14:00:00'),
+            strtotime('2019-05-17T14:00:00'),
+        ]);
+
+        $this->scheduleAJob($schedulePolicy, true);
+
+        $this->recruiterCreatesJobsFromCrontabNTimes(2);
+        $jobs = $this->fetchScheduledJobs();
+
+        $this->assertEquals(1, count($jobs));
+    }
+
     public function testSchedulersAreUniqueOnUrn()
     {
         $firstScheduling = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($firstScheduling);
-        $this->scheduleAJob($schedulePolicy, 'my-urn');
+        $this->scheduleAJob($schedulePolicy);
 
         $schedulers = $this->fetchSchedulers();
         $this->assertEquals(1, count($schedulers));
@@ -107,24 +122,21 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
 
         $secondScheduling = strtotime('2023-02-18T17:00:00');
         $schedulePolicy = new FixedSchedulePolicy($secondScheduling);
-        $this->scheduleAJob($schedulePolicy, 'my-urn');
+        $this->scheduleAJob($schedulePolicy);
 
         $schedulers = $this->fetchSchedulers();
         $this->assertEquals(1, count($schedulers));
         $this->assertEquals($secondScheduling, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
     }
 
-    private function scheduleAJob(SchedulePolicy $schedulePolicy, string $urn = null)
+    private function scheduleAJob(SchedulePolicy $schedulePolicy, bool $unique = false)
     {
         $scheduler = (new SampleRepeatableCommand())
             ->asRepeatableJobOf($this->recruiter)
             ->repeatWithPolicy($schedulePolicy)
             ->retryWithPolicy(ExponentialBackoff::forTimes(2, 5))
+            ->unique($unique)
         ;
-
-        if ($urn) {
-            $scheduler->withUrn($urn);
-        }
 
         return $scheduler->create();
     }

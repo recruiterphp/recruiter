@@ -9,6 +9,7 @@ trait RepeatableBehaviour
         return $recruiter
             ->repeatableJobOf($this)
             ->withUrn($this->urn())
+            ->unique($this->unique())
         ;
     }
 }
