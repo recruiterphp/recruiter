@@ -81,6 +81,7 @@ class Scheduler
     {
         return [
             '_id' => new ObjectId(),
+            'urn' => null,
             'created_at' => T\MongoDate::now(),
             'last_scheduling_at' => null,
             'attempts' => 0,
@@ -138,9 +139,21 @@ class Scheduler
         return $this;
     }
 
+    public function withUrn(string $urn)
+    {
+        $this->status['urn'] = $urn;
+
+        return $this;
+    }
+
     public function id()
     {
         return $this->status['_id'];
+    }
+
+    public function urn()
+    {
+        return $this->status['urn'];
     }
 
     private function filterForRetriableExceptions(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
