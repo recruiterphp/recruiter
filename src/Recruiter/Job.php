@@ -120,7 +120,7 @@ class Job
         $this->status['scheduled'] = [
             'by' => [
                 'namespace' => $namespace,
-                'id' => $id,
+                'urn' => $id,
             ],
             'executions' => $executions,
         ];
