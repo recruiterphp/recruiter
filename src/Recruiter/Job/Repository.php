@@ -3,6 +3,7 @@ namespace Recruiter\Job;
 
 use Exception;
 use MongoDB;
+use MongoDB\BSON\ObjectId;
 use Recruiter\Job;
 use Recruiter\Recruiter;
 use RuntimeException;
@@ -37,6 +38,10 @@ class Repository
 
     public function scheduled($id)
     {
+        if (is_string($id)) {
+            $id = new ObjectId($id);
+        }
+
         $found = $this->map($this->scheduled->find(['_id' => $id]));
         if (count($found) === 0) {
             throw new Exception("Unable to find scheduled job with ObjectId('{$id}')");
