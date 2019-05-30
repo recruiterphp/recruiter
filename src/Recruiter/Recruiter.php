@@ -18,6 +18,7 @@ class Recruiter
     private $db;
     private $jobs;
     private $workers;
+    private $scheduler;
     private $eventDispatcher;
 
     public function __construct(MongoDB\Database $db)
@@ -25,6 +26,7 @@ class Recruiter
         $this->db = $db;
         $this->jobs = new Job\Repository($db);
         $this->workers = new Worker\Repository($db, $this);
+        $this->scheduler = new Scheduler\Repository($db);
         $this->eventDispatcher = new EventDispatcher();
     }
 
@@ -38,6 +40,11 @@ class Recruiter
         return new JobToSchedule(
             Job::around($workable, $this->jobs)
         );
+    }
+
+    public function repeatableJobOf(Repeatable $repeatable)
+    {
+        return Scheduler::around($repeatable, $this->scheduler, $this);
     }
 
     public function queued()
@@ -98,6 +105,14 @@ class Recruiter
     public function assignJobsToWorkers()
     {
         return $this->assignLockedJobsToWorkers($this->bookJobsForWorkers());
+    }
+
+    public function scheduleRepeatableJobs()
+    {
+        $schedulers = $this->scheduler->all();
+        foreach ($schedulers as $scheduler) {
+            $scheduler->schedule($this->jobs);
+        }
     }
 
     /**
