@@ -5,6 +5,7 @@ namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
 use Exception;
+use Geezer\Command\LeadershipEventsHandler;
 use Geezer\Command\RobustCommand;
 use Geezer\Command\RobustCommandRunner;
 use Geezer\Leadership\Dictatorship;
@@ -16,6 +17,7 @@ use Onebip\Concurrency\MongoLock;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 use Recruiter\Factory;
+use Recruiter\Infrastructure\Filesystem\BootstrapFile;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
@@ -25,7 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Timeless\Interval;
 
-class RecruiterCommand implements RobustCommand
+class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 {
     /**
      * @var Factory
@@ -79,6 +81,7 @@ class RecruiterCommand implements RobustCommand
     public function execute(): bool
     {
         $this->rollbackLockedJobs();
+        $assignment = $this->scheduleRepeatableJobs();
         $assignment = $this->assignJobsToWorkers();
         $this->retireDeadWorkers();
 
@@ -116,6 +119,23 @@ class RecruiterCommand implements RobustCommand
         $this->memoryLimit->ensure($memoryUsage);
 
         return $assignment;
+    }
+
+    private function scheduleRepeatableJobs(): void
+    {
+        $creationStartAt = microtime(true);
+        $this->recruiter->scheduleRepeatableJobs();
+        $creationEndAt = microtime(true);
+
+        //FIXME:! log every job created?
+        /* foreach ($assignment as $worker => $job) { */
+        /*     $this->log(sprintf(' tried to assign job `%s` to worker `%s`', $job, $worker)); */
+        /* } */
+
+        $this->log(sprintf(
+            'creation of jobs from crontab in %fms',
+            ($creationEndAt - $creationStartAt) * 1000
+        ));
     }
 
     private function retireDeadWorkers()
@@ -165,6 +185,7 @@ class RecruiterCommand implements RobustCommand
             new InputOption('memory-limit', 'm', InputOption::VALUE_REQUIRED, 'Maximum amount of memory allocable', '256MB'),
             new InputOption('considered-dead-after', 'd', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before considering a worker dead', '30m'),
             new InputOption('log-level', null, InputOption::VALUE_REQUIRED, 'The logging level: `emergency|alert|critical|error|warning|notice|info|debug`'),
+            new InputOption('bootstrap', 's', InputOption::VALUE_REQUIRED, 'A PHP file that loads the worker environment'),
         ]);
     }
 
@@ -188,6 +209,12 @@ class RecruiterCommand implements RobustCommand
 
         $this->recruiter = new Recruiter($db);
         $this->recruiter->createCollectionsAndIndexes();
+
+        if ($input->getOption('bootstrap')) {
+            /** @var string */
+            $bootstrap = $input->getOption('bootstrap');
+            BootstrapFile::fromFilePath($bootstrap)->load($this->recruiter);
+        }
     }
 
     private function log(string $message, string $level = LogLevel::DEBUG): void
@@ -202,5 +229,19 @@ class RecruiterCommand implements RobustCommand
                 'pid' => posix_getpid(),
             ]
         );
+    }
+
+    public function leadershipAcquired(): void
+    {
+        if (is_callable('recruiter_become_master')) {
+            recruiter_become_master($this->recruiter);
+        }
+    }
+
+    public function leadershipLost(): void
+    {
+        if (is_callable('recruiter_stept_back')) {
+            recruiter_stept_back($this->recruiter);
+        }
     }
 }
