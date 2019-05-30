@@ -31,7 +31,7 @@ class Cron implements SchedulePolicy
     {
         return [
             'cron_expression' => $this->cronExpression,
-            'now' => $this->now->getTimestamp(),
+            'now' => $this->now ? $this->now->getTimestamp() : null,
         ];
     }
 
