@@ -5,6 +5,7 @@ namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
 use Exception;
+use Geezer\Command\LeadershipEventsHandler;
 use Geezer\Command\RobustCommand;
 use Geezer\Command\RobustCommandRunner;
 use Geezer\Leadership\Dictatorship;
@@ -16,6 +17,7 @@ use Onebip\Concurrency\MongoLock;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 use Recruiter\Factory;
+use Recruiter\Infrastructure\Filesystem\BootstrapFile;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
@@ -25,7 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Timeless\Interval;
 
-class RecruiterCommand implements RobustCommand
+class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 {
     /**
      * @var Factory
@@ -174,12 +176,13 @@ class RecruiterCommand implements RobustCommand
     public function definition(): InputDefinition
     {
         return new InputDefinition([
-        new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', 'mongodb://localhost:27017/recruiter'),
-        new InputOption('backoff-to', 'b', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling (milliseconds)', '1600ms'),
-        new InputOption('backoff-from', 'f', InputOption::VALUE_REQUIRED, 'Time to wait at least before to search for new jobs (milliseconds)', '200ms'),
-        new InputOption('lease-time', 'l', InputOption::VALUE_REQUIRED, 'Maximum time to hold a lock before a refresh', '60s'),
-        new InputOption('memory-limit', 'm', InputOption::VALUE_REQUIRED, 'Maximum amount of memory allocable', '256MB'),
-        new InputOption('considered-dead-after', 'd', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before considering a worker dead', '30m'),
+            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', 'mongodb://localhost:27017/recruiter'),
+            new InputOption('backoff-to', 'b', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling (milliseconds)', '1600ms'),
+            new InputOption('backoff-from', 'f', InputOption::VALUE_REQUIRED, 'Time to wait at least before to search for new jobs (milliseconds)', '200ms'),
+            new InputOption('lease-time', 'l', InputOption::VALUE_REQUIRED, 'Maximum time to hold a lock before a refresh', '60s'),
+            new InputOption('memory-limit', 'm', InputOption::VALUE_REQUIRED, 'Maximum amount of memory allocable', '256MB'),
+            new InputOption('considered-dead-after', 'd', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before considering a worker dead', '30m'),
+            new InputOption('bootstrap', 's', InputOption::VALUE_REQUIRED, 'A PHP file that loads the worker environment'),
         ]);
     }
 
@@ -203,6 +206,12 @@ class RecruiterCommand implements RobustCommand
 
         $this->recruiter = new Recruiter($db);
         $this->recruiter->createCollectionsAndIndexes();
+
+        if ($input->getOption('bootstrap')) {
+            /** @var string */
+            $bootstrap = $input->getOption('bootstrap');
+            BootstrapFile::fromFilePath($bootstrap)->load($this->recruiter);
+        }
     }
 
     private function log(string $message, string $level = LogLevel::DEBUG): void
@@ -217,5 +226,19 @@ class RecruiterCommand implements RobustCommand
                 'pid' => posix_getpid(),
             ]
         );
+    }
+
+    public function leadershipAcquired(): void
+    {
+        if (is_callable('recruiter_become_master')) {
+            recruiter_become_master($this->recruiter);
+        }
+    }
+
+    public function leadershipLost(): void
+    {
+        if (is_callable('recruiter_stept_back')) {
+            recruiter_stept_back($this->recruiter);
+        }
     }
 }

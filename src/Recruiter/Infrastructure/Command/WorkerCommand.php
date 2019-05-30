@@ -166,4 +166,12 @@ class WorkerCommand implements RobustCommand
             ]
         );
     }
+
+    public function leadershipAcquired(): void
+    {
+    }
+
+    public function leadershipLost(): void
+    {
+    }
 }
