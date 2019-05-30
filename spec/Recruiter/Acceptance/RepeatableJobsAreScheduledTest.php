@@ -117,7 +117,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         // Adding a scheduler with the same URN again
         $newSchedulingTime = strtotime('2023-02-18T17:00:00');
         $schedulePolicy = new FixedSchedulePolicy($newSchedulingTime);
-        $this->scheduleAJob('unique-urn', $schedulePolicy);
+        $this->scheduleAJob('unique-urn', $schedulePolicy, true);
 
         // Check that the scheduler keeps metadata intact
         $schedulers = $this->fetchSchedulers();
@@ -125,6 +125,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
 
         // Check that job related data are updated
         $this->assertEquals($newSchedulingTime, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
+        $this->assertEquals(true, $schedulers[0]->export()['unique']);
 
         // Check that the scheduler keeps metadata intact
         $this->assertEquals($aSchedulerAlreadyHaveSomeAttempts, $schedulers[0]->export()['attempts']);
