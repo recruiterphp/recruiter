@@ -31,19 +31,34 @@ class Repository
     public function save(Scheduler $scheduler)
     {
         $document = $scheduler->export();
-
-        if ($scheduler->urn()) {
-            $filter = ['urn' => $document['urn']];
-            unset($document['_id']);
-        } else {
-            $filter = ['_id' => $document['_id']];
-        }
-
         $this->schedulers->replaceOne(
-            $filter,
+            ['_id' => $document['_id']],
             $document,
             ['upsert' => true]
         );
+    }
+
+    public function create(Scheduler $scheduler)
+    {
+        $document = $scheduler->export();
+
+        if (0 === $this->schedulers->count(['urn' => $document['urn']])) {
+            $this->schedulers->insertOne($document);
+        } else {
+            $document = array_filter($document, function ($key) {
+                return in_array($key, [
+                    'workable',
+                    'schedule_policy',
+                    'retry_policy',
+                    'unique',
+                ]);
+            }, ARRAY_FILTER_USE_KEY);
+
+            $this->schedulers->updateOne(
+                ['urn' => $scheduler->urn()],
+                ['$set' => $document]
+            );
+        }
     }
 
     private function map($cursor)

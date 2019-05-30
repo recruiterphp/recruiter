@@ -109,9 +109,9 @@ class Recruiter
 
     public function scheduleRepeatableJobs()
     {
-        $jobs = $this->scheduler->all();
-        foreach ($jobs as $job) {
-            $job->schedule($this->jobs);
+        $schedulers = $this->scheduler->all();
+        foreach ($schedulers as $scheduler) {
+            $scheduler->schedule($this->jobs);
         }
     }
 
