@@ -42,9 +42,9 @@ class Scheduler
     {
         return new self(
             $document,
-            WorkableInJob::import($document),
+            WorkableInJob::import($document['job']),
             SchedulePolicyInJob::import($document),
-            RetryPolicyInJob::import($document),
+            RetryPolicyInJob::import($document['job']),
             $repository
         );
     }
@@ -94,9 +94,13 @@ class Scheduler
     {
         return array_merge(
             $this->status,
-            WorkableInJob::export($this->workable, 'FIXME:!'),
             SchedulePolicyInJob::export($this->schedulePolicy),
-            RetryPolicyInJob::export($this->retryPolicy)
+            [
+                'job' => array_merge(
+                    WorkableInJob::export($this->workable, 'execute'),
+                    RetryPolicyInJob::export($this->retryPolicy)
+                ),
+            ]
         );
     }
 

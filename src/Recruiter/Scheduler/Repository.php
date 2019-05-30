@@ -47,9 +47,8 @@ class Repository
         } else {
             $document = array_filter($document, function ($key) {
                 return in_array($key, [
-                    'workable',
+                    'job',
                     'schedule_policy',
-                    'retry_policy',
                     'unique',
                 ]);
             }, ARRAY_FILTER_USE_KEY);
