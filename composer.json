@@ -28,7 +28,8 @@
         "symfony/console": "^4.2",
         "symfony/event-dispatcher": "^3.4|^4.0",
         "ulrichsg/getopt-php": "~2.1",
-        "mongodb/mongodb": "^1.4"
+        "mongodb/mongodb": "^1.4",
+        "mtdowling/cron-expression": "^1.2"
     },
     "suggest": {
         "symfony/console": "In order to use Recruiter\\Command\\RecruiterJobCommand."

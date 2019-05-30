@@ -14,6 +14,11 @@ class Moment
         return new self($ts * 1000);
     }
 
+    public static function fromDateTime(DateTime $dateTime)
+    {
+        return static::fromTimestamp($dateTime->getTimestamp());
+    }
+
     public function __construct($ms)
     {
         $this->ms = $ms;
