@@ -21,8 +21,8 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $expectedScheduleDate = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDate);
 
-        $scheduler = $this->scheduleAJob($schedulePolicy);
-        $this->recruiterCreatesJobsFromCrontabNTimes(1);
+        $scheduler = $this->scheduleAJob('unique-urn', $schedulePolicy);
+        $this->recruiterScheduleJobsNTimes(1);
 
         $jobs = $this->fetchScheduledJobs();
 
@@ -62,9 +62,9 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $expectedScheduleDate = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDate);
 
-        $this->scheduleAJob($schedulePolicy);
+        $this->scheduleAJob('unique-urn', $schedulePolicy);
 
-        $this->recruiterCreatesJobsFromCrontabNTimes(10);
+        $this->recruiterScheduleJobsNTimes(10);
         $jobs = $this->fetchScheduledJobs();
 
         $this->assertEquals(1, count($jobs));
@@ -84,9 +84,9 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         ];
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDates);
 
-        $this->scheduleAJob($schedulePolicy);
+        $this->scheduleAJob('unique-urn', $schedulePolicy);
 
-        $this->recruiterCreatesJobsFromCrontabNTimes(2);
+        $this->recruiterScheduleJobsNTimes(2);
         $jobs = $this->fetchScheduledJobs();
 
         $this->assertEquals(2, count($jobs));
@@ -101,9 +101,9 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
             strtotime('2019-05-17T14:00:00'),
         ]);
 
-        $this->scheduleAJob($schedulePolicy, true);
+        $this->scheduleAJob('unique-urn', $schedulePolicy, true);
 
-        $this->recruiterCreatesJobsFromCrontabNTimes(2);
+        $this->recruiterScheduleJobsNTimes(2);
         $jobs = $this->fetchScheduledJobs();
 
         $this->assertEquals(1, count($jobs));
@@ -111,26 +111,44 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
 
     public function testSchedulersAreUniqueOnUrn()
     {
-        $firstScheduling = strtotime('2019-05-16T14:00:00');
-        $schedulePolicy = new FixedSchedulePolicy($firstScheduling);
-        $this->scheduleAJob($schedulePolicy);
+        $aSchedulerAlreadyHaveSomeAttempts = 3;
+        $this->IHaveAScheduleWithALongStory('unique-urn', $aSchedulerAlreadyHaveSomeAttempts);
 
+        // Adding a scheduler with the same URN again
+        $newSchedulingTime = strtotime('2023-02-18T17:00:00');
+        $schedulePolicy = new FixedSchedulePolicy($newSchedulingTime);
+        $this->scheduleAJob('unique-urn', $schedulePolicy);
+
+        // Check that the scheduler keeps metadata intact
         $schedulers = $this->fetchSchedulers();
         $this->assertEquals(1, count($schedulers));
-        $this->assertEquals($firstScheduling, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
 
+        // Check that job related data are updated
+        $this->assertEquals($newSchedulingTime, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
 
-        $secondScheduling = strtotime('2023-02-18T17:00:00');
-        $schedulePolicy = new FixedSchedulePolicy($secondScheduling);
-        $this->scheduleAJob($schedulePolicy);
-
-        $schedulers = $this->fetchSchedulers();
-        $this->assertEquals(1, count($schedulers));
-        $this->assertEquals($secondScheduling, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
+        // Check that the scheduler keeps metadata intact
+        $this->assertEquals($aSchedulerAlreadyHaveSomeAttempts, $schedulers[0]->export()['attempts']);
     }
 
-    private function scheduleAJob(SchedulePolicy $schedulePolicy, bool $unique = false)
+    private function IHaveAScheduleWithALongStory(string $urn, $attempts)
     {
+        $scheduleTimes = [];
+        for ($i = 1; $i <= $attempts; $i++) {
+            $scheduleTimes[] = strtotime("2018-05-" . $i . "T15:00:00");
+        }
+
+        $schedulePolicy = new FixedSchedulePolicy($scheduleTimes);
+        $this->scheduleAJob($urn, $schedulePolicy);
+
+        $this->recruiterScheduleJobsNTimes($attempts);
+    }
+
+    private function scheduleAJob(string $urn, SchedulePolicy $schedulePolicy = null, bool $unique = false)
+    {
+        if (is_null($schedulePolicy)) {
+            $schedulePolicy = new FixedSchedulePolicy(strtotime('2023-02-18T17:00:00'));
+        }
+
         $scheduler = (new SampleRepeatableCommand())
             ->asRepeatableJobOf($this->recruiter)
             ->repeatWithPolicy($schedulePolicy)
@@ -141,7 +159,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         return $scheduler->create();
     }
 
-    private function recruiterCreatesJobsFromCrontabNTimes(int $nth)
+    private function recruiterScheduleJobsNTimes(int $nth = 1)
     {
         $i = 0;
         while ($i++ < $nth) {

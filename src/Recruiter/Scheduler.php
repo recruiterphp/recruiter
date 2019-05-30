@@ -65,7 +65,7 @@ class Scheduler
 
     public function create()
     {
-        $this->schedulers->save($this);
+        $this->schedulers->create($this);
 
         return $this;
     }
@@ -100,14 +100,13 @@ class Scheduler
         );
     }
 
-    private function wasAlreadyScheduled()
+    private function wasAlreadyScheduled($nextScheduling)
     {
         if (!$this->status['last_scheduling']['scheduled_at']) {
             return false;
         }
 
         $lastScheduling = T\MongoDate::toMoment($this->status['last_scheduling']['scheduled_at']);
-        $nextScheduling = $this->schedulePolicy->next();
 
         return $lastScheduling == $nextScheduling;
     }
@@ -119,7 +118,7 @@ class Scheduler
         }
 
         try {
-            $alreadyScheduledJob = $jobs->scheduled(new \MongoDB\BSON\ObjectId($this->status['last_scheduling']['job_id']));
+            $alreadyScheduledJob = $jobs->scheduled($this->status['last_scheduling']['job_id']);
             return true;
         } catch (\Exception $e) {
             return false;
@@ -128,7 +127,8 @@ class Scheduler
 
     public function schedule(JobsRepository $jobs)
     {
-        if ($this->wasAlreadyScheduled()) {
+        $nextScheduling = $this->schedulePolicy->next();
+        if ($this->wasAlreadyScheduled($nextScheduling)) {
             return;
         }
 
@@ -136,7 +136,6 @@ class Scheduler
             return;
         }
 
-        $nextScheduling = $this->schedulePolicy->next();
         $this->status['last_scheduling']['scheduled_at'] = T\MongoDate::from($nextScheduling);
         $this->status['last_scheduling']['job_id'] = null;
         $this->status['attempts'] = $this->status['attempts'] + 1;
