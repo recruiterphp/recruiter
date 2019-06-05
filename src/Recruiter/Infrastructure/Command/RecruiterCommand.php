@@ -233,8 +233,8 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 
     public function leadershipAcquired(): void
     {
-        if (is_callable('recruiter_become_master')) {
-            recruiter_become_master($this->recruiter);
+        if (is_callable('recruiter_became_master')) {
+            recruiter_became_master($this->recruiter);
         }
     }
 
