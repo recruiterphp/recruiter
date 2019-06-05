@@ -11,7 +11,6 @@
     }],
     "repositories": [
         { "type": "vcs", "url": "git@github.com:EasyWelfare/onebip-concurrency.git" },
-        { "type": "vcs", "url": "git@github.com:EasyWelfare/onebip-clock.git" },
         { "type": "git", "url": "git@github.com:EasyWelfare/geezer.git" }
     ],
     "require": {
