@@ -2,7 +2,7 @@
 
 namespace Recruiter\Acceptance;
 
-use RecruiterPhp\Concurrency\Timeout;
+Recruiter\Concurrency\Timeout;
 use Recruiter\Workable\ConsumingMemoryCommand;
 use Timeless as T;
 

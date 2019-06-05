@@ -5,12 +5,12 @@ namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
 use Exception;
-use Geezer\Command\RobustCommand;
-use Geezer\Command\RobustCommandRunner;
-use Geezer\Leadership\Anarchy;
-use Geezer\Leadership\LeadershipStrategy;
-use Geezer\Timing\ExponentialBackoffStrategy;
-use Geezer\Timing\WaitStrategy;
+use Recruiter\Geezer\Command\RobustCommand;
+use Recruiter\Geezer\Command\RobustCommandRunner;
+use Recruiter\Geezer\Leadership\Anarchy;
+use Recruiter\Geezer\Leadership\LeadershipStrategy;
+use Recruiter\Geezer\Timing\ExponentialBackoffStrategy;
+use Recruiter\Geezer\Timing\WaitStrategy;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Recruiter\Factory;
