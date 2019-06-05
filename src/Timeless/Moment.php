@@ -73,4 +73,9 @@ class Moment
     {
         return (new DateTime('@' . $this->s(), new DateTimeZone('UTC')))->format(DateTime::RFC3339);
     }
+
+    public function toDateTime()
+    {
+        return new DateTime('@' . $this->s(), new DateTimeZone('UTC'));
+    }
 }

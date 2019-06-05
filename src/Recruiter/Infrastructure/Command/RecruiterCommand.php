@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
+use DateTime;
 use Exception;
 use Geezer\Command\LeadershipEventsHandler;
 use Geezer\Command\RobustCommand;
@@ -12,7 +13,6 @@ use Geezer\Leadership\Dictatorship;
 use Geezer\Leadership\LeadershipStrategy;
 use Geezer\Timing\ExponentialBackoffStrategy;
 use Geezer\Timing\WaitStrategy;
-use Onebip\Clock\SystemClock;
 use Onebip\Concurrency\MongoLock;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
@@ -141,7 +141,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
     private function retireDeadWorkers()
     {
         $unlockedJobs = $this->recruiter->retireDeadWorkers(
-            new SystemClock(),
+            new DateTime(),
             $this->consideredDeadAfter
         );
         $this->log(sprintf('unlocked %d jobs due to dead workers', $unlockedJobs), LogLevel::DEBUG);
