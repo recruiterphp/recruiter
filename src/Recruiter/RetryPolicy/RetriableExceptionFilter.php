@@ -14,8 +14,6 @@ class RetriableExceptionFilter implements RetryPolicy
     private $filteredRetryPolicy;
     private $retriableExceptions;
 
-    private $retryPolicy;
-
     /**
      * @param string $exceptionClass  fully qualified class or interface name
      * @return self
@@ -81,7 +79,7 @@ class RetriableExceptionFilter implements RetryPolicy
     private function isExceptionRetriable($exception)
     {
         if (!is_null($exception) && is_object($exception)) {
-            return Onebip\array_some(
+            return Recruiter\array_some(
                 $this->retriableExceptions,
                 function ($retriableExceptionType) use ($exception) {
                     return ($exception instanceof $retriableExceptionType);
