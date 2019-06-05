@@ -3,15 +3,16 @@
 namespace Recruiter;
 
 use DateInterval;
-use MongoDB\Collection as MongoCollection;
+use DateTimeInterface;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection as MongoCollection;
 use Onebip;
-use Onebip\Clock;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
 use Recruiter\Worker\Repository;
 use Timeless as T;
 use Timeless\Interval;
+use Timeless\Moment;
 
 class Worker
 {
@@ -254,14 +255,15 @@ class Worker
                 $jobs = array_merge($jobs, array_values($document['assigned_to']));
             }
         }
+
         return array_values(array_unique($jobs));
     }
 
-    public static function retireDeadWorkers(Repository $roster, Clock $clock, Interval $consideredDeadAfter)
+    public static function retireDeadWorkers(Repository $roster, DateTimeInterface $now, Interval $consideredDeadAfter)
     {
-        $now = $clock->current();
         $consideredDeadAt = clone $now;
         $consideredDeadAt->sub($consideredDeadAfter->toDateInterval());
+        error_log(var_export($consideredDeadAt, true));
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {
@@ -272,6 +274,7 @@ class Worker
                 }
             }
         }
+
         return $jobsToReassign;
     }
 }

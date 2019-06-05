@@ -1,8 +1,8 @@
 <?php
 namespace Recruiter;
 
+use DateTimeInterface;
 use MongoDB;
-use Onebip\Clock;
 use Onebip\Concurrency\LockNotAvailableException;
 use Onebip\Concurrency\MongoLock;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
@@ -178,10 +178,10 @@ class Recruiter
      * @step
      * @return integer  how many jobs were unlocked as a result
      */
-    public function retireDeadWorkers(Clock $clock, Interval $consideredDeadAfter)
+    public function retireDeadWorkers(DateTimeInterface $now, Interval $consideredDeadAfter)
     {
         return $this->jobs->releaseAll(
-            $jobsAssignedToDeadWorkers = Worker::retireDeadWorkers($this->workers, $clock, $consideredDeadAfter)
+            $jobsAssignedToDeadWorkers = Worker::retireDeadWorkers($this->workers, $now, $consideredDeadAfter)
         );
     }
 

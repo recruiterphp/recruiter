@@ -1,7 +1,6 @@
 <?php
 namespace Recruiter\Acceptance;
 
-use Onebip\Clock\SystemClock;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Workable\LazyBones;
 use Recruiter\Workable\ThrowsFatalError;
@@ -83,7 +82,7 @@ class FaultToleranceTest extends BaseAcceptanceTest
         $this->assertEquals(1, count($assignments));
         sleep(2);
         // The worker is dead and the job is not properly scheduled
-        $this->recruiter->retireDeadWorkers(new SystemClock(), T\seconds(0));
+        $this->recruiter->retireDeadWorkers(new \DateTime(), T\seconds(0));
         $this->waitForNumberOfWorkersToBe(0);
 
         // Second execution of the job
@@ -94,7 +93,7 @@ class FaultToleranceTest extends BaseAcceptanceTest
         $this->assertEquals(1, count($assignments));
         sleep(2);
         // The worker is dead and the job is not properly scheduled
-        $this->recruiter->retireDeadWorkers(new SystemClock(), T\seconds(0));
+        $this->recruiter->retireDeadWorkers(new \DateTime(), T\seconds(0));
         $this->waitForNumberOfWorkersToBe(0);
         $this->assertJobIsMarkedAsCrashed();
 
