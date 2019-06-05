@@ -2,7 +2,6 @@
 
 namespace Recruiter\RetryPolicy;
 
-use Onebip;
 use InvalidArgumentException;
 
 use Recruiter\Job;

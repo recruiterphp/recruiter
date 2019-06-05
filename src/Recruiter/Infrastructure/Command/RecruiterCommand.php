@@ -13,7 +13,7 @@ use Geezer\Leadership\Dictatorship;
 use Geezer\Leadership\LeadershipStrategy;
 use Geezer\Timing\ExponentialBackoffStrategy;
 use Geezer\Timing\WaitStrategy;
-use Onebip\Concurrency\MongoLock;
+use RecruiterPhp\Concurrency\MongoLock;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 use Recruiter\Factory;

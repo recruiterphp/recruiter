@@ -262,7 +262,6 @@ class Worker
     {
         $consideredDeadAt = clone $now;
         $consideredDeadAt->sub($consideredDeadAfter->toDateInterval());
-        error_log(var_export($consideredDeadAt, true));
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {

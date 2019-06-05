@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use MongoDB\Driver\Exception\BulkWriteException;
-use Onebip;
 use Recruiter\Finalizable;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;

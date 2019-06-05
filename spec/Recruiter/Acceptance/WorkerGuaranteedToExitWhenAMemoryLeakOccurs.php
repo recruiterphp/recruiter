@@ -2,7 +2,7 @@
 
 namespace Recruiter\Acceptance;
 
-use Onebip\Concurrency\Timeout;
+use RecruiterPhp\Concurrency\Timeout;
 use Recruiter\Workable\ConsumingMemoryCommand;
 use Timeless as T;
 
@@ -30,7 +30,8 @@ class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTest
         ]);
         $this->waitForNumberOfWorkersToBe($numberOfWorkersBefore + 1, 5);
 
-        Timeout::inSeconds(5, function () { })
+        Timeout::inSeconds(5, function () {
+        })
             ->until(function () {
                 $at = T\now();
                 $statistics = $this->recruiter->statistics($tag = null, $at);
