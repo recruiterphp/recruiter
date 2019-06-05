@@ -5,7 +5,6 @@ namespace Recruiter;
 use DateInterval;
 use MongoDB\Collection as MongoCollection;
 use MongoDB\BSON\ObjectId;
-use Onebip;
 use Onebip\Clock;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
@@ -206,14 +205,14 @@ class Worker
         $result = [];
         $workers = iterator_to_array($collection->find(['available' => true], ['projection' => ['_id' => 1, 'work_on' => 1]]));
         if (count($workers) > 0) {
-            $unitsOfWorkers = Onebip\array_group_by(
+            $unitsOfWorkers = array_group_by(
                 $workers,
                 function ($worker) {
                     return $worker['work_on'];
                 }
             );
             foreach ($unitsOfWorkers as $workOn => $workersInUnit) {
-                $workersInUnit = Onebip\array_pluck($workersInUnit, '_id');
+                $workersInUnit = array_column($workersInUnit, '_id');
                 $workersInUnit = array_slice($workersInUnit, 0, min(count($workersInUnit), $workersPerUnit));
                 $result[] = [$workOn, $workersInUnit];
             }
@@ -224,9 +223,9 @@ class Worker
     public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers)
     {
         $assignment = array_combine(
-            Onebip\array_map($workers, function ($id) {
+            array_map(function ($id) {
                 return (string)$id;
-            }),
+            }, $workers),
             $jobs
         );
 
