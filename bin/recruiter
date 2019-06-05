@@ -8,7 +8,7 @@ foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/auto
     }
 }
 
-use Geezer\Command\RobustCommandRunner;
+use Recruiter\Geezer\Command\RobustCommandRunner;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;

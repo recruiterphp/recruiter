@@ -2,7 +2,7 @@
 namespace Recruiter\Acceptance;
 
 use DateTime;
-use RecruiterPhp\Concurrency\Timeout;
+use Recruiter\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
