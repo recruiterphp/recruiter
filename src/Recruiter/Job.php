@@ -306,7 +306,7 @@ class Job
 
     public static function pickReadyJobsForWorkers(MongoCollection $collection, $worksOn, $workers)
     {
-        $jobs = Onebip\array_pluck(
+        $jobs = array_column(
             iterator_to_array(
                 $collection
                     ->find(
@@ -328,6 +328,7 @@ class Job
             ),
             '_id'
         );
+
         if (count($jobs) > 0) {
             return [$worksOn, $workers, $jobs];
         }

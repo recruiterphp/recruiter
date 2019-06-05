@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
-use function Onebip\array_some;
-
 /**
  * Class SynchronousExecutionReport
  */

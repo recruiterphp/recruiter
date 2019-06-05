@@ -22,7 +22,6 @@
         "easywelfare/geezer": "^3.0",
         "gabrielelana/byte-units": "~0.1",
         "monolog/monolog": ">=1",
-        "onebip/onebip-array": "dev-master",
         "easywelfare/onebip-concurrency": "^2.0",
         "psr/log": "^1.0",
         "symfony/console": "^4.2",
@@ -51,7 +50,8 @@
             "Sink\\": "src/Sink"
         },
         "files": [
-            "src/Timeless/functions.php"
+            "src/Timeless/functions.php",
+            "src/Recruiter/functions.php"
         ]
     }
 }
