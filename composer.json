@@ -1,9 +1,9 @@
 {
-    "name": "onebip/recruiter",
+    "name": "recruiterphp/recruiter",
     "description": "Job Queue Manager: high performance, high volume, persistent, fault tolerant. 100% PHP/MongoDB, 100% Awesome",
     "type": "project",
     "keywords": ["job", "jobs", "deferred", "offline", "delay", "background", "queue", "manager", "mongodb"],
-    "homepage": "https://github.com/onebip/recruiter",
+    "homepage": "https://github.com/recruiterphp/recruiter",
     "license": "MIT",
     "authors": [{
         "name": "gabriele.lana",
