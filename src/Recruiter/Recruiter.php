@@ -3,10 +3,10 @@ namespace Recruiter;
 
 use DateTimeInterface;
 use MongoDB;
-use Onebip\Concurrency\LockNotAvailableException;
-use Onebip\Concurrency\MongoLock;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Utils\Chainable;
+use RecruiterPhp\Concurrency\LockNotAvailableException;
+use RecruiterPhp\Concurrency\MongoLock;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;

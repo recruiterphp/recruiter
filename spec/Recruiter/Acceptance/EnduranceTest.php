@@ -2,7 +2,7 @@
 namespace Recruiter\Acceptance;
 
 use Recruiter\Job\Repository;
-use Onebip\Concurrency\Timeout;
+use RecruiterPhp\Concurrency\Timeout;
 use Eris;
 use Eris\Generator;
 use Eris\Generator\ConstantGenerator;
