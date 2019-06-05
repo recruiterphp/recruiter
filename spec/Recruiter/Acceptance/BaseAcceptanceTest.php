@@ -1,7 +1,7 @@
 <?php
 namespace Recruiter\Acceptance;
 
-use Onebip\Clock\SystemClock;
+use DateTime;
 use Onebip\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
@@ -75,7 +75,7 @@ abstract class BaseAcceptanceTest extends TestCase
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
-                $this->recruiter->retireDeadWorkers(new SystemClock(), T\seconds(0));
+                $this->recruiter->retireDeadWorkers(new DateTime(), T\seconds(0));
                 return $this->numberOfWorkers() == $expectedNumber;
             });
     }
