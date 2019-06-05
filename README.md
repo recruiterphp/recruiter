@@ -1,5 +1,5 @@
 # Disclaimer
-This is a work in progress not ready to be used or seen. This work is sponsored by [Onebip](http://www.onebip.com)
+This is a work in progress not ready to be used or seen. This work is sponsored by [Onebip](http://www.onebip.com), [EasyWelfare](https://www.easywelfare.com/)
 
 # Recruiter
 It's a Job Queue Manager built with PHP meant to be used in PHP projects. Features and characteristics:
