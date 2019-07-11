@@ -10,6 +10,7 @@ Welcome to Recruiter's documentation!
    :maxdepth: 2
 
    overview
+   processes
    setup
    workable
    jobs
@@ -19,5 +20,7 @@ Welcome to Recruiter's documentation!
    recruiter-hooks
    priority
    analytics
+   mongo-collections
+   administration
 
    todo

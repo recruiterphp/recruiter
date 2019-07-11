@@ -32,13 +32,12 @@ Documentazione da scrivere:
    - :strike:`come si implementa una retry policy` (non é dettagliato, ma uno si può guardare l'implementazione di una delle tante esistenti per capire come fare...)
    - :strike:`tags`
    - :strike:`recruiter statistiche`
-   - come rimettere un job in coda
-   - collezioni ( a che serve archived, etc.)
-   - how to debug
    - :strike:`hooks`
-   - gracefull shutdown
-   - esecuzione nei test
    - :strike:`repeatable jobs`
-   - iniettare il logger
    - :strike:`working-on (priority queues)`
+   - collezioni ( a che serve archived, etc.)
+   - come rimettere un job in coda
+   - how to debug
+   - esecuzione nei test
+   - iniettare il logger
    - geezer

@@ -1,3 +1,5 @@
+.. _analytics-page:
+
 Analytics
 ===========================
 
