@@ -36,7 +36,7 @@ How to handle priority
 
 | In linea di massima possiamo affermare che più worker ci sono per una determinata coda (gruppo) e più quella coda verrà smaltita velocemente.
 
-| Per limitare il lavoro di un worker ad uno specifico gruppo di jobs dovremo utilizzare l'ozione `work-on` al lancio del processo `worker`.
+| Per limitare il lavoro di un worker ad uno specifico gruppo di jobs dovremo utilizzare l'opzione **work-on** al lancio del processo `worker`.
 | Ad esempio:
 
 .. code-block:: bash

@@ -35,8 +35,8 @@ Documentazione da scrivere:
    - :strike:`hooks`
    - :strike:`repeatable jobs`
    - :strike:`working-on (priority queues)`
-   - collezioni ( a che serve archived, etc.)
-   - come rimettere un job in coda
+   - :strike:`collezioni ( a che serve archived, etc.)`
+   - :strike:`come rimettere un job in coda`
    - how to debug
    - esecuzione nei test
    - iniettare il logger

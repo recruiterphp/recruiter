@@ -3,6 +3,8 @@ Administration console
 
 | La libreria fornisce alcuni comandi da console per la gestione del recruiter:
 
+.. _recovering:
+
 ===========================
 Recovering a job
 ===========================

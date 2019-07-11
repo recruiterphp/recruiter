@@ -42,6 +42,11 @@ Mongo Collections
 | Il processo `cleaner` si occupa di mantenere ridotte le dimensioni di questa collezione, cancellando i `jobs` più vecchi di 5 giorni (default).
 | É possibile modificare questa finestra temporale tramite l'opzione **clean-after** del processo `cleaner`.
 
+| Questa collezione risulta molto utile per 2 motivi:
+
+   * indagare i motivi del fallimento di un job (nel documento viene incluso lo stato del job (completato o meno) e il motivo dell'ultimo fallimento, più altri dati utili)
+   * :ref:`rischedulare un job<recovering>`
+
 .. _schedulers-collection:
 
 ============================
