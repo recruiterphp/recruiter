@@ -35,3 +35,18 @@ How to handle priority
 - quattro job facenti parti del gruppo ``double-optin-email`` in parallelo
 
 | In linea di massima possiamo affermare che più worker ci sono per una determinata coda (gruppo) e più quella coda verrà smaltita velocemente.
+
+| Per limitare il lavoro di un worker ad uno specifico gruppo di jobs dovremo utilizzare l'ozione `work-on` al lancio del processo `worker`.
+| Ad esempio:
+
+.. code-block:: bash
+
+   $ php vendor/bin/recruiter start:worker --work-on='double-optin-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+   $ php vendor/bin/recruiter start:worker --work-on='double-optin-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+   $ php vendor/bin/recruiter start:worker --work-on='double-optin-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+   $ php vendor/bin/recruiter start:worker --work-on='double-optin-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+
+   $ php vendor/bin/recruiter start:worker --work-on='confirmation-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+   $ php vendor/bin/recruiter start:worker --work-on='confirmation-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
+
+   $ php vendor/bin/recruiter start:worker --work-on='follow-up-email' --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php

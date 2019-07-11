@@ -30,7 +30,7 @@ Documentazione da scrivere:
 - approfondimenti
    - :strike:`come si implementa una workable`
    - :strike:`come si implementa una retry policy` (non é dettagliato, ma uno si può guardare l'implementazione di una delle tante esistenti per capire come fare...)
-   - tags
+   - :strike:`tags`
    - :strike:`recruiter statistiche`
    - come rimettere un job in coda
    - collezioni ( a che serve archived, etc.)

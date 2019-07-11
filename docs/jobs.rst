@@ -211,8 +211,10 @@ Optimistic Jobs
 ==================
 Raggrupare i Job
 ==================
-| Come `abbiamo visto in precedenza <FIXME:!.html>`_ un worker può essere assegnato ad un solo specifico gruppo di jobs.
-| Per assegnare un job ad un gruppo si utilizza il metodo ``inGroup($group)``
+| I `worker` (i processi che eseguono il lavoro descritto dai jobs) possono essere lanciati con l'intento di eseguire qualsiasi job disponibile oppure possono essere limitati all'esecuzione di un solo gruppo di jobs.
+| Questo modalità può tornarci utile, ad esempio, per `gestire priorità di esecuzione diverse a seconda dei jobs <priority.html>`_.
+
+| Ogni `job` può essere assegnato, al massimo, ad un singolo gruppo e per farlo si utilizza il metodo ``inGroup($group)``
 
 .. code-block:: php
 
@@ -224,24 +226,6 @@ Raggrupare i Job
       ->inBackground()
       ->execute()
    ;
-
-| In questo modo solo i worker relativi al gruppo `http` potranno eseguire questo job
-
-
-.. |recruiter.workable.class| replace:: ``Recruiter\Workable``
-.. _recruiter.workable.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Workable.php
-
-.. |recruiter.workable.shellCommand.class| replace:: ``Recruiter\Workable\ShellCommand``
-.. _recruiter.workable.shellCommand.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Workable/ShellCommand.php
-
-.. |recruiter.recruiter.class| replace:: ``Recruiter\Recruiter``
-.. _recruiter.recruiter.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Recruiter.php
-
-.. |timeless.moment.class| replace:: ``Timeless\Moment``
-.. _timeless.moment.class: https://github.com/recruiterphp/recruiter/blob/master/src/Timeless/Moment.php
-
-.. |retryPolicy.class| replace:: ``Recruiter\RetryPolicy``
-.. _retryPolicy.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/RetryPolicy.php
 
 ==================
 Tags
@@ -258,3 +242,20 @@ Tags
       ->inBackground()
       ->execute()
    ;
+
+
+
+.. |recruiter.workable.class| replace:: ``Recruiter\Workable``
+.. _recruiter.workable.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Workable.php
+
+.. |recruiter.workable.shellCommand.class| replace:: ``Recruiter\Workable\ShellCommand``
+.. _recruiter.workable.shellCommand.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Workable/ShellCommand.php
+
+.. |recruiter.recruiter.class| replace:: ``Recruiter\Recruiter``
+.. _recruiter.recruiter.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Recruiter.php
+
+.. |timeless.moment.class| replace:: ``Timeless\Moment``
+.. _timeless.moment.class: https://github.com/recruiterphp/recruiter/blob/master/src/Timeless/Moment.php
+
+.. |retryPolicy.class| replace:: ``Recruiter\RetryPolicy``
+.. _retryPolicy.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/RetryPolicy.php
