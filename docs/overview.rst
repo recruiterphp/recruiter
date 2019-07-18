@@ -6,10 +6,10 @@ What is Recruiter
 
 Features and characteristics:
 
-* `Jobs <jobs.html>`_ are made persistent on MongoDB
-* `Jobs are retriable <jobs.html#retry>`_ with complex and customizable strategies
-* `Jobs <jobs.html>`_ are stored by default in an history collection for after the fact inspection and analytics
-* `Multiple queues are supported through tagging <priority.html>`_
+* :ref:`Jobs<jobs>` are made persistent on MongoDB
+* :ref:`Jobs<job-retry>` with complex and customizable strategies
+* :ref:`Jobs<jobs>` are stored by default in an history collection for after the fact inspection and analytics
+* :ref:`Multiple queues are supported through grouping<priority>`
 * Built to be robust, scalable and fault tolerant
 
 At high level, it provides a few major components:

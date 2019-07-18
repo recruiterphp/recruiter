@@ -1,3 +1,5 @@
+.. _priority:
+
 How to handle priority
 =================================
 
@@ -15,7 +17,7 @@ How to handle priority
 
 | Nell'ultimo caso invece non abbiamo nessuna fretta, infatti che l'email venga inviata dopo 7 giorni esatti o dopo 7 giorni e 2 minuti cambia molto poco, l'utente non se ne accorgerà ed anche il business (in questa nostra ipotesi) non ne risentirà.
 
-| Per attuare questa strategia possiamo innanzitutto `suddividere i jobs in diversi gruppi <jobs.html#raggrupare-i-job>`_, in questo specifico caso andremo quindi a creare 3 gruppi:
+| Per attuare questa strategia possiamo innanzitutto :ref:`suddividere i jobs in diversi gruppi<jobs-grouping>`, in questo specifico caso andremo quindi a creare 3 gruppi:
 
 * `double-optin-email` (or `high-priority`)
 * `confirmation-email` (or `generics`)

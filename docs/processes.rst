@@ -10,13 +10,11 @@ Recruiter process
 | Il processo `recruiter` é colui che si occupa di assegnare, al momento giusto, i job presenti in coda ai vari `worker` che sono in esecuzione.
 
 | E' importante che una sola instanza del processo `recruiter` sia live in un determinato momento, ma lo sviluppatore non deve preoccuparsene in quanto il `recruiter` include al suo interno un meccanismo di muta esclusione, é quindi possibile eseguire più processi in contemporanea (ad esempio se si hanno più server identici, ognuno dei quali lancia la propria istanza di `recruiter`) senza che ci siano problemi di concorrenza.
-| Per maggiori informazioni riguardo a questa funzionalità guardare il capitolo relativo a `Geezer <geezer.html>`_
+| Per maggiori informazioni riguardo a questa funzionalità guardare il capitolo relativo a :ref:`Geezer<geezer>`
 
 | Il processo `recruiter` per funzionare ha bisogno di collegarsi ad un istanza di mongodb, é possibile specificare l'URI tramite l'opzione **--target ${MONGOURI}** (se non specificata il processo `recruiter` proverà a collegarsi a `localhost:27017`)
 
-| Se si vuole approfittare degli `hook`_ messi a disposizione dal processo `recruiter` é indispensabile passare al comando uno script php da includere, in modo tale che le funzioni definite dall'utente siano visibili. Questo può essere fatto tramite l'opzione **--bootstrap**
-
-.. _hook: recruiter-hooks.html
+| Se si vuole approfittare degli :ref:`hook<recruiter-hooks>` messi a disposizione dal processo `recruiter` é indispensabile passare al comando uno script php da includere, in modo tale che le funzioni definite dall'utente siano visibili. Questo può essere fatto tramite l'opzione **--bootstrap**
 
 | Per lanciare il processo `recruiter` utilizzare il seguente comando:
 
@@ -43,9 +41,7 @@ Worker process
 | Il processo `worker` é colui che si occupa effettivamente di eseguire un determinato job.
 | Al proprio avvio il processo `worker` comunica al processo `recruiter` il fatto di essere disponibile ad accettare lavori.
 | E' possibile eseguire più processi `worker` in contemporanea, ognuno di questi eseguirà un singolo job alla volta.
-| E' possibile limitare un `worker` all'esecuzione di un solo specifico gruppo di lavori, questo é un metodo per poter gesitre in maniera blanda le `priorità`_.
-
-.. _priorità: priority.html
+| E' possibile limitare un `worker` all'esecuzione di un solo specifico gruppo di lavori, questo é un metodo per poter gesitre in maniera blanda le :ref:`priorità<priority>`.
 
 | Il processo `worker` per funzionare ha bisogno di collegarsi ad un istanza di mongodb, é possibile specificare l'URI tramite l'opzione **--target ${MONGOURI}** (se non specificata il processo `worker` proverà a collegarsi a `localhost:27017`)
 

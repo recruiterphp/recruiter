@@ -1,3 +1,5 @@
+.. _recruiter-hooks:
+
 Recruiter Hooks
 =============================
 
@@ -13,7 +15,7 @@ recruiter_became_master
 =============================
 | Questa funzione verrà invocata dal processo recruiter nel momento in cui ottiene la leadership.
 
-| Per maggiori informazioni su cosa significhi ottenere la leadership vedere il capitolo relativo a `Geezer <geezer.html>`_
+| Per maggiori informazioni su cosa significhi ottenere la leadership vedere il capitolo relativo a :ref:`Geezer<geezer>`
 
 
 .. code-block:: php
@@ -32,7 +34,7 @@ recruiter_stept_back
 =============================
 | Questa funzione verrà invocata dal processo recruiter che perde la leadership.
 
-| Per maggiori informazioni su cosa significhi perdere la leadership vedere il capitolo relativo a `Geezer <geezer.html>`_
+| Per maggiori informazioni su cosa significhi perdere la leadership vedere il capitolo relativo a :ref:`Geezer<geezer>`
 
 .. code-block:: php
 

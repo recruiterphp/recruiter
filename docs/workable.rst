@@ -1,8 +1,10 @@
+.. _workable:
+
 Cos'é un oggetto Workable?
 ===================================
 
 | Il workable é la classe che contiene la procedura che dovrà essere svolta in maniera asincrona.
-| Questa verrà poi encapsulata in un `Job` del recruiter per poter essere messo in una coda ed essere successivamente eseguito da un `Worker <overview.html#worker-process>`_.
+| Questa verrà poi encapsulata in un `Job` del recruiter per poter essere messo in una coda ed essere successivamente eseguito da un :ref:`Worker<worker>`.
 
 ===================================
 Implementare un proprio `Workable`
@@ -134,7 +136,7 @@ Implementare un proprio `Workable`
 | - abbiamo settato il `Job` per l'esecuzione in background.
 | - abbiamo istruito il `Worker` a chiamare il metodo **`execute()`** sull'istanza `Workable` contenuta nel `Job`.
 
-| Nel `prossimo capitolo <jobs.html>`_ scopriremo tutte le opzioni disponibili per i vari `Job`.
+| Nel :ref:`prossimo capitolo<jobs>` scopriremo tutte le opzioni disponibili per i vari `Job`.
 
 
 .. |recruiter.workable.class| replace:: ``Recruiter\Workable``

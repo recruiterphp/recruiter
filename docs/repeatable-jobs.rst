@@ -5,7 +5,7 @@ Repeatable Jobs
 | Vediamo come utilizzarli tramite un esempio.
 |
 | Supponiamo di voler inviare, ogni giorno alle 06:00 UTC, un report ad un determinato indirizzo email.
-| Avremo bisogno quindi di `creare il nostro Workable <workable.html>`_ che contenga la procedura per generare/inviare il report, procediamo, come visto in precedenza, ad implementare la classe |recruiter.workable.class|_ utilizzando il trait |recruiter.workable-behaviour.class|_ per evitare di scrivere codice ridondante.
+| Avremo bisogno quindi di :ref:`creare il nostro Workable<workable>` che contenga la procedura per generare/inviare il report, procediamo, come visto in precedenza, ad implementare la classe |recruiter.workable.class|_ utilizzando il trait |recruiter.workable-behaviour.class|_ per evitare di scrivere codice ridondante.
 
 .. code-block:: php
 

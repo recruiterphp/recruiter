@@ -34,7 +34,7 @@ Per poter accodare dei job da eseguire dovremo avere in mano un istanza della cl
 ============
 Hello World
 ============
-| Abbiamo già visto questo esempio nel `capitolo relativo alla creazione di un oggetto Workable <workable.html>`_
+| Abbiamo già visto questo esempio nel :ref:`capitolo relativo alla creazione di un oggetto Workable<workable>`.
 | Tenendo conto di aver sviluppato una classe **HttpRequestCommand** il codice più semplice che potremmo scrivere per accodare una richiesta Http é il seguente:
 
 .. code-block:: php
@@ -85,6 +85,10 @@ Schedule a Job in the future
 
 In questo modo il job verrà messo in coda e verrà eseguto non appena ci sarà un worker libero disponibile successivamente alla data '2038-01-19T00:00:00.000000Z'
 
+
+
+.. _job-retry:
+
 ============
 Retry
 ============
@@ -94,7 +98,7 @@ Retry
 | In caso di fallimento di un job il recruiter ci dà la possibilità di specificare il fatto la sua esecuzione possa essere ritentata.
 | Per fare ciò dovremo assegnare una |retryPolicy.class|_ al job tramite il metodo ``retryWithPolicy(RetryPolicy $retryPolicy)``.
 
-| Vedremo più avanti `come poter creare una propria RetryPolicy <retry-policies.html>`_, nel frattempo possiamo utilizzare le retry policies già incluse nella libreria recruiter.
+| Vedremo più avanti :ref:`come poter creare una propria RetryPolicy<retry-policies>`, nel frattempo possiamo utilizzare le retry policies già incluse nella libreria recruiter.
 
 | Supponiamo ad esempio di voler ritentare la nostra chiamata http nel caso in cui fallisca, di volere eseguire fino ad un massimo di tre retry e di voler attendere 60 secondi tra un tentativo e l'altro:
 
@@ -129,7 +133,7 @@ Retry
 | `2038-01-19T00:02:00.000Z`
 | `2038-01-19T00:03:00.000Z`
 
-| Questo é un semplice esempio di come poter ripetere un job in caso di fallimento, le :ref:`Retry Policies` possono avere anche logiche molto più complesse, date uno sguardo alla `pagina dedicata <retry-policies.html>`_ per capirne le potenzialità.
+| Questo é un semplice esempio di come poter ripetere un job in caso di fallimento, le `Retry Policies` possono avere anche logiche molto più complesse, date uno sguardo alla :ref:`pagina dedicata<retry-policies>` per capirne le potenzialità.
 
 =============================
 Retriable Exceptions
@@ -212,11 +216,15 @@ Optimistic Jobs
       ;
 
 
+
+
+.. _jobs-grouping:
+
 ==================
 Raggrupare i Job
 ==================
 | I `worker` (i processi che eseguono il lavoro descritto dai jobs) possono essere lanciati con l'intento di eseguire qualsiasi job disponibile oppure possono essere limitati all'esecuzione di un solo gruppo di jobs.
-| Questo modalità può tornarci utile, ad esempio, per `gestire priorità di esecuzione diverse a seconda dei jobs <priority.html>`_.
+| Questo modalità può tornarci utile, ad esempio, per :ref:`gestire priorità di esecuzione diverse a seconda dei jobs<priority>`.
 
 | Ogni `job` può essere assegnato, al massimo, ad un singolo gruppo e per farlo si utilizza il metodo ``inGroup($group)``
 

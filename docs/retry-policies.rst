@@ -1,3 +1,5 @@
+.. _retry-policies:
+
 Retry Policies
 ==============
 
