@@ -1,8 +1,12 @@
 Jobs
-============
+================
 
-| FIXME:! Un `job` é l'unita di lavoro......
-| Come abbiamo già visto in precedenza esso incapsula la procedura da eseguire (l'esportazione del `Workable`), inoltre contiene tutte le informazioni necessarie alla corretta esecuzione, come ad esempio:
+================
+Cos'é un Job
+================
+
+| Possiamo definire i ``Job`` come le unità di lavoro eseguite dal recruiter.
+| Essi si occupano di incapsulare l'oggetto ``Workable`` che abbiamo visto in precedenza (e quindi la procedura da esegure) oltre a tutte le altre informazioni necessarie alla corretta esecuzione di questa procedura, come ad esempio:
 
 * la data di schedulazione,
 * la policy di retry in caso di fallimento,
