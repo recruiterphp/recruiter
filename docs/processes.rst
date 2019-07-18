@@ -87,3 +87,46 @@ Per una lista completa delle opzioni lanciare il comando:
 .. code-block:: bash
 
    $ php vendor/bin/recruiter help start:cleaner
+
+
+=================================
+Logging
+=================================
+| Come abbiamo visto nei paragrafi precedenti, é possibile lanciare i vari processi (`recruiter`, `worker` e `cleaner`) grazie allo script php ``vendor/bin/recruiter``.
+| Lo script php ``vendor/bin/recruiter`` non fa altro che creare una istanza di |symfony.console.application.doc|_, registrare i vari |symfony.console.command.doc|_ (Recruiter, Worker e Clenaer Commands) ed eseguire l'applicazione symfony.
+| Lo script crea i comandi Recruiter, Worker e Cleaner iniettandogli un istanza di |psr.loginterface.doc|_ che logga su standard output. Nel caso in cui si desiderasse una diversa tipologia di |psr.loginterface.doc|_ bisogna includere questi comandi nella propria ``Symfony\Component\Console\Application`` in modo tale da poterli inizializzare iniettandogli il logger che si vuole.
+
+
+.. code-block:: php
+
+   <?php
+   // bin/my-command
+
+   use Recruiter\Geezer\Command\RobustCommandRunner;
+   use Recruiter\Factory;
+   use Recruiter\Infrastructure\Command\CleanerCommand;
+   use Recruiter\Infrastructure\Command\RecruiterCommand;
+   use Recruiter\Infrastructure\Command\WorkerCommand;
+   use Symfony\Component\Console\Application;
+   use Domain\MyLogger;
+
+   $logger = new MyLogger();
+
+   $application = new Application();
+
+   $application->add(RecruiterCommand::toRobustCommand(new Factory(), $logger));
+   $application->add(WorkerCommand::toRobustCommand(new Factory(), $logger));
+   $application->add(CleanerCommand::toRobustCommand(new Factory(), $logger));
+
+   $application->run();
+
+
+
+.. |symfony.console.command.doc| replace:: ``Symfony\Component\Console\Command\Command``
+.. _symfony.console.command.doc: https://symfony.com/doc/current/console.html#creating-a-command
+
+.. |psr.loginterface.doc| replace:: ``Psr\Log\LoggerInterface``
+.. _psr.loginterface.doc: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md
+
+.. |symfony.console.application.doc| replace:: ``Symfony\Component\Console\Application``
+.. _symfony.console.application.doc: https://symfony.com/doc/current/components/console.html#creating-a-console-application

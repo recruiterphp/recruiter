@@ -37,7 +37,6 @@ Documentazione da scrivere:
    - :strike:`working-on (priority queues)`
    - :strike:`collezioni ( a che serve archived, etc.)`
    - :strike:`come rimettere un job in coda`
-   - how to debug
-   - esecuzione nei test
-   - iniettare il logger
+   - :strike:`esecuzione nei test`
+   - :strike:`iniettare il logger`
    - geezer
