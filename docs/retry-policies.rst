@@ -105,7 +105,7 @@ RetryForevers
 ==================
 
 Questa `RetryPolicy` permette di ritentare l'esecuzione di un job all'infinito specificando l'intervallo di tempo tra un tentativo e l'altro.
-Se ad esempio vogliamo eseguire un job all'infinito aspettando 30 secondi tra un tentativoo e l'altro possiamo scrivere:
+Se ad esempio volessimo eseguire un job all'infinito aspettando 30 secondi tra un tentativo e l'altro possiamo scrivere:
 
 .. code-block:: php
 
