@@ -22,5 +22,6 @@ Welcome to Recruiter's documentation!
    analytics
    mongo-collections
    administration
+   inside-tests
 
    todo
