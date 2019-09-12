@@ -8,6 +8,11 @@ class WorkableInJob
 {
     public static function import($document)
     {
+        $dataAboutWorkableObject = [
+            'parameters' => null,
+            'class' => null,
+        ];
+
         try {
             if (!array_key_exists('workable', $document)) {
                 throw new Exception('Unable to import Job without data about Workable object');

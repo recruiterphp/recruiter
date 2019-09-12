@@ -1,7 +1,7 @@
 <?php
 namespace Recruiter\Acceptance;
 
-use DateTime;
+use DateTimeImmutable;
 use Recruiter\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
@@ -75,7 +75,7 @@ abstract class BaseAcceptanceTest extends TestCase
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
-                $this->recruiter->retireDeadWorkers(new DateTime(), T\seconds(0));
+                $this->recruiter->retireDeadWorkers(new DateTimeImmutable(), T\seconds(0));
                 return $this->numberOfWorkers() == $expectedNumber;
             });
     }

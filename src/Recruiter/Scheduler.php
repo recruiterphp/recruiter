@@ -6,6 +6,7 @@ use MongoDB\BSON\ObjectId;
 use Recruiter\Scheduler\Repository;
 use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\RetryPolicy;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;
 use Timeless\Interval;
@@ -21,10 +22,14 @@ class Scheduler
 
     private $schedulePolicy;
 
+    private $repeatable;
+
+    private $retryPolicy;
+
     public static function around(Repeatable $repeatable, Repository $repository, Recruiter $recruiter)
     {
         $retryPolicy = ($repeatable instanceof Retriable) ?
-            $workable->retryWithPolicy() :
+            $repeatable->retryWithPolicy() :
             new RetryPolicy\DoNotDoItAgain()
         ;
 
@@ -33,8 +38,7 @@ class Scheduler
             $repeatable,
             null,
             $retryPolicy,
-            $repository,
-            $recruiter
+            $repository
         );
     }
 
@@ -51,13 +55,13 @@ class Scheduler
 
     public function __construct(
         array $status,
-        Workable $workable,
+        Repeatable $repeatable,
         ?SchedulePolicy $schedulePolicy,
         ?RetryPolicy $retryPolicy,
         Repository $schedulers
     ) {
         $this->status = $status;
-        $this->workable = $workable;
+        $this->repeatable = $repeatable;
         $this->schedulePolicy = $schedulePolicy;
         $this->retryPolicy = $retryPolicy;
         $this->schedulers = $schedulers;
@@ -97,7 +101,7 @@ class Scheduler
             SchedulePolicyInJob::export($this->schedulePolicy),
             [
                 'job' => array_merge(
-                    WorkableInJob::export($this->workable, 'execute'),
+                    WorkableInJob::export($this->repeatable, 'execute'),
                     RetryPolicyInJob::export($this->retryPolicy)
                 ),
             ]
@@ -131,6 +135,10 @@ class Scheduler
 
     public function schedule(JobsRepository $jobs)
     {
+        if (!$this->schedulePolicy) {
+            throw new RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
+        }
+
         $nextScheduling = $this->schedulePolicy->next();
         if ($this->wasAlreadyScheduled($nextScheduling)) {
             return;
@@ -145,7 +153,7 @@ class Scheduler
         $this->status['attempts'] = $this->status['attempts'] + 1;
         $this->schedulers->save($this);
 
-        $jobToSchedule = (new JobToSchedule(Job::around($this->workable, $jobs)))
+        $jobToSchedule = (new JobToSchedule(Job::around($this->repeatable, $jobs)))
             ->scheduleAt($nextScheduling)
             ->retryWithPolicy($this->retryPolicy)
             ->scheduledBy('scheduler', $this->status['urn'], $this->status['attempts'])

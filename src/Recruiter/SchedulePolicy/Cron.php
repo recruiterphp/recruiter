@@ -40,6 +40,7 @@ class Cron implements SchedulePolicy
         $now = null;
         if (isset($parameters['now'])) {
             $now = DateTime::createFromFormat('U', $parameters['now']);
+            $now = $now === false ? null : $now;
         }
 
         return new self($parameters['cron_expression'], $now);

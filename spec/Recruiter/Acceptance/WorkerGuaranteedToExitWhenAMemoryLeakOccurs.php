@@ -6,7 +6,7 @@ Recruiter\Concurrency\Timeout;
 use Recruiter\Workable\ConsumingMemoryCommand;
 use Timeless as T;
 
-class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTest
+class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTest
 {
     /**
      * @group acceptance

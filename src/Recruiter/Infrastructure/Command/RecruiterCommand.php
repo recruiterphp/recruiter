@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
-use DateTime;
+use DateTimeImmutable;
 use Exception;
 use Recruiter\Geezer\Command\LeadershipEventsHandler;
 use Recruiter\Geezer\Command\RobustCommand;
@@ -81,7 +81,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
     public function execute(): bool
     {
         $this->rollbackLockedJobs();
-        $assignment = $this->scheduleRepeatableJobs();
+        $this->scheduleRepeatableJobs();
         $assignment = $this->assignJobsToWorkers();
         $this->retireDeadWorkers();
 
@@ -141,7 +141,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
     private function retireDeadWorkers()
     {
         $unlockedJobs = $this->recruiter->retireDeadWorkers(
-            new DateTime(),
+            new DateTimeImmutable(),
             $this->consideredDeadAfter
         );
         $this->log(sprintf('unlocked %d jobs due to dead workers', $unlockedJobs), LogLevel::DEBUG);
