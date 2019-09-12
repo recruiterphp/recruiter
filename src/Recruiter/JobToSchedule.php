@@ -12,6 +12,8 @@ use Timeless\Moment;
 class JobToSchedule
 {
     private $job;
+
+    /** @var bool */
     private $mustBeScheduled;
 
     public function __construct(Job $job)

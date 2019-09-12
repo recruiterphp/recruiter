@@ -120,12 +120,13 @@ class Repository
 
     public function cleanScheduled(T\Moment $upperLimit)
     {
-        $result = $this->scheduled->remove([
-                'created_at' => [
-                    '$lte' => T\MongoDate::from($upperLimit),
-                ]
-            ]);
-        return $result['ok'] ? $result['n'] : 0;
+        $result = $this->scheduled->deleteMany([
+            'created_at' => [
+                '$lte' => T\MongoDate::from($upperLimit),
+            ]
+        ]);
+
+        return $result->getDeletedCount();
     }
 
     public function queued(

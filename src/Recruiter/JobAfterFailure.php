@@ -8,9 +8,16 @@ use Timeless\MongoDate;
 
 class JobAfterFailure
 {
+    /** @var Job */
     private $job;
+
+    /** @var JobExecution */
     private $lastJobExecution;
+
+    /** @var bool */
     private $hasBeenScheduled;
+
+    /** @var bool */
     private $hasBeenArchived;
 
     public function __construct(Job $job, JobExecution $lastJobExecution)

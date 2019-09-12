@@ -23,7 +23,7 @@ class Cron implements SchedulePolicy
     public function next(): Moment
     {
         return Moment::fromDateTime(
-            CronExpression::factory($this->cronExpression)->getNextRunDate($this->now)
+            CronExpression::factory($this->cronExpression)->getNextRunDate($this->now ?? 'now')
         );
     }
 

@@ -14,4 +14,5 @@ parameters:
     - '#Call to function is_callable\(\) with .recruiter_became…. will always evaluate to false.#'
     - '#Function recruiter_became_master not found.#'
     - '#Function recruiter_stept_back not found.#'
-  #inferPrivatePropertyTypeFromConstructor: true
+    - '#Call to an undefined method Traversable::toArray().#'
+  inferPrivatePropertyTypeFromConstructor: true

@@ -13,7 +13,9 @@ use Exception;
 
 class TimeTable implements RetryPolicy
 {
+    /** @var array */
     private $timeTable;
+
     private $howManyRetries;
 
     use RetryPolicyBehaviour;
