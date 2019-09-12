@@ -43,9 +43,26 @@ class Repository
         }
 
         $found = $this->map($this->scheduled->find(['_id' => $id]));
+
         if (count($found) === 0) {
             throw new Exception("Unable to find scheduled job with ObjectId('{$id}')");
         }
+
+        return $found[0];
+    }
+
+    public function archived($id)
+    {
+        if (is_string($id)) {
+            $id = new ObjectId($id);
+        }
+
+        $found = $this->map($this->archived->find(['_id' => $id]));
+
+        if (count($found) === 0) {
+            throw new Exception("Unable to find archived job with ObjectId('{$id}')");
+        }
+
         return $found[0];
     }
 

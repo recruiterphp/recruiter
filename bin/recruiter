@@ -16,6 +16,8 @@ use Recruiter\Factory;
 use Recruiter\Infrastructure\Command\CleanerCommand;
 use Recruiter\Infrastructure\Command\RecruiterCommand;
 use Recruiter\Infrastructure\Command\WorkerCommand;
+use Recruiter\Infrastructure\Command\Bko\AnalyticsCommand;
+use Recruiter\Infrastructure\Command\Bko\JobRecoverCommand;
 use Symfony\Component\Console\Application;
 
 $output = "[%context.datetime%][%context.hostname%:%context.pid%][%context.program%][%level_name%][%context.workerId%] %message%\n";
@@ -30,6 +32,8 @@ $application = new Application();
 $application->add(RecruiterCommand::toRobustCommand(new Factory(), $logger));
 $application->add(WorkerCommand::toRobustCommand(new Factory(), $logger));
 $application->add(CleanerCommand::toRobustCommand(new Factory(), $logger));
+$application->add(new AnalyticsCommand(new Factory(), $logger));
+$application->add(new JobRecoverCommand(new Factory(), $logger));
 
 $application->run();
 
