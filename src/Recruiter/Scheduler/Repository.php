@@ -60,6 +60,11 @@ class Repository
         }
     }
 
+    public function deleteByUrn(string $urn)
+    {
+        $this->schedulers->deleteOne(['urn' => $urn]);
+    }
+
     private function map($cursor)
     {
         $schedulers = [];

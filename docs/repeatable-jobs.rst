@@ -87,6 +87,14 @@ Repeatable Jobs
       ->create()
    ;
 
+
+| Per eliminare uno scheduler attivo é possibile utilizzare il comando console `scheduler:remove` e seguirne le istruzioni.
+
+.. code-block:: bash
+
+   $ php vendor/bin/recruiter scheduler:remove --target 127.0.0.1:27017
+
+
 .. |recruiter.workable.class| replace:: ``Recruiter\Workable``
 .. _recruiter.workable.class: https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Workable.php
 

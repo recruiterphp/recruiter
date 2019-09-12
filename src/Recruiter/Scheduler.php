@@ -193,6 +193,11 @@ class Scheduler
         return $this->status['urn'];
     }
 
+    public function schedulePolicy()
+    {
+        return $this->schedulePolicy;
+    }
+
     private function filterForRetriableExceptions(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
     {
         if (!is_array($retriableExceptionTypes)) {
