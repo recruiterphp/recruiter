@@ -2,7 +2,7 @@
 
 namespace Recruiter;
 
-interface Repeatable
+interface Repeatable extends Workable
 {
     /**
      * Assign an unique name to the scheduler in order to handle idempotency,

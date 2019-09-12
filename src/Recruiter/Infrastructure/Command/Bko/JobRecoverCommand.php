@@ -39,6 +39,11 @@ class JobRecoverCommand extends Command
     private $logger;
 
     /**
+     * @var JobRepository
+     */
+    private $jobRepository;
+
+    /**
      * @param Factory $factory
      * @param LoggerInterface $logger
      */
@@ -77,9 +82,11 @@ class JobRecoverCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
         $this->recruiter = new Recruiter($db);
+        /** @var string */
         $archivedJobId = $input->getArgument('jobId');
 
         $output->writeln("<info>Recovering job `$archivedJobId` ...</info>");
@@ -90,7 +97,9 @@ class JobRecoverCommand extends Command
         $job = $this->createJobFromAnArchivedJob($archivedJob, $this->jobRepository);
 
         if ($input->getOption('scheduleAt')) {
-            $job->scheduleAt(Moment::fromDateTime(new DateTime($input->getOption('scheduleAt'))));
+            /** @var string */
+            $scheduleAt = $input->getOption('scheduleAt');
+            $job->scheduleAt(Moment::fromDateTime(new DateTime($scheduleAt)));
         } else {
             $job->scheduleAt(T\now());
         }

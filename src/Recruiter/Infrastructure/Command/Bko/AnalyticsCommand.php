@@ -68,6 +68,7 @@ class AnalyticsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var string */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
         $this->recruiter = new Recruiter($db);

@@ -10,3 +10,8 @@ parameters:
     - '#Instantiated class Recruiter\\Workable\\ThisClassDoesnNotExists not found.#'
     - '#Constructor of class Recruiter\\Workable\\FailsInConstructor has an unused parameter \$parameters.#'
     - '#Static call to instance method stdClass::import()#'
+    - '#Call to function is_callable\(\) with .recruiter_stept_back. will always evaluate to false.#'
+    - '#Call to function is_callable\(\) with .recruiter_became…. will always evaluate to false.#'
+    - '#Function recruiter_became_master not found.#'
+    - '#Function recruiter_stept_back not found.#'
+  #inferPrivatePropertyTypeFromConstructor: true

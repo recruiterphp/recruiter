@@ -15,7 +15,7 @@ class EveryMinutes implements SchedulePolicy
 
     public function next(): Moment
     {
-        return Moment::fromTimestamp(mktime(date('H'), date('i') + 1, 0));
+        return Moment::fromTimestamp(mktime(intval(date('H')), intval(date('i')) + 1, 0));
     }
 
     public function export(): array

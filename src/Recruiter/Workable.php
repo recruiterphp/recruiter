@@ -9,7 +9,7 @@ interface Workable
      *
      * @param Recruiter $recruiter
      *
-     * @return Job
+     * @return JobToSchedule
      */
     public function asJobOf(Recruiter $recruiter);
 

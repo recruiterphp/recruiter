@@ -3,7 +3,7 @@
 namespace Recruiter;
 
 use DateInterval;
-use DateTimeInterface;
+use DateTimeImmutable;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
@@ -258,10 +258,9 @@ class Worker
         return array_values(array_unique($jobs));
     }
 
-    public static function retireDeadWorkers(Repository $roster, DateTimeInterface $now, Interval $consideredDeadAfter)
+    public static function retireDeadWorkers(Repository $roster, DateTimeImmutable $now, Interval $consideredDeadAfter)
     {
-        $consideredDeadAt = clone $now;
-        $consideredDeadAt->sub($consideredDeadAfter->toDateInterval());
+        $consideredDeadAt = $now->sub($consideredDeadAfter->toDateInterval());
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {

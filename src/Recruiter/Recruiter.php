@@ -1,7 +1,7 @@
 <?php
 namespace Recruiter;
 
-use DateTimeInterface;
+use DateTimeImmutable;
 use MongoDB;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Utils\Chainable;
@@ -186,7 +186,7 @@ class Recruiter
      * @step
      * @return integer  how many jobs were unlocked as a result
      */
-    public function retireDeadWorkers(DateTimeInterface $now, Interval $consideredDeadAfter)
+    public function retireDeadWorkers(DateTimeImmutable $now, Interval $consideredDeadAfter)
     {
         return $this->jobs->releaseAll(
             $jobsAssignedToDeadWorkers = Worker::retireDeadWorkers($this->workers, $now, $consideredDeadAfter)
