@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Recruiter'
-copyright = '2019, Gabriele Lana'
-author = 'Gabriele Lana'
+copyright = ''
+author = ''
 
 # The full version, including alpha/beta/rc tags
 release = '4.0.1'
