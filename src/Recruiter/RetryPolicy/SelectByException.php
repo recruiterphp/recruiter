@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Recruiter\Job;
 use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
+use Throwable;
 use function Recruiter\array_all;
 
 /**
@@ -127,7 +128,14 @@ class SelectByException implements RetryPolicy
                     return $retriableException->retryPolicy();
                 }
             }
+            if ($exception instanceof Throwable) {
+                throw new Exception(
+                    'Unable to find a RetryPolicy associated to exception: ' . get_class($exception), 0, $exception
+                );
+            }
         }
-        throw new Exception('Unable to find a RetryPolicy associated to exception: ' . var_export($exception, true));
+        throw new Exception(
+            'Unable to find a RetryPolicy associated to: ' . var_export($exception, true)
+        );
     }
 }
