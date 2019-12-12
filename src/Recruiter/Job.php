@@ -14,6 +14,7 @@ use Recruiter\RetryPolicy;
 use Recruiter\Taggable;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Throwable;
 use Timeless as T;
 use Timeless\Moment;
 
@@ -144,7 +145,7 @@ class Job
                 $result = $this->workable->$methodToCall($this->retryStatistics());
                 $this->afterExecution($result, $eventDispatcher);
             }
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $this->afterFailure($exception, $eventDispatcher);
         }
 
