@@ -2,12 +2,12 @@
 namespace Recruiter;
 
 use Exception;
-use Recruiter\Workable\RecoverWorkableFromException;
+use Recruiter\Workable\RecoverRepeatableFromException;
 
-class WorkableInJob
+class RepeatableInJob
 {
-    // TODO: resolve the duplication with RepeatableInJob
-    public static function import($document): Workable
+    // TODO: resolve duplication with WorkableInJob
+    public static function import($document): Repeatable
     {
         $dataAboutWorkableObject = [
             'parameters' => null,
@@ -28,12 +28,12 @@ class WorkableInJob
             if (!method_exists($dataAboutWorkableObject['class'], 'import')) {
                 throw new Exception('Unable to import Workable without method import');
             }
-            $workable = $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
-            assert($workable instanceof Workable);
-            return $workable;
+            $repeatable =  $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
+            assert($repeatable instanceof Repeatable);
+            return $repeatable;
 
         } catch (Exception $e) {
-            return new RecoverWorkableFromException($dataAboutWorkableObject['parameters'], $dataAboutWorkableObject['class'], $e);
+            return new RecoverRepeatableFromException($dataAboutWorkableObject['parameters'], $dataAboutWorkableObject['class'], $e);
         }
     }
 
