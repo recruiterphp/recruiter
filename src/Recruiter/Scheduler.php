@@ -46,7 +46,7 @@ class Scheduler
     {
         return new self(
             $document,
-            WorkableInJob::import($document['job']),
+            RepeatableInJob::import($document['job']),
             SchedulePolicyInJob::import($document),
             RetryPolicyInJob::import($document['job']),
             $repository
