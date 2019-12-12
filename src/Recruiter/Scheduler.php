@@ -8,6 +8,7 @@ use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\RetryPolicy;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Throwable;
 use Timeless as T;
 use Timeless\Interval;
 use Timeless\Moment;
@@ -128,7 +129,7 @@ class Scheduler
         try {
             $alreadyScheduledJob = $jobs->scheduled($this->status['last_scheduling']['job_id']);
             return true;
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }

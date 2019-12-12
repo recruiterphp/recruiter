@@ -3,6 +3,7 @@ namespace Recruiter;
 
 use Exception;
 use Recruiter\Workable\RecoverWorkableFromException;
+use Throwable;
 
 class WorkableInJob
 {
@@ -32,7 +33,7 @@ class WorkableInJob
             assert($workable instanceof Workable);
             return $workable;
 
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return new RecoverWorkableFromException($dataAboutWorkableObject['parameters'], $dataAboutWorkableObject['class'], $e);
         }
     }
