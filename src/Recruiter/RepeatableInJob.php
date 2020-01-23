@@ -2,6 +2,7 @@
 namespace Recruiter;
 
 use Exception;
+use InvalidArgumentException;
 use Recruiter\Workable\RecoverRepeatableFromException;
 
 class RepeatableInJob
@@ -16,19 +17,20 @@ class RepeatableInJob
 
         try {
             if (!array_key_exists('workable', $document)) {
-                throw new Exception('Unable to import Job without data about Workable object');
+                throw new InvalidArgumentException('Unable to import Job without data about Workable object');
             }
             $dataAboutWorkableObject = $document['workable'];
             if (!array_key_exists('class', $dataAboutWorkableObject)) {
-                throw new Exception('Unable to import Job without a class');
+                throw new InvalidArgumentException('Unable to import Job without a class');
             }
             if (!class_exists($dataAboutWorkableObject['class'])) {
-                throw new Exception('Unable to import Job with unknown Workable class');
+                throw new InvalidArgumentException('Unable to import Job with unknown Workable class');
             }
             if (!method_exists($dataAboutWorkableObject['class'], 'import')) {
-                throw new Exception('Unable to import Workable without method import');
+                throw new InvalidArgumentException('Unable to import Workable without method import');
             }
-            $repeatable =  $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
+
+            $repeatable = $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
             assert($repeatable instanceof Repeatable);
             return $repeatable;
 
