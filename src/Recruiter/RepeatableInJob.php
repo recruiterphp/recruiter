@@ -55,12 +55,12 @@ class RepeatableInJob
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($workable): string
+    private static function classNameOf($repeatable): string
     {
-        $workableClassName = get_class($workable);
-        if (method_exists($workable, 'getClass')) {
-            $workableClassName = $workable->getClass();
+        $repeatableClassName = get_class($repeatable);
+        if (method_exists($repeatable, 'getClass')) {
+            $repeatableClassName = $repeatable->getClass();
         }
-        return $workableClassName;
+        return $repeatableClassName;
     }
 }
