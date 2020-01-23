@@ -6,7 +6,7 @@ interface Repeatable extends Workable
 {
     /**
      * Assign an unique name to the scheduler in order to handle idempotency,
-     * only one scheduler with the same urn can be exists
+     * only one scheduler with the same urn can exists
      *
      * @return string
      */
