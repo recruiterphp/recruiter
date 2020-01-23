@@ -39,7 +39,7 @@ class RepeatableInJob
         }
     }
 
-    public static function export($workable, $methodToCall)
+    public static function export($workable, $methodToCall): array
     {
         return [
             'workable' => [
@@ -50,12 +50,12 @@ class RepeatableInJob
         ];
     }
 
-    public static function initialize()
+    public static function initialize(): array
     {
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($workable)
+    private static function classNameOf($workable): string
     {
         $workableClassName = get_class($workable);
         if (method_exists($workable, 'getClass')) {
