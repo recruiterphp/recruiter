@@ -23,6 +23,7 @@ use Recruiter\Worker;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Throwable;
 use Timeless\Interval;
 
 class WorkerCommand implements RobustCommand
@@ -80,7 +81,7 @@ class WorkerCommand implements RobustCommand
         return (bool) $doneSomeWork;
     }
 
-    public function shutdown(?Exception $e = null): bool
+    public function shutdown(?Throwable $e = null): bool
     {
         if ($this->worker->retireIfNotAssigned()) {
             $this->log(sprintf('worker `%s` retired', $this->worker->id()), LogLevel::INFO);
@@ -88,6 +89,11 @@ class WorkerCommand implements RobustCommand
             return true;
         }
 
+        return false;
+    }
+
+    public function hasTerminated(): bool
+    {
         return false;
     }
 

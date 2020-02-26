@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Throwable;
 use Timeless\Interval;
 
 class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
@@ -101,7 +102,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
     private function assignJobsToWorkers(): array
     {
         $pickStartAt = microtime(true);
-        list ($assignment, $actualNumber) = $this->recruiter->assignJobsToWorkers();
+        list($assignment, $actualNumber) = $this->recruiter->assignJobsToWorkers();
         $pickEndAt = microtime(true);
         foreach ($assignment as $worker => $job) {
             $this->log(sprintf(' tried to assign job `%s` to worker `%s`', $job, $worker), LogLevel::INFO);
@@ -147,12 +148,17 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         $this->log(sprintf('unlocked %d jobs due to dead workers', $unlockedJobs), LogLevel::DEBUG);
     }
 
-    public function shutdown(?Exception $e = null): bool
+    public function shutdown(?Throwable $e = null): bool
     {
         $this->recruiter->bye();
         $this->log('ok, see you space cowboy...', LogLevel::INFO);
 
         return true;
+    }
+
+    public function hasTerminated(): bool
+    {
+        return false;
     }
 
     public function leadershipStrategy(): LeadershipStrategy
