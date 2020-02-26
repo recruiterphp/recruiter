@@ -22,6 +22,7 @@ use Recruiter\Concurrency\MongoLock;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Throwable;
 use Timeless\Interval;
 
 class CleanerCommand implements RobustCommand
@@ -93,10 +94,15 @@ class CleanerCommand implements RobustCommand
         return $numberOfJobsCleaned > 0;
     }
 
-    public function shutdown(?Exception $e = null): bool
+    public function shutdown(?Throwable $e = null): bool
     {
         $this->log('ok, see you space cowboy...', LogLevel::INFO);
         return true;
+    }
+
+    public function hasTerminated(): bool
+    {
+        return false;
     }
 
     public function leadershipStrategy(): LeadershipStrategy
