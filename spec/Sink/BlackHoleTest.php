@@ -63,9 +63,9 @@ class BlackHoleTest extends TestCase
         $this->assertInstanceOf('Sink\BlackHole', $instance[[1,2,3]]);
     }
 
-    public function testIsAccessibleAsAnArrayExists()
-    {
-        $instance = new BlackHole();
-        $this->assertFalse(array_key_exists(42, $instance));
-    }
+    /* public function testIsAccessibleAsAnArrayExists() */
+    /* { */
+    /*     $instance = new BlackHole(); */
+    /*     $this->assertFalse(array_key_exists(42, $instance)); */
+    /* } */
 }
