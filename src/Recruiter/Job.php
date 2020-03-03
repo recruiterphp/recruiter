@@ -250,7 +250,7 @@ class Job
         }
     }
 
-    private function triggerOnWorkable($method, ?Exception $e = null)
+    private function triggerOnWorkable($method, ?Throwable $e = null)
     {
         if ($this->workable instanceof Finalizable) {
             $this->workable->$method($e);
@@ -310,7 +310,8 @@ class Job
             iterator_to_array(
                 $collection
                     ->find(
-                        (Worker::canWorkOnAnyJobs($worksOn) ?
+                        (
+                            Worker::canWorkOnAnyJobs($worksOn) ?
                             [   'scheduled_at' => ['$lt' => T\MongoDate::now()],
                                 'locked' => false,
                             ] :

@@ -3,7 +3,7 @@
 namespace Recruiter;
 
 use Timeless as T;
-use Exception;
+use Throwable;
 
 class JobExecution
 {
@@ -25,7 +25,7 @@ class JobExecution
         $this->startedAt = T\now();
     }
 
-    public function failedWith(Exception $exception)
+    public function failedWith(Throwable $exception)
     {
         $this->endedAt = T\now();
         $this->failedWith = $exception;
@@ -111,7 +111,7 @@ class JobExecution
     private function traceOf($result)
     {
         $trace = 'ok';
-        if ($result instanceof \Exception) {
+        if ($result instanceof Throwable) {
             $trace = $result->getTraceAsString();
         } elseif (is_object($result) && method_exists($result, 'trace')) {
             $trace = $result->trace();
