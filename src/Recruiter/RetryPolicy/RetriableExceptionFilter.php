@@ -66,7 +66,7 @@ class RetriableExceptionFilter implements RetryPolicy
     private function ensureAreAllExceptions($exceptions)
     {
         foreach ($exceptions as $exception) {
-            if (!is_a($exception, 'Exception', true)) {
+            if (!is_a($exception, 'Throwable', true)) {
                 throw new InvalidArgumentException(
                     "Only subclasses of Exception can be retriable exceptions, '{$exception}' is not"
                 );
