@@ -24,7 +24,7 @@
   "require": {
     "php": "~7.2",
     "ext-mongodb": ">=1.1",
-    "alcaeus/mongo-php-adapter": "^1.1",
+    "alcaeus/mongo-php-adapter": "^1",
     "recruiterphp/geezer": "^5",
     "gabrielelana/byte-units": "~0.1",
     "monolog/monolog": ">=1",
