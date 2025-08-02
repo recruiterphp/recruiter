@@ -2,32 +2,19 @@
 
 namespace Recruiter;
 
-use MongoDB;
+use MongoDB\Database;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 
 class FactoryTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var string
-     */
-    private $dbHost;
-
-    /**
-     * @var string
-     */
-    private $dbName;
+    private Factory $factory;
+    private MongoURI $mongoURI;
 
     protected function setUp(): void
     {
         $this->factory = new Factory();
-        $this->dbHost = 'localhost:27017';
-        $this->dbName = 'recruiter';
+        $this->mongoURI = MongoURI::from(getenv('MONGODB_URI') ?: MongoURI::DEFAULT_URI);
     }
 
     public function testShouldCreateAMongoDatabaseConnection()
@@ -47,7 +34,7 @@ class FactoryTest extends TestCase
     public function testShouldOverwriteTheWriteConcernPassedInTheOptions()
     {
         $mongoDb = $this->factory->getMongoDb(
-            MongoURI::from('mongodb://localhost:27017/recruiter'),
+            $this->mongoURI,
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',
@@ -57,10 +44,10 @@ class FactoryTest extends TestCase
         $this->assertEquals('majority', $mongoDb->getWriteConcern()->getW());
     }
 
-    private function creationOfDefaultMongoDb()
+    private function creationOfDefaultMongoDb(): Database
     {
         return $this->factory->getMongoDb(
-            MongoURI::from(sprintf('mongodb://%s/%s', $this->dbHost, $this->dbName)),
+            $this->mongoURI,
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',

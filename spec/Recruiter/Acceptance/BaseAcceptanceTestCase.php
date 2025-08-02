@@ -7,6 +7,7 @@ use MongoDB\Database;
 use Recruiter\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
+use Recruiter\Infrastructure\Persistence\Mongodb\URI;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Recruiter\RetryPolicy;
@@ -29,7 +30,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
     protected function setUp(): void
     {
         $factory = new Factory();
-        $uri = getenv('MONGODB_URI') ?: 'mongodb://localhost:27017';
+        $uri = getenv('MONGODB_URI') ?: URI::DEFAULT_URI;
         $this->recruiterDb = $factory->getMongoDb(MongoURI::from($uri), []);
         $this->cleanDb();
         $this->files = ['/tmp/recruiter.log', '/tmp/worker.log'];
@@ -204,7 +205,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         }
     }
 
-    private function terminateProcesses($signal): void
+    private function terminateProcesses(int $signal): void
     {
         if ($this->processRecruiter) {
             $this->stopProcessWithSignal($this->processRecruiter, $signal);
