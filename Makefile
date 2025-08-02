@@ -25,7 +25,7 @@ test: up
 	docker compose exec php vendor/bin/phpunit
 
 phpstan: up
-	docker compose exec php vendor/bin/phpstan
+	docker compose exec php vendor/bin/phpstan --memory-limit=2G
 
 rector: up
 	docker compose exec php vendor/bin/rector
