@@ -7,7 +7,7 @@ use Recruiter\Workable\AlwaysSucceed;
 use Recruiter\RetryPolicy\RetryManyTimes;
 use Symfony\Component\EventDispatcher\Event;
 
-class HooksTest extends BaseAcceptanceTest
+class HooksTest extends BaseAcceptanceTestCase
 {
     public function setUp(): void
     {
@@ -22,7 +22,7 @@ class HooksTest extends BaseAcceptanceTest
             ->getEventDispatcher()
             ->addListener(
                 'job.failure.last',
-                function (Event $event) {
+                function (Event $event): void {
                     $this->events[] = $event;
                 }
             );
@@ -48,7 +48,7 @@ class HooksTest extends BaseAcceptanceTest
             ->getEventDispatcher()
             ->addListener(
                 'job.failure.last',
-                function (Event $event) {
+                function (Event $event): void {
                     $this->events[] = $event;
                 }
             );
@@ -59,7 +59,7 @@ class HooksTest extends BaseAcceptanceTest
             ->inBackground()
             ->execute();
 
-        $runAJob = function ($howManyTimes, $worker) {
+        $runAJob = function ($howManyTimes, $worker): void {
             for ($i = 0; $i < $howManyTimes;) {
                 list($_, $assigned) = $this->recruiter->assignJobsToWorkers();
                 $worker->work();
@@ -84,7 +84,7 @@ class HooksTest extends BaseAcceptanceTest
             ->getEventDispatcher()
             ->addListener(
                 'job.started',
-                function (Event $event) {
+                function (Event $event): void {
                     $this->events[] = $event;
                 }
             );
@@ -109,7 +109,7 @@ class HooksTest extends BaseAcceptanceTest
             ->getEventDispatcher()
             ->addListener(
                 'job.ended',
-                function (Event $event) {
+                function (Event $event): void {
                     $this->events[] = $event;
                 }
             );

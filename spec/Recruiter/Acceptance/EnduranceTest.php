@@ -12,7 +12,7 @@ use Timeless as T;
 /**
  * @group long
  */
-class EnduranceTest extends BaseAcceptanceTest
+class EnduranceTest extends BaseAcceptanceTestCase
 {
     use Eris\TestTrait;
 
@@ -73,7 +73,7 @@ class EnduranceTest extends BaseAcceptanceTest
             ->hook(Listener\log('/tmp/recruiter-test-iterations.log'))
             ->hook(Listener\collectFrequencies())
             ->disableShrinking()
-            ->then(function ($tuple) {
+            ->then(function ($tuple): void {
                 list ($workers, $actions) = $tuple;
                 $this->clean();
                 $this->start($workers);

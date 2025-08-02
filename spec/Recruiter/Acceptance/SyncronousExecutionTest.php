@@ -5,7 +5,7 @@ use Recruiter\Workable\AlwaysFail;
 use Recruiter\Workable\FactoryMethodCommand;
 use Timeless as T;
 
-class SyncronousExecutionTest extends BaseAcceptanceTest
+class SyncronousExecutionTest extends BaseAcceptanceTestCase
 {
     public function testJobsAreExecutedInOrderOfScheduling()
     {

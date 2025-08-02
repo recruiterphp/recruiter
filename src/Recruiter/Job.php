@@ -241,10 +241,10 @@ class Job
         return $archived;
     }
 
-    private function emit($eventType, $eventDispatcher)
+    private function emit($eventType, EventDispatcherInterface $eventDispatcher): void
     {
         $event = new Event($this->export());
-        $eventDispatcher->dispatch($eventType, $event);
+        $eventDispatcher->dispatch($event, $eventType);
         if ($this->workable instanceof EventListener) {
             $this->workable->onEvent($eventType, $event);
         }

@@ -8,7 +8,7 @@ use Recruiter\Workable\FailsInConstructor;
 use Recruiter\RetryPolicy\RetryManyTimes;
 use Timeless as T;
 
-class FaultToleranceTest extends BaseAcceptanceTest
+class FaultToleranceTest extends BaseAcceptanceTestCase
 {
     public function testRecruiterCrashAfterLockingJobsBeforeAssignmentAndIsRestarted()
     {

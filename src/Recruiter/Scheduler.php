@@ -151,7 +151,7 @@ class Scheduler
 
         $this->status['last_scheduling']['scheduled_at'] = T\MongoDate::from($nextScheduling);
         $this->status['last_scheduling']['job_id'] = null;
-        $this->status['attempts'] = $this->status['attempts'] + 1;
+        $this->status['attempts'] += 1;
         $this->schedulers->save($this);
 
         $jobToSchedule = (new JobToSchedule(Job::around($this->repeatable, $jobs)))

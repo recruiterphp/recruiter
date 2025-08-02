@@ -1,18 +1,39 @@
-FROM php:7.2-cli
+FROM php:8.4-cli
 
-RUN apt-get update \
- && apt-get install -y mongodb git
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install MongoDB extension
 RUN pecl install mongodb \
- && docker-php-ext-install bcmath pdo_mysql mbstring opcache pcntl \
- && docker-php-ext-enable mongodb
+    && docker-php-ext-enable mongodb \
+    && docker-php-ext-install -j$(nproc) \
+        bcmath \
+        pdo_mysql \
+        opcache \
+        pcntl
 
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && composer global require hirak/prestissimo --no-plugins --no-scripts
+# Copy Composer from official image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /app
 
-COPY . /app
+# Copy composer files
+COPY composer.json composer.lock* ./
 
-RUN composer install
+# Install dependencies including dev dependencies for testing
+RUN composer install --optimize-autoloader
 
-ENTRYPOINT /etc/init.d/mongodb start && vendor/bin/phpunit
+# Copy application code
+COPY . .
+
+# Set environment variable for Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+CMD ["tail", "-f", "/dev/null"]

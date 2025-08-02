@@ -31,7 +31,7 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
                 [$this->equalTo('afterLastFailure'), $exception],
                 [$this->equalTo('finalize'), $exception]
             );
-        $workable = new FinalizableWorkable(function () use ($exception) {
+        $workable = new FinalizableWorkable(function () use ($exception): void {
             throw $exception;
         }, $listener);
 

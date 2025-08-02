@@ -2,8 +2,7 @@ parameters:
   level: max
   paths:
     - src
-  excludes_analyse:
-    - %currentWorkingDirectory%/vendor/
+    - tests
   autoload_directories:
     - %currentWorkingDirectory%/spec
   ignoreErrors:

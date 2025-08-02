@@ -30,9 +30,9 @@ class SynchronousExecutionReport
         return new self($data);
     }
 
-    public function isThereAFailure()
+    public function isThereAFailure(): bool
     {
-        return array_some($this->data, function ($jobExecution, $jobId) {
+        return array_any($this->data, function ($jobExecution, $jobId) {
             return $jobExecution->isFailed();
         });
     }

@@ -5,7 +5,7 @@ namespace Recruiter\Acceptance;
 use Recruiter\Worker\Repository;
 use Recruiter\Recruiter;
 
-class WorkerRepositoryTest extends BaseAcceptanceTest
+class WorkerRepositoryTest extends BaseAcceptanceTestCase
 {
     public function setUp(): void
     {

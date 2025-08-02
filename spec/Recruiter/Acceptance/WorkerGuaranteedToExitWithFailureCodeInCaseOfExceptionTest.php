@@ -5,7 +5,7 @@ namespace Recruiter\Acceptance;
 use Recruiter\Workable\FactoryMethodCommand;
 use Recruiter\Workable\ThrowsFatalError;
 
-class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcceptanceTest
+class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance
