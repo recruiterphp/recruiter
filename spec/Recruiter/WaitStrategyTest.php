@@ -10,7 +10,7 @@ class WaitStrategyTest extends TestCase
     public function setUp(): void
     {
         $this->waited = 0;
-        $this->howToWait = function($microseconds) {
+        $this->howToWait = function($microseconds): void {
             $this->waited = T\milliseconds($microseconds/1000);
         };
         $this->timeToWaitAtLeast = T\milliseconds(250);

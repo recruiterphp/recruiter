@@ -1,27 +1,7 @@
 <?php
 namespace Recruiter;
 
-function array_all($array, callable $predicate)
-{
-    foreach ($array as $key => $value) {
-        if (!call_user_func($predicate, $value, $key, $array)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-function array_some($array, callable $predicate)
-{
-    foreach ($array as $key => $value) {
-        if (call_user_func($predicate, $value, $key, $array)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function array_group_by($array, callable $f = null)
+function array_group_by($array, ?callable $f = null): array
 {
     $f = $f ?: function ($value) {
         return $value;

@@ -8,7 +8,6 @@ use Recruiter\Job;
 use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Throwable;
-use function Recruiter\array_all;
 
 /**
  * Select retry policies based on the raised exception

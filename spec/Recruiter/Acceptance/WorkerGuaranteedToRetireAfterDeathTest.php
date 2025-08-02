@@ -2,7 +2,7 @@
 
 namespace Recruiter\Acceptance;
 
-class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTest
+class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance

@@ -1,23 +1,20 @@
 <?php
 namespace Recruiter\Job;
 
-use Symfony\Component\EventDispatcher;
+use Symfony\Contracts\EventDispatcher;
 
 class Event extends EventDispatcher\Event
 {
-    private $jobExport;
-
-    public function __construct(array $jobExport)
+    public function __construct(private readonly array $jobExport)
     {
-        $this->jobExport = $jobExport;
     }
 
-    public function export()
+    public function export(): array
     {
         return $this->jobExport;
     }
 
-    public function hasTag($wantedTag)
+    public function hasTag(string $wantedTag): bool
     {
         $tags = array_key_exists('tags', $this->jobExport) ? $this->jobExport['tags'] : [];
         return in_array($wantedTag, $tags);

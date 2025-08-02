@@ -4,7 +4,7 @@ namespace Recruiter\Acceptance;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Workable\LazyBones;
 
-class AssignmentTest extends BaseAcceptanceTest
+class AssignmentTest extends BaseAcceptanceTestCase
 {
     public function testAJobCanBeAssignedAndExecuted()
     {

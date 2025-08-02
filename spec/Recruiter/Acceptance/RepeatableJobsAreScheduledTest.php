@@ -12,7 +12,7 @@ use Symfony\Component\EventDispatcher\Event;
 use Timeless as T;
 use Timeless\Moment;
 
-class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
+class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 {
     use ArraySubsetAsserts;
 
@@ -144,7 +144,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         $this->recruiterScheduleJobsNTimes($attempts);
     }
 
-    private function scheduleAJob(string $urn, SchedulePolicy $schedulePolicy = null, bool $unique = false)
+    private function scheduleAJob(string $urn, ?SchedulePolicy $schedulePolicy = null, bool $unique = false)
     {
         if (is_null($schedulePolicy)) {
             $schedulePolicy = new FixedSchedulePolicy(strtotime('2023-02-18T17:00:00'));
@@ -160,7 +160,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTest
         return $scheduler->create();
     }
 
-    private function recruiterScheduleJobsNTimes(int $nth = 1)
+    private function recruiterScheduleJobsNTimes(int $nth = 1): void
     {
         $i = 0;
         while ($i++ < $nth) {

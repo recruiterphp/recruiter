@@ -11,7 +11,7 @@ use Recruiter\RetryPolicy;
 use Recruiter\Workable\ShellCommand;
 use Timeless as T;
 
-abstract class BaseAcceptanceTest extends TestCase
+abstract class BaseAcceptanceTestCase extends TestCase
 {
     protected $recruiterDb;
 
@@ -24,7 +24,8 @@ abstract class BaseAcceptanceTest extends TestCase
     public function setUp(): void
     {
         $factory = new Factory();
-        $this->recruiterDb = $factory->getMongoDb(MongoURI::from('mongodb://localhost:27017/recruiter'), []);
+        $uri = getenv('MONGODB_URI') ?: 'mongodb://localhost:27017';
+        $this->recruiterDb = $factory->getMongoDb(MongoURI::from($uri), []);
         $this->cleanDb();
         $this->files = ['/tmp/recruiter.log', '/tmp/worker.log'];
         $this->cleanLogs();
@@ -178,7 +179,7 @@ abstract class BaseAcceptanceTest extends TestCase
         $this->jobs++;
     }
 
-    protected function enqueueJobWithRetryPolicy($duration = 10, RetryPolicy $retryPolicy)
+    protected function enqueueJobWithRetryPolicy(int $duration, RetryPolicy $retryPolicy): void
     {
         $workable = ShellCommand::fromCommandLine("sleep " . ($duration / 1000));
         $workable

@@ -6,7 +6,7 @@ Recruiter\Concurrency\Timeout;
 use Recruiter\Workable\ConsumingMemoryCommand;
 use Timeless as T;
 
-class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTest
+class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance
@@ -30,7 +30,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTest
         ]);
         $this->waitForNumberOfWorkersToBe($numberOfWorkersBefore + 1, 5);
 
-        Timeout::inSeconds(5, function () {
+        Timeout::inSeconds(5, function (): void {
         })
             ->until(function () {
                 $at = T\now();

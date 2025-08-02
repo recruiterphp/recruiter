@@ -3,6 +3,7 @@ namespace Recruiter\Job;
 
 use DateTime;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
@@ -455,10 +456,10 @@ class RepositoryTest extends TestCase
     }
 
     private function jobMockWithAttemptsAndCustomParameters(
-        Moment $createdAt = null,
-        Moment $endedAt = null,
-        array $workableParameters = null
-    ) {
+        ?Moment $createdAt = null,
+        ?Moment $endedAt = null,
+        ?array $workableParameters = null
+    ): Job&MockObject {
         $parameters = [
             '_id' => new ObjectId(),
             'created_at' => T\MongoDate::from($createdAt),
@@ -482,12 +483,12 @@ class RepositoryTest extends TestCase
             $parameters['workable']['parameters'] = $workableParameters;
         }
         $job = $this
-                ->getMockBuilder('Recruiter\Job')
+                ->getMockBuilder(Job::class)
                 ->disableOriginalConstructor()
                 ->getMock();
         $job->expects($this->once())
             ->method('export')
-            ->will($this->returnValue($parameters));
+            ->willReturn($parameters);
         return $job;
     }
 }
