@@ -2,6 +2,8 @@
 namespace Recruiter\Acceptance;
 
 use DateTimeImmutable;
+use MongoDB\Collection;
+use MongoDB\Database;
 use Recruiter\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
@@ -13,15 +15,18 @@ use Timeless as T;
 
 abstract class BaseAcceptanceTestCase extends TestCase
 {
-    protected $recruiterDb;
+    protected Database $recruiterDb;
+    protected Recruiter $recruiter;
+    protected Collection $scheduled;
+    protected Collection $archived;
+    protected Collection $roster;
+    protected Collection $schedulers;
+    private ?array $processRecruiter;
+    private ?array $processCleaner;
+    private array $processWorkers;
+    private array $lastStatus;
 
-    protected $recruiter;
-    protected $scheduled;
-    protected $archived;
-    protected $roster;
-    protected $schedulers;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         $factory = new Factory();
         $uri = getenv('MONGODB_URI') ?: 'mongodb://localhost:27017';
@@ -40,17 +45,17 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->processWorkers = [];
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->terminateProcesses(SIGKILL);
     }
 
-    protected function cleanDb()
+    protected function cleanDb(): void
     {
         $this->recruiterDb->drop();
     }
 
-    protected function clean()
+    protected function clean(): void
     {
         $this->terminateProcesses(SIGKILL);
         $this->cleanLogs();
@@ -58,7 +63,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->jobs = 0;
     }
 
-    public function cleanLogs()
+    public function cleanLogs(): void
     {
         foreach ($this->files as $file) {
             if (file_exists($file)) {
@@ -67,12 +72,12 @@ abstract class BaseAcceptanceTestCase extends TestCase
         }
     }
 
-    protected function numberOfWorkers()
+    protected function numberOfWorkers(): int
     {
-        return $this->roster->count();
+        return $this->roster->countDocuments();
     }
 
-    protected function waitForNumberOfWorkersToBe($expectedNumber, $howManySeconds = 1)
+    protected function waitForNumberOfWorkersToBe($expectedNumber, $howManySeconds = 1): void
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
@@ -81,7 +86,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
             });
     }
 
-    protected function startRecruiter()
+    protected function startRecruiter(): array
     {
         $descriptors = [
             0 => ['pipe', 'r'],
@@ -103,7 +108,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->processRecruiter;
     }
 
-    protected function startCleaner()
+    protected function startCleaner(): array
     {
         $descriptors = [
             0 => ['pipe', 'r'],
@@ -150,7 +155,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return end($this->processWorkers);
     }
 
-    protected function stopProcessWithSignal(array $processAndPipes, $signal)
+    protected function stopProcessWithSignal(array $processAndPipes, $signal): void
     {
         list($process, $pipes, $name) = $processAndPipes;
         proc_terminate($process, $signal);
@@ -168,7 +173,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
     /**
      * @param integer $duration  milliseconds
      */
-    protected function enqueueJob($duration = 10, $tag = 'generic')
+    protected function enqueueJob($duration = 10, $tag = 'generic'): void
     {
         $workable = ShellCommand::fromCommandLine("sleep " . ($duration / 1000));
         $workable
@@ -190,7 +195,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->jobs++;
     }
 
-    protected function start($workers)
+    protected function start(int $workers): void
     {
         $this->startRecruiter();
         $this->startCleaner();
@@ -199,7 +204,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         }
     }
 
-    private function terminateProcesses($signal)
+    private function terminateProcesses($signal): void
     {
         if ($this->processRecruiter) {
             $this->stopProcessWithSignal($this->processRecruiter, $signal);
@@ -215,31 +220,31 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->processWorkers = [];
     }
 
-    protected function restartWorkerGracefully($workerIndex)
+    protected function restartWorkerGracefully($workerIndex): void
     {
         $this->stopProcessWithSignal($this->processWorkers[$workerIndex], SIGTERM);
         $this->processWorkers[$workerIndex] = $this->startWorker();
     }
 
-    protected function restartWorkerByKilling($workerIndex)
+    protected function restartWorkerByKilling($workerIndex): void
     {
         $this->stopProcessWithSignal($this->processWorkers[$workerIndex], SIGKILL);
         $this->processWorkers[$workerIndex] = $this->startWorker();
     }
 
-    protected function restartRecruiterGracefully()
+    protected function restartRecruiterGracefully(): void
     {
         $this->stopProcessWithSignal($this->processRecruiter, SIGTERM);
         $this->startRecruiter();
     }
 
-    protected function restartRecruiterByKilling()
+    protected function restartRecruiterByKilling(): void
     {
         $this->stopProcessWithSignal($this->processRecruiter, SIGKILL);
         $this->startRecruiter();
     }
 
-    protected function files()
+    protected function files(): string
     {
         $logs = '';
         if (getenv('TEST_DUMP')) {
@@ -253,7 +258,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $logs;
     }
 
-    private function optionsToString(array $options = [])
+    private function optionsToString(array $options = []): string
     {
         $optionsString = '';
 
