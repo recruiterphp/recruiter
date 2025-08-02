@@ -19,6 +19,10 @@
     {
       "name": "gabriele.lana",
       "email": "gabriele.lana@cleancode.it"
+    },
+    {
+      "name": "Contributors",
+      "homepage": "https://github.com/recruiterphp/recruiter/graphs/contributors"
     }
   ],
   "require": {
