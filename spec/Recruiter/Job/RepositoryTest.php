@@ -1,31 +1,32 @@
 <?php
 namespace Recruiter\Job;
 
-use DateTime;
 use MongoDB\BSON\ObjectId;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Job;
 use Recruiter\JobToSchedule;
-use Recruiter\RetryPolicy\ExponentialBackoff;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
 use Timeless\Interval;
 use Timeless\Moment;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
 class RepositoryTest extends TestCase
 {
-    public function setUp(): void
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
     {
         $factory = new Factory();
-        $this->recruiterDb = $factory->getMongoDb(MongoURI::from('mongodb://localhost:27017/recruiter'), []);
+        $this->recruiterDb = $factory->getMongoDb(MongoURI::from(getenv('MONGODB_URI') ?: MongoURI::DEFAULT_URI), []);
         $this->recruiterDb->drop();
         $this->repository = new Repository($this->recruiterDb);
         $this->clock = T\clock()->stop();
-        $this->eventDispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     public function tearDown(): void
