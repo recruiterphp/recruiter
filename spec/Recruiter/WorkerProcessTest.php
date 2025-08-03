@@ -59,17 +59,17 @@ class WorkerProcessTest extends TestCase
         $process->cleanUp($this->repository);
     }
 
-    private function givenWorkerProcessAlive()
+    private function givenWorkerProcessAlive(): MockObject&Process
     {
         return $this->givenWorkerProcess(true);
     }
 
-    private function givenWorkerProcessDead()
+    private function givenWorkerProcessDead(): MockObject&Process
     {
         return $this->givenWorkerProcess(false);
     }
 
-    private function givenWorkerProcess($alive)
+    private function givenWorkerProcess(bool $alive): MockObject&Process
     {
         $process = $this->getMockBuilder(Process::class)
             ->onlyMethods(['isAlive'])
@@ -79,7 +79,7 @@ class WorkerProcessTest extends TestCase
 
         $process->expects($this->any())
             ->method('isAlive')
-            ->will($this->returnValue($alive))
+            ->willReturn($alive)
         ;
 
         return $process;

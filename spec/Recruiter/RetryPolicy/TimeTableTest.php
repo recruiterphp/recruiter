@@ -2,6 +2,7 @@
 
 namespace Recruiter\RetryPolicy;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Job;
 use Recruiter\JobAfterFailure;
@@ -111,7 +112,7 @@ class TimeTableTest extends TestCase
         $tt = new TimeTable(['1 minute ago' => '2 minutes']);
     }
 
-    private function givenJobThat(T\Moment $wasCreatedAt)
+    private function givenJobThat(T\Moment $wasCreatedAt): MockObject&JobAfterFailure
     {
         $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
@@ -126,7 +127,7 @@ class TimeTableTest extends TestCase
         return $job;
     }
 
-    private function jobThatWasCreated(string $relativeTime): JobAfterFailure
+    private function jobThatWasCreated(string $relativeTime): MockObject&JobAfterFailure
     {
         $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
         $job = $this->getMockBuilder(JobAfterFailure::class)

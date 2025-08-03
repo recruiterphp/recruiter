@@ -12,6 +12,7 @@ return RectorConfig::configure()
     ])
     // uncomment to reach your current PHP version
     ->withPhpSets()
-    ->withTypeCoverageLevel(2)
+    ->withTypeCoverageLevel(3)
     ->withDeadCodeLevel(0)
-    ->withCodeQualityLevel(1);
+    ->withCodeQualityLevel(1)
+;

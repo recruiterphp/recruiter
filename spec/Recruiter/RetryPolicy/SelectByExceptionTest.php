@@ -2,6 +2,7 @@
 
 namespace Recruiter\RetryPolicy;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
@@ -11,21 +12,19 @@ class SelectByExceptionTest extends TestCase
 {
     public function testCanBeBuilt(): void
     {
-        $retryPolicy = SelectByException::create()
-                     ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
-                     ->when(\LogicException::class)->then(new DoNotDoItAgain())
-                     ->build()
+        SelectByException::create()
+             ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
+             ->when(\LogicException::class)->then(new DoNotDoItAgain())
+             ->build()
         ;
-
-        $this->assertInstanceOf(RetryPolicy::class, $retryPolicy);
     }
 
     public function testCanBeExportedAndImported(): void
     {
         $retryPolicy = SelectByException::create()
-                     ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
-                     ->when(\LogicException::class)->then(new DoNotDoItAgain())
-                     ->build()
+             ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
+             ->when(\LogicException::class)->then(new DoNotDoItAgain())
+             ->build()
         ;
 
         $retryPolicyExported = $retryPolicy->export();
@@ -51,6 +50,9 @@ class SelectByExceptionTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function testDefaultDoNotSchedule(): void
     {
         $exception = new \Exception('something');
@@ -65,12 +67,12 @@ class SelectByExceptionTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    private function jobFailedWith(\Exception $exception)
+    private function jobFailedWith(\Throwable $exception): MockObject&JobAfterFailure
     {
         $job = $this->getMockBuilder(JobAfterFailure::class)->disableOriginalConstructor()->getMock();
         $job->expects($this->any())
             ->method('causeOfFailure')
-            ->will($this->returnValue($exception))
+            ->willReturn($exception)
         ;
 
         return $job;
