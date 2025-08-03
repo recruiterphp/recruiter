@@ -35,8 +35,8 @@
     "mongodb/mongodb": "^2.1",
     "monolog/monolog": "^3.9",
     "psr/log": "^3.0",
-    "recruiterphp/concurrency": "^4.0",
-    "recruiterphp/geezer": "^6.0",
+    "recruiterphp/concurrency": "^5.0",
+    "recruiterphp/geezer": "^7.0",
     "symfony/console": "^7.3",
     "symfony/event-dispatcher": "^7.3",
     "ulrichsg/getopt-php": "^4.0"
