@@ -5,13 +5,12 @@ namespace Recruiter\Workable;
 use Recruiter\Workable;
 use Recruiter\WorkableBehaviour;
 
-class ThrowsFatalError implements Workable
+class ExitsAbruptly implements Workable
 {
     use WorkableBehaviour;
 
     public function execute(): void
     {
-        /** @phpstan-ignore-next-line */
-        new ThisClassDoesnNotExists();
+        exit(-1);
     }
 }

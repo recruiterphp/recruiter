@@ -2,7 +2,7 @@
 
 namespace Recruiter\Acceptance;
 
-use Recruiter\Workable\ThrowsFatalError;
+use Recruiter\Workable\ExitsAbruptly;
 
 class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcceptanceTestCase
 {
@@ -11,7 +11,7 @@ class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcc
      */
     public function testInCaseOfExceptionTheExitCodeOfWorkerProcessIsNotZero(): void
     {
-        new ThrowsFatalError()
+        new ExitsAbruptly()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
