@@ -490,7 +490,7 @@ class RepositoryTest extends TestCase
                 'ended_at' => T\MongoDate::from($endedAt),
             ],
             'retry_policy' => [
-                'class' => 'Recruiter\\RetryPolicy\\DoNotDoItAgain',
+                'class' => 'Recruiter\RetryPolicy\DoNotDoItAgain',
                 'parameters' => [],
             ],
         ];
@@ -507,7 +507,8 @@ class RepositoryTest extends TestCase
         ;
         $job->expects($this->once())
             ->method('export')
-            ->willReturn($parameters);
+            ->willReturn($parameters)
+        ;
 
         return $job;
     }

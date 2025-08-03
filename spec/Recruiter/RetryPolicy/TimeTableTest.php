@@ -136,7 +136,8 @@ class TimeTableTest extends TestCase
         ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt));
+            ->will($this->returnValue($wasCreatedAt))
+        ;
 
         return $job;
     }

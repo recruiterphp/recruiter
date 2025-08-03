@@ -139,7 +139,8 @@ class RetriableExceptionFilterTest extends TestCase
         $jobAfterFailure
             ->expects($this->any())
             ->method('causeOfFailure')
-            ->will($this->returnValue($exception));
+            ->will($this->returnValue($exception))
+        ;
 
         return $jobAfterFailure;
     }
