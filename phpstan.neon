@@ -6,10 +6,8 @@ parameters:
   scanDirectories:
     - %currentWorkingDirectory%/vendor/giorgiosironi/eris/src/
   ignoreErrors:
-    - '#Instantiated class Recruiter\\Workable\\ThisClassDoesnNotExists not found.#'
     - '#Function recruiter_became_master not found.#'
     - '#Function recruiter_stept_back not found.#'
     - '#Unsafe usage of new static\(\).#'
     - '#Call to an undefined static method Sink\\BlackHole::whateverStaticMethod\(\).#'
-    - '#Constructor of class Recruiter\\Workable\\FailsInConstructor has an unused parameter \$parameters.#'
   inferPrivatePropertyTypeFromConstructor: true
