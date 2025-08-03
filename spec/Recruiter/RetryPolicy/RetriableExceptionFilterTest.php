@@ -2,6 +2,7 @@
 
 namespace Recruiter\RetryPolicy;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\JobAfterFailure;
@@ -12,13 +13,16 @@ class RetriableExceptionFilterTest extends TestCase
     private MockObject&RetryPolicy $filteredRetryPolicy;
 
     /**
-     * @throws \PHPUnit\Framework\MockObject\Exception
+     * @throws Exception
      */
     protected function setUp(): void
     {
         $this->filteredRetryPolicy = $this->createMock(RetryPolicy::class);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCallScheduleOnRetriableException(): void
     {
         $exception = $this->createMock(\Exception::class);
@@ -128,7 +132,7 @@ class RetriableExceptionFilterTest extends TestCase
         new RetriableExceptionFilter($retryPolicy, [$notAnExceptionClass]);
     }
 
-    private function jobFailedWithException(\Throwable $exception): MockObject&JobAfterFailure
+    private function jobFailedWithException(mixed $exception): MockObject&JobAfterFailure
     {
         $jobAfterFailure = $this
             ->getMockBuilder(JobAfterFailure::class)
