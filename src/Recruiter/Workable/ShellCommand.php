@@ -37,7 +37,7 @@ class ShellCommand implements Workable
         return ['command' => $this->commandLine];
     }
 
-    public static function import($parameters)
+    public static function import(array $parameters)
     {
         return new self($parameters['command']);
     }

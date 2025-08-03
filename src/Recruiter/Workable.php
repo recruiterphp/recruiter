@@ -6,26 +6,20 @@ interface Workable
 {
     /**
      * Turn this `Recruiter\Workable` instance into a `Recruiter\Job` instance
-     *
-     * @param Recruiter $recruiter
-     *
-     * @return JobToSchedule
      */
-    public function asJobOf(Recruiter $recruiter);
+    public function asJobOf(Recruiter $recruiter): JobToSchedule;
 
     /**
      * Export parameters that need to be persisted
      *
      * @return array
      */
-    public function export();
+    public function export(): array;
 
     /**
      * Import an array of parameters as a Workable instance
      *
      * @param array $parameters Previously exported parameters
-     *
-     * @return Workable
      */
-    public static function import($parameters);
+    public static function import(array $parameters): static;
 }

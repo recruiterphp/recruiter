@@ -104,8 +104,8 @@ class FactoryMethodCommand implements Workable
         ];
     }
 
-    public static function import($document)
+    public static function import(array $parameters)
     {
-        return new self($document['steps']);
+        return new self($parameters['steps']);
     }
 }
