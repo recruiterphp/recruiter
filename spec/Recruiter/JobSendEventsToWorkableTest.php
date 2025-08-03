@@ -2,6 +2,7 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Recruiter\Job\Event;
@@ -24,9 +25,12 @@ class JobSendEventsToWorkableTest extends TestCase
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testTakeRetryPolicyFromRetriableInstance()
     {
-        $listener = $this->createPartialMock('StdClass', ['onEvent']);
+        $listener = $this->createPartialMock(EventListener::class, ['onEvent']);
         $listener
             ->expects($this->exactly(3))
             ->method('onEvent')
@@ -46,14 +50,13 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
 {
     use WorkableBehaviour;
 
-    public function __construct($listener)
+    public function __construct(private readonly EventListener $listener)
     {
-        $this->listener = $listener;
     }
 
-    public function onEvent($channel, Event $e)
+    public function onEvent($channel, Event $ev)
     {
-        return $this->listener->onEvent($channel, $e);
+        return $this->listener->onEvent($channel, $ev);
     }
 
     public function execute()

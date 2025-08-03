@@ -53,7 +53,7 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('message', $lastExecution);
         $this->assertArrayHasKey('trace', $lastExecution);
         $this->assertEquals("Sorry, I'm good for nothing", $lastExecution['message']);
-        $this->assertRegexp("/.*AlwaysFail->execute.*/", $lastExecution['trace']);
+        $this->assertMatchesRegularExpression("/.*AlwaysFail->execute.*/", $lastExecution['trace']);
     }
 
     public function testArrayAsGroupIsNotAllowed()

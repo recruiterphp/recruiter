@@ -25,7 +25,7 @@ class Cleaner
         return $this->repository->cleanArchived($upperLimit);
     }
 
-    public function cleanScheduled(Interval $gracePeriod = null)
+    public function cleanScheduled(?Interval $gracePeriod = null)
     {
         $upperLimit = T\now();
         if (!is_null($gracePeriod)) {

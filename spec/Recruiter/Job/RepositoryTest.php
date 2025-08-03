@@ -238,7 +238,7 @@ class RepositoryTest extends TestCase
         $jobs = $this->repository->recentJobsWithManyAttempts($lowerLimit, $upperLimit);
         $jobsFounds = 0;
         foreach ($jobs as $job) {
-            $this->assertRegExp(
+            $this->assertMatchesRegularExpression(
                 '/many_attempts_and_archived|many_attempts_and_scheduled/',
                 reset($job->export()['workable']['parameters'])
             );
@@ -384,7 +384,7 @@ class RepositoryTest extends TestCase
         $jobs = $this->repository->slowRecentJobs($lowerLimit, $upperLimit);
         $jobsFounds = 0;
         foreach ($jobs as $job) {
-            $this->assertRegExp(
+            $this->assertMatchesRegularExpression(
                 '/slow_job_recent_archived|slow_job_recent_scheduled/',
                 reset($job->export()['workable']['parameters'])
             );

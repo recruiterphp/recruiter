@@ -131,8 +131,8 @@ class Repository
 
     public function queued(
         $group = null,
-        T\Moment $at = null,
-        T\Moment $from = null,
+        ?T\Moment $at = null,
+        ?T\Moment $from = null,
         array $query = []
     ) {
         if ($at === null) {
@@ -152,7 +152,7 @@ class Repository
         return $this->scheduled->count($query);
     }
 
-    public function postponed($group = null, T\Moment $at = null, array $query = [])
+    public function postponed($group = null, ?T\Moment $at = null, array $query = [])
     {
         if ($at === null) {
             $at = T\now();
@@ -199,7 +199,7 @@ class Repository
         return $distinctAndCount;
     }
 
-    public function recentHistory($group = null, T\Moment $at = null, array $query = [])
+    public function recentHistory($group = null, ?T\Moment $at = null, array $query = [])
     {
         if ($at === null) {
             $at = T\now();

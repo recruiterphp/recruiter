@@ -65,12 +65,12 @@ class Recruiter
     /**
      * @deprecated use the method `analytics` instead.
      */
-    public function statistics($group = null, Moment $at = null, array $query = [])
+    public function statistics($group = null, ?Moment $at = null, array $query = [])
     {
         return $this->analytics($group, $at, $query);
     }
 
-    public function analytics($group = null, Moment $at = null, array $query = [])
+    public function analytics($group = null, ?Moment $at = null, array $query = [])
     {
         $totalsScheduledJobs = $this->jobs->scheduledCount($group, $query);
         $queued = $this->jobs->queued($group, $at, $at ? $at->before(T\hour(24)) : null, $query);
