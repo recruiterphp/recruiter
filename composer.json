@@ -27,7 +27,9 @@
   "homepage": "https://github.com/recruiterphp/recruiter",
   "require": {
     "php": "^8.4",
+    "ext-bcmath": "*",
     "ext-mongodb": ">=1.1",
+    "ext-posix": "*",
     "dragonmantank/cron-expression": "^3.4",
     "gabrielelana/byte-units": "^0.5",
     "mongodb/mongodb": "^2.1",
@@ -37,17 +39,16 @@
     "recruiterphp/geezer": "^6.0",
     "symfony/console": "^7.3",
     "symfony/event-dispatcher": "^7.3",
-    "ulrichsg/getopt-php": "^4.0",
-    "ext-bcmath": "*"
+    "ulrichsg/getopt-php": "^4.0"
   },
   "require-dev": {
+    "ext-pcntl": "*",
     "dms/phpunit-arraysubset-asserts": "^0.5",
     "ergebnis/composer-normalize": "^2.47",
     "giorgiosironi/eris": "^1.0",
     "phpstan/phpstan": "*",
     "phpunit/phpunit": "^10.0",
-    "rector/rector": "^2.1",
-    "ext-pcntl": "*"
+    "rector/rector": "^2.1"
   },
   "suggest": {
     "symfony/console": "In order to use Recruiter\\Command\\RecruiterJobCommand."
