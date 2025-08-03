@@ -63,7 +63,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         // executions. The problem is that the retry policy is
         // evaluated after the execution but fatal errors are not
         // catchable and so the job will stay scheduled forever
-        (new ThrowsFatalError())
+        new ThrowsFatalError()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
