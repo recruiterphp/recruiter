@@ -3,6 +3,8 @@ parameters:
   paths:
     - src
     - spec
+  scanDirectories:
+    - %currentWorkingDirectory%/vendor/giorgiosironi/eris/src/
   ignoreErrors:
     - '#Instantiated class Recruiter\\Workable\\ThisClassDoesnNotExists not found.#'
     - '#Constructor of class Recruiter\\Workable\\FailsInConstructor has an unused parameter \$parameters.#'
