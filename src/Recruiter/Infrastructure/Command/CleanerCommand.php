@@ -127,8 +127,9 @@ class CleanerCommand implements RobustCommand
 
     public function definition(): InputDefinition
     {
+        $defaultMongoUri = getenv('MONGODB_URI') ?: 'mongodb://localhost:27017';
         return new InputDefinition([
-            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', 'mongodb://localhost:27017/recruiter'),
+            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', $defaultMongoUri),
             new InputOption('clean-after', 'c', InputOption::VALUE_REQUIRED, 'delete jobs after :period', '5days'),
             new InputOption('wait-at-least', null, InputOption::VALUE_REQUIRED, 'Time to wait at least before to search for jobs to clear', '1m'),
             new InputOption('wait-at-most', null, InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling', '3m'),
