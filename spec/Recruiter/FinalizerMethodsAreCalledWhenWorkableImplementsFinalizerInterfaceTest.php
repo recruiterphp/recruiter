@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest extends TestCase
 {
     private MockObject&Repository $repository;
-    private EventDispatcherInterface $dispatcher;
+    private MockObject&EventDispatcherInterface $dispatcher;
     private ListenerSpy $listener;
 
     /**
