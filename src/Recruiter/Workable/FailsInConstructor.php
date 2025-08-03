@@ -9,7 +9,7 @@ class FailsInConstructor implements Workable
 {
     use WorkableBehaviour;
 
-    public function __construct($parameters = [], $fromRecruiter = true)
+    public function __construct(protected array $parameters = [], $fromRecruiter = true)
     {
         if ($fromRecruiter) {
             throw new Exception("I am supposed to fail in constructor code for testing purpose");
