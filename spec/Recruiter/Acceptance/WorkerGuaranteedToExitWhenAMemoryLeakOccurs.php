@@ -2,7 +2,7 @@
 
 namespace Recruiter\Acceptance;
 
-Recruiter\Concurrency\Timeout;
+use Recruiter\Concurrency\Timeout;
 use Recruiter\Workable\ConsumingMemoryCommand;
 use Timeless as T;
 

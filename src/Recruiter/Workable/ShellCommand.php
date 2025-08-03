@@ -32,12 +32,12 @@ class ShellCommand implements Workable
         return $output;
     }
 
-    public function export()
+    public function export(): array
     {
         return ['command' => $this->commandLine];
     }
 
-    public static function import(array $parameters)
+    public static function import(array $parameters): static
     {
         return new self($parameters['command']);
     }

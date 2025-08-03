@@ -3,6 +3,7 @@ namespace Recruiter\Workable;
 
 use Recruiter\Workable;
 use Recruiter\Recruiter;
+use Recruiter\JobToSchedule;
 
 class FactoryMethodCommand implements Workable
 {
@@ -42,7 +43,7 @@ class FactoryMethodCommand implements Workable
         $this->steps = $steps;
     }
 
-    public function asJobOf(Recruiter $recruiter)
+    public function asJobOf(Recruiter $recruiter): JobToSchedule
     {
         return $recruiter->jobOf($this);
     }
@@ -97,14 +98,14 @@ class FactoryMethodCommand implements Workable
         return $this;
     }
 
-    public function export()
+    public function export(): array
     {
         return [
             'steps' => $this->steps,
         ];
     }
 
-    public static function import(array $parameters)
+    public static function import(array $parameters): static
     {
         return new self($parameters['steps']);
     }
