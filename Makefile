@@ -1,4 +1,4 @@
-.PHONY: build up down test phpstan rector fix-cs install update shell logs clean
+.PHONY: build up down test test-long phpstan rector fix-cs install update shell logs clean
 
 # Build the Docker image
 build:
@@ -22,7 +22,11 @@ update:
 
 # Run all tests except the long ones
 test: up
-	docker compose exec php vendor/bin/phpunit
+	docker compose exec php vendor/bin/phpunit --exclude-group=long
+
+# Run long tests specifically
+test-long: up
+	docker compose exec php vendor/bin/phpunit --group=long
 
 phpstan: up
 	docker compose exec php vendor/bin/phpstan --memory-limit=2G
