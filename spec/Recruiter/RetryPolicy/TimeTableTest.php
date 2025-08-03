@@ -10,7 +10,7 @@ class TimeTableTest extends TestCase
 {
     private $scheduler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->scheduler = new TimeTable([
             '5 minutes ago' => '1 minute',

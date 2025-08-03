@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\Event;
 
 class HooksTest extends BaseAcceptanceTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->memoryLimit = new MemoryLimit('64MB');
         parent::setUp();

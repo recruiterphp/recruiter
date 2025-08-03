@@ -29,7 +29,7 @@ class RepositoryTest extends TestCase
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         T\clock()->start();
     }

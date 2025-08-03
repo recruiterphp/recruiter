@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class JobCallCustomMethodOnWorkableTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->workable = $this
             ->getMockBuilder('Recruiter\Workable')
