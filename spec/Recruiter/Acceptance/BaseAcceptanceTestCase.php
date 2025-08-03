@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Recruiter\Concurrency\Timeout;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI;
-use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Recruiter\RetryPolicy;
 use Recruiter\Workable\ShellCommand;
