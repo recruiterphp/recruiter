@@ -8,7 +8,7 @@ use Recruiter\Job\EventListener;
 
 class JobSendEventsToWorkableTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = $this
             ->getMockBuilder('Recruiter\Job\Repository')

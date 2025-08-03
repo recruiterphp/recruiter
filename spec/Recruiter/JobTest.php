@@ -8,7 +8,7 @@ use Recruiter\Infrastructure\Memory\MemoryLimit;
 
 class JobTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->repository = $this
             ->getMockBuilder('Recruiter\Job\Repository')

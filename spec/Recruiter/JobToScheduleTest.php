@@ -8,7 +8,7 @@ use Recruiter\RetryPolicy;
 
 class JobToScheduleTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
         $this->job = $this
@@ -17,7 +17,7 @@ class JobToScheduleTest extends TestCase
             ->getMock();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->clock->start();
     }

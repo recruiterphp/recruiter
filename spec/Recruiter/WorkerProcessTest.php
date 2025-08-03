@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class WorkerProcessTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->pid = 4242;
 

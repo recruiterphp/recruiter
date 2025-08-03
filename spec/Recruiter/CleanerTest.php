@@ -8,7 +8,7 @@ use Timeless as T;
 
 class CleanerTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
         $this->now = $this->clock->now();
@@ -23,7 +23,7 @@ class CleanerTest extends TestCase
         $this->interval = Interval::parse('10s');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         T\clock()->start();
     }

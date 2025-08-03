@@ -7,7 +7,7 @@ use Timeless as T;
 
 class WaitStrategyTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->waited = 0;
         $this->howToWait = function($microseconds): void {
