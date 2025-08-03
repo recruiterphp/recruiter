@@ -110,7 +110,7 @@ class WorkableTaggable implements Workable, Taggable
         return ['tags' => $this->tags];
     }
 
-    public static function import($parameters)
+    public static function import(array $parameters)
     {
         return new self($parameters['tags']);
     }
