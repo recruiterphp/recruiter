@@ -9,10 +9,7 @@ class RetriableException
     /** @var string */
     private $exceptionClass;
 
-    /** @var RetryPolicy */
-    private $retryPolicy;
-
-    public function __construct(string $exceptionClass, RetryPolicy $retryPolicy)
+    public function __construct(string $exceptionClass, private readonly RetryPolicy $retryPolicy)
     {
         if (!class_exists($exceptionClass)) {
             throw new \InvalidArgumentException("Class $exceptionClass doesn't exists");
@@ -21,7 +18,6 @@ class RetriableException
             throw new \InvalidArgumentException("Class $exceptionClass is not Throwable");
         }
         $this->exceptionClass = $exceptionClass;
-        $this->retryPolicy = $retryPolicy;
     }
 
     public function exceptionClass(): string

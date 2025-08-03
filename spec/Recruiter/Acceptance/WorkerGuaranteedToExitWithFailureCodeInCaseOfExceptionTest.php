@@ -9,9 +9,9 @@ class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcc
     /**
      * @group acceptance
      */
-    public function testInCaseOfExceptionTheExitCodeOfWorkerProcessIsNotZero()
+    public function testInCaseOfExceptionTheExitCodeOfWorkerProcessIsNotZero(): void
     {
-        (new ThrowsFatalError())
+        new ThrowsFatalError()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()

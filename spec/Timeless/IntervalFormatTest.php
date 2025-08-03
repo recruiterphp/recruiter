@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class IntervalFormatTest extends TestCase
 {
-    public function testFormatExtended()
+    public function testFormatExtended(): void
     {
         $this->assertEquals('4 milliseconds', milliseconds(4)->format('milliseconds'));
         $this->assertEquals('1 second', milliseconds(1000)->format('seconds'));
@@ -19,7 +19,7 @@ class IntervalFormatTest extends TestCase
         $this->assertEquals('1 year', months(12)->format('years'));
     }
 
-    public function testFormatShort()
+    public function testFormatShort(): void
     {
         $this->assertEquals('4ms', milliseconds(4)->format('ms'));
         $this->assertEquals('1s', milliseconds(1000)->format('s'));

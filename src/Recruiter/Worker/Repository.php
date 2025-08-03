@@ -9,12 +9,10 @@ use Recruiter\Recruiter;
 class Repository
 {
     private $roster;
-    private $recruiter;
 
-    public function __construct(MongoDB\Database $db, Recruiter $recruiter)
+    public function __construct(MongoDB\Database $db, private readonly Recruiter $recruiter)
     {
         $this->roster = $db->selectCollection('roster');
-        $this->recruiter = $recruiter;
     }
 
     public function save($worker)

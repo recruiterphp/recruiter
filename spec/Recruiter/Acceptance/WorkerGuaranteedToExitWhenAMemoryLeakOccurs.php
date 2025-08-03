@@ -13,12 +13,12 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
      *
      * @dataProvider provideMemoryConsumptions
      */
-    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak($withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive)
+    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak($withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive): void
     {
-        (new ConsumingMemoryCommand([
+        new ConsumingMemoryCommand([
             'withMemoryLeak' => $withMemoryLeak,
             'howManyItems' => $howManyItems,
-        ]))
+        ])
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()

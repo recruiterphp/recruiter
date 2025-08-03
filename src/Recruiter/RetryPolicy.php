@@ -13,10 +13,8 @@ interface RetryPolicy
      * - schedule the job
      * - archive the job
      * - do nothing (and the job will be archived anyway)
-     *
-     * @return void
      */
-    public function schedule(JobAfterFailure $job);
+    public function schedule(JobAfterFailure $job): void;
 
     /**
      * Export retry policy parameters.

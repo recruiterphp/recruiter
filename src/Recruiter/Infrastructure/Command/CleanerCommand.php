@@ -26,45 +26,14 @@ use Timeless\Interval;
 
 class CleanerCommand implements RobustCommand
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
+    private Cleaner $cleaner;
+    private LeadershipStrategy $leadershipStrategy;
+    private WaitStrategy $waitStrategy;
+    private MemoryLimit $memoryLimit;
+    private Interval $gracePeriod;
 
-    /**
-     * @var Cleaner
-     */
-    private $cleaner;
-
-    /**
-     * @var LeadershipStrategy
-     */
-    private $leadershipStrategy;
-
-    /**
-     * @var WaitStrategy
-     */
-    private $waitStrategy;
-
-    /**
-     * @var MemoryLimit
-     */
-    private $memoryLimit;
-
-    /**
-     * @var Interval
-     */
-    private $gracePeriod;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct($factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     public static function toRobustCommand(Factory $factory, LoggerInterface $logger): RobustCommandRunner

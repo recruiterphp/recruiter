@@ -27,7 +27,7 @@ class SchedulePolicyInJob
     {
         return [
             'schedule_policy' => [
-                'class' => get_class($schedulePolicy),
+                'class' => $schedulePolicy::class,
                 'parameters' => $schedulePolicy->export(),
             ],
         ];

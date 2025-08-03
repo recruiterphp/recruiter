@@ -9,7 +9,7 @@ class AlwaysFail implements Workable
 {
     use WorkableBehaviour;
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception('Sorry, I\'m good for nothing');
     }

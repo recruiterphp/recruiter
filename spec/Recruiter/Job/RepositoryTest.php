@@ -43,7 +43,7 @@ class RepositoryTest extends TestCase
         T\clock()->start();
     }
 
-    public function testCountsQueuedJobsAsOfNow()
+    public function testCountsQueuedJobsAsOfNow(): void
     {
         $this->aJobToSchedule()->inGroup('generic')->inBackground()->execute();
         $this->aJobToSchedule()->inGroup('generic')->inBackground()->execute();
@@ -53,7 +53,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(1, $this->repository->queued('fast-lane'));
     }
 
-    public function testCountsQueuedJobsWithCornerCaseTagging()
+    public function testCountsQueuedJobsWithCornerCaseTagging(): void
     {
         $this->aJobToSchedule()->inBackground()->execute();
         $this->aJobToSchedule()->inGroup([])->inBackground()->execute();
@@ -63,7 +63,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(4, $this->repository->queued('generic'));
     }
 
-    public function testCountsQueudJobsWithScheduledAtGreatherThanASpecificDate()
+    public function testCountsQueudJobsWithScheduledAtGreatherThanASpecificDate(): void
     {
         $this->aJobToSchedule()->inBackground()->execute();
         $time1 = $this->clock->now();
@@ -79,14 +79,14 @@ class RepositoryTest extends TestCase
         );
     }
 
-    public function testCountsPostponedJobs()
+    public function testCountsPostponedJobs(): void
     {
         $this->aJobToSchedule()->inBackground()->execute();
         $this->aJobToSchedule()->scheduleIn(T\hour(24))->execute();
         $this->assertEquals(1, $this->repository->postponed('generic'));
     }
 
-    public function testRecentHistory()
+    public function testRecentHistory(): void
     {
         $ed = $this->eventDispatcher;
         $this->repository->archive($this->aJob()->beforeExecution($ed)->afterExecution(42, $ed));
@@ -109,7 +109,7 @@ class RepositoryTest extends TestCase
         );
     }
 
-    public function testCountQueuedJobsGroupingByASpecificKeyword()
+    public function testCountQueuedJobsGroupingByASpecificKeyword(): void
     {
         $workable1 = $this->workableMock();
         $workable2 = $this->workableMock();
@@ -142,7 +142,7 @@ class RepositoryTest extends TestCase
         );
     }
 
-    public function testGetDelayedScheduledJobs()
+    public function testGetDelayedScheduledJobs(): void
     {
         $workable1 = $this->workableMockWithCustomParameters([
             'job1' => 'delayed_and_unpicked',
@@ -168,7 +168,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(2, $jobsFounds);
     }
 
-    public function testCountDelayedScheduledJobs()
+    public function testCountDelayedScheduledJobs(): void
     {
         $this->aJobToSchedule($this->aJob())->inBackground()->execute();
         $this->aJobToSchedule($this->aJob())->inBackground()->execute();
@@ -179,7 +179,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(2, $this->repository->countDelayedScheduledJobs($lowerLimit));
     }
 
-    public function testCountRecentJobsWithManyAttempts()
+    public function testCountRecentJobsWithManyAttempts(): void
     {
         $ed = $this->eventDispatcher;
         $this->repository->archive($this->aJob()->beforeExecution($ed)->beforeExecution($ed)->afterExecution(42, $ed));
@@ -204,7 +204,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(4, $this->repository->countRecentJobsWithManyAttempts($lowerLimit, $upperLimit));
     }
 
-    public function testGetRecentJobsWithManyAttempts()
+    public function testGetRecentJobsWithManyAttempts(): void
     {
         $ed = $this->eventDispatcher;
         $workable1 = $this->workableMockWithCustomParameters([
@@ -251,7 +251,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(4, $jobsFounds);
     }
 
-    public function testCountSlowRecentJobs()
+    public function testCountSlowRecentJobs(): void
     {
         $ed = $this->eventDispatcher;
         $elapseTimeInSecondsBeforeJobsExecutionEnd = 6;
@@ -314,7 +314,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(4, $this->repository->countSlowRecentJobs($lowerLimit, $upperLimit));
     }
 
-    public function testGetSlowRecentJobs()
+    public function testGetSlowRecentJobs(): void
     {
         $ed = $this->eventDispatcher;
         $elapseTimeInSecondsBeforeJobsExecutionEnd = 6;
@@ -397,7 +397,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(4, $jobsFounds);
     }
 
-    public function testCleanOldArchived()
+    public function testCleanOldArchived(): void
     {
         $ed = $this->eventDispatcher;
         $this->repository->archive($this->aJob()->beforeExecution($ed)->afterExecution(42, $ed));
@@ -407,7 +407,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(0, $this->repository->countArchived());
     }
 
-    public function testCleaningOfOldArchivedCanBeLimitedByTime()
+    public function testCleaningOfOldArchivedCanBeLimitedByTime(): void
     {
         $ed = $this->eventDispatcher;
         $this->repository->archive($this->aJob()->beforeExecution($ed)->afterExecution(42, $ed));
@@ -490,7 +490,7 @@ class RepositoryTest extends TestCase
                 'ended_at' => T\MongoDate::from($endedAt),
             ],
             'retry_policy' => [
-                'class' => 'Recruiter\RetryPolicy\DoNotDoItAgain',
+                'class' => \Recruiter\RetryPolicy\DoNotDoItAgain::class,
                 'parameters' => [],
             ],
         ];

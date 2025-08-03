@@ -9,16 +9,13 @@ class ShellCommand implements Workable
 {
     use WorkableBehaviour;
 
-    private $commandLine;
-
     public static function fromCommandLine($commandLine)
     {
         return new self($commandLine);
     }
 
-    private function __construct($commandLine)
+    private function __construct(private $commandLine)
     {
-        $this->commandLine = $commandLine;
     }
 
     public function execute()

@@ -19,6 +19,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
     private Repository $jobRepository;
     private string $actionLog;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,51 +28,43 @@ class EnduranceTest extends BaseAcceptanceTestCase
         $this->files[] = $this->actionLog;
     }
 
-    public function testNotWithstandingCrashesJobsAreEventuallyPerformed()
+    public function testNotWithstandingCrashesJobsAreEventuallyPerformed(): void
     {
         $this
             ->limitTo(100)
             ->forAll(
                 Generator\bind(
                     Generator\choose(1, 4),
-                    function ($workers) {
-                        return Generator\tuple(
-                            Generator\constant($workers),
-                            Generator\seq(Generator\oneOf(
-                                Generator\map(
-                                    function ($durationAndTag) {
-                                        [$duration, $tag] = $durationAndTag;
+                    fn ($workers) => Generator\tuple(
+                        Generator\constant($workers),
+                        Generator\seq(Generator\oneOf(
+                            Generator\map(
+                                function ($durationAndTag) {
+                                    [$duration, $tag] = $durationAndTag;
 
-                                        return ['enqueueJob', $duration, $tag];
-                                    },
-                                    Generator\tuple(
-                                        Generator\nat(),
-                                        Generator\elements(['generic', 'fast-lane']),
-                                    ),
+                                    return ['enqueueJob', $duration, $tag];
+                                },
+                                Generator\tuple(
+                                    Generator\nat(),
+                                    Generator\elements(['generic', 'fast-lane']),
                                 ),
-                                Generator\map(
-                                    function ($workerIndex) {
-                                        return ['restartWorkerGracefully', $workerIndex];
-                                    },
-                                    Generator\choose(0, $workers - 1),
-                                ),
-                                Generator\map(
-                                    function ($workerIndex) {
-                                        return ['restartWorkerByKilling', $workerIndex];
-                                    },
-                                    Generator\choose(0, $workers - 1),
-                                ),
-                                Generator\constant('restartRecruiterGracefully'),
-                                Generator\constant('restartRecruiterByKilling'),
-                                Generator\map(
-                                    function ($milliseconds) {
-                                        return ['sleep', $milliseconds];
-                                    },
-                                    Generator\choose(1, 1000),
-                                ),
-                            )),
-                        );
-                    },
+                            ),
+                            Generator\map(
+                                fn ($workerIndex) => ['restartWorkerGracefully', $workerIndex],
+                                Generator\choose(0, $workers - 1),
+                            ),
+                            Generator\map(
+                                fn ($workerIndex) => ['restartWorkerByKilling', $workerIndex],
+                                Generator\choose(0, $workers - 1),
+                            ),
+                            Generator\constant('restartRecruiterGracefully'),
+                            Generator\constant('restartRecruiterByKilling'),
+                            Generator\map(
+                                fn ($milliseconds) => ['sleep', $milliseconds],
+                                Generator\choose(1, 1000),
+                            ),
+                        )),
+                    ),
                 ),
             )
             ->hook(Listener\log('/tmp/recruiter-test-iterations.log'))
@@ -98,13 +91,9 @@ class EnduranceTest extends BaseAcceptanceTestCase
                 $estimatedTime = max(count($actions) * 4, 60);
                 Timeout::inSeconds(
                     $estimatedTime,
-                    function () {
-                        return "all $this->jobs jobs to be performed. Now is " . date('c') . ' Logs: ' . $this->files();
-                    },
+                    fn () => "all $this->jobs jobs to be performed. Now is " . date('c') . ' Logs: ' . $this->files(),
                 )
-                    ->until(function () {
-                        return $this->jobRepository->countArchived() === $this->jobs;
-                    })
+                    ->until(fn () => $this->jobRepository->countArchived() === $this->jobs)
                 ;
 
                 $at = T\now();

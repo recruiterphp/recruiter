@@ -8,13 +8,8 @@ use Timeless\Moment;
 
 class Cron implements SchedulePolicy
 {
-    private $cronExpression;
-    private $now;
-
-    public function __construct(string $cronExpression, ?\DateTime $now = null)
+    public function __construct(private readonly string $cronExpression, private readonly ?\DateTime $now = null)
     {
-        $this->cronExpression = $cronExpression;
-        $this->now = $now;
     }
 
     public function next(): Moment

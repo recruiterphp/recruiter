@@ -10,7 +10,7 @@ use Timeless as T;
 
 class FaultToleranceTest extends BaseAcceptanceTestCase
 {
-    public function testRecruiterCrashAfterLockingJobsBeforeAssignmentAndIsRestarted()
+    public function testRecruiterCrashAfterLockingJobsBeforeAssignmentAndIsRestarted(): void
     {
         $memoryLimit = new MemoryLimit('64MB');
         $this->enqueueJob();
@@ -22,9 +22,9 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertEquals(1, $totalNumber);
     }
 
-    public function testRetryPolicyMustBeAppliedEvenWhenWorkerDiesInConstructor()
+    public function testRetryPolicyMustBeAppliedEvenWhenWorkerDiesInConstructor(): void
     {
-        (new FailsInConstructor([], false))
+        new FailsInConstructor([], false)
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
@@ -39,7 +39,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         sleep(2);
         $jobDocument = current($this->scheduled->find()->toArray());
         $this->assertEquals(1, $jobDocument['attempts']);
-        $this->assertEquals('Recruiter\Workable\FailsInConstructor', $jobDocument['workable']['class']);
+        $this->assertEquals(FailsInConstructor::class, $jobDocument['workable']['class']);
         $this->assertStringContainsString('This job failed while instantiating a workable', $jobDocument['last_execution']['message']);
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
@@ -48,7 +48,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         sleep(2);
         $jobDocument = current($this->archived->find()->toArray());
         $this->assertEquals(2, $jobDocument['attempts']);
-        $this->assertEquals('Recruiter\Workable\FailsInConstructor', $jobDocument['workable']['class']);
+        $this->assertEquals(FailsInConstructor::class, $jobDocument['workable']['class']);
         $this->assertStringContainsString('This job failed while instantiating a workable', $jobDocument['last_execution']['message']);
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
@@ -56,7 +56,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertEquals(0, count($assignments));
     }
 
-    public function testRetryPolicyMustBeAppliedEvenWhenWorkerDies()
+    public function testRetryPolicyMustBeAppliedEvenWhenWorkerDies(): void
     {
         // This job will fail with a fatal error and we want it to be
         // retried at most 1 time, this means at most 2

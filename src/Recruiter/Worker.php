@@ -12,11 +12,6 @@ use Timeless\Interval;
 
 class Worker
 {
-    private $status;
-    private $recruiter;
-    private $repository;
-    private $memoryLimit;
-
     public static function workFor(
         Recruiter $recruiter,
         Repository $repository,
@@ -28,16 +23,8 @@ class Worker
         return $worker;
     }
 
-    public function __construct(
-        $status,
-        Recruiter $recruiter,
-        Repository $repository,
-        MemoryLimit $memoryLimit,
-    ) {
-        $this->status = $status;
-        $this->recruiter = $recruiter;
-        $this->repository = $repository;
-        $this->memoryLimit = $memoryLimit;
+    public function __construct(private $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
+    {
     }
 
     public function id()
@@ -131,7 +118,7 @@ class Worker
                 date('c'),
                 $this->id(),
                 $job->id(),
-                get_class($e),
+                $e::class,
                 $e->getMessage(),
             );
 
@@ -208,9 +195,7 @@ class Worker
         if (count($workers) > 0) {
             $unitsOfWorkers = array_group_by(
                 $workers,
-                function ($worker) {
-                    return $worker['work_on'];
-                },
+                fn ($worker) => $worker['work_on'],
             );
             foreach ($unitsOfWorkers as $workOn => $workersInUnit) {
                 $workersInUnit = array_column($workersInUnit, '_id');
@@ -225,9 +210,7 @@ class Worker
     public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers)
     {
         $assignment = array_combine(
-            array_map(function ($id) {
-                return (string) $id;
-            }, $workers),
+            array_map(fn ($id) => (string) $id, $workers),
             $jobs,
         );
 

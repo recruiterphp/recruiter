@@ -171,9 +171,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         [$process, $pipes, $name] = $processAndPipes;
         proc_terminate($process, $signal);
         $this->lastStatus = proc_get_status($process);
-        Timeout::inSeconds(30, function () use ($signal) {
-            return 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it";
-        })
+        Timeout::inSeconds(30, fn () => 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it")
             ->until(function () use ($process) {
                 $this->lastStatus = proc_get_status($process);
 

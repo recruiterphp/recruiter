@@ -25,7 +25,7 @@ class JobSendEventsToWorkableTest extends TestCase
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
-    public function testTakeRetryPolicyFromRetriableInstance()
+    public function testTakeRetryPolicyFromRetriableInstance(): void
     {
         $listener = new EventListenerSpy();
         $workable = new WorkableThatIsAlsoAnEventListener($listener);
@@ -50,12 +50,12 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
         $this->parameters = [];
     }
 
-    public function onEvent($channel, Event $ev)
+    public function onEvent($channel, Event $ev): void
     {
-        return $this->listener->onEvent($channel, $ev);
+        $this->listener->onEvent($channel, $ev);
     }
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception();
     }

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class IntervalParseTest extends TestCase
 {
-    public function testParseExtendedFormat()
+    public function testParseExtendedFormat(): void
     {
         $this->assertEquals(milliseconds(4), Interval::parse('4 milliseconds'));
         $this->assertEquals(milliseconds(4), Interval::parse('4milliseconds'));
@@ -65,7 +65,7 @@ class IntervalParseTest extends TestCase
         $this->assertEquals(years(1), Interval::parse('1 year'));
     }
 
-    public function testParseShortFormat()
+    public function testParseShortFormat(): void
     {
         $this->assertEquals(milliseconds(4), Interval::parse('4 ms'));
         $this->assertEquals(milliseconds(4), Interval::parse('4ms'));
@@ -85,21 +85,21 @@ class IntervalParseTest extends TestCase
         $this->assertEquals(years(4), Interval::parse('4y'));
     }
 
-    public function testFromDateInterval()
+    public function testFromDateInterval(): void
     {
         $this->assertEquals(days(2), Interval::fromDateInterval(new \DateInterval('P2D')));
         $this->assertEquals(minutes(10), Interval::fromDateInterval(new \DateInterval('PT10M')));
         $this->assertEquals(days(2)->add(minutes(10)), Interval::fromDateInterval(new \DateInterval('P2DT10M')));
     }
 
-    public function testNumberAsIntervalFormat()
+    public function testNumberAsIntervalFormat(): void
     {
         $this->expectException(InvalidIntervalFormat::class);
         $this->expectExceptionMessage("Maybe you mean '5 seconds' or something like that?");
         Interval::parse(5);
     }
 
-    public function testBadString()
+    public function testBadString(): void
     {
         $this->expectException(InvalidIntervalFormat::class);
         Interval::parse('whatever');

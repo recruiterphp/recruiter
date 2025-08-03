@@ -27,45 +27,14 @@ use Timeless\Interval;
 
 class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
+    private Recruiter $recruiter;
+    private Interval $consideredDeadAfter;
+    private LeadershipStrategy $leadershipStrategy;
+    private WaitStrategy $waitStrategy;
+    private MemoryLimit $memoryLimit;
 
-    /**
-     * @var Recruiter
-     */
-    private $recruiter;
-
-    /**
-     * @var Interval
-     */
-    private $consideredDeadAfter;
-
-    /**
-     * @var LeadershipStrategy
-     */
-    private $leadershipStrategy;
-
-    /**
-     * @var WaitStrategy
-     */
-    private $waitStrategy;
-
-    /**
-     * @var MemoryLimit
-     */
-    private $memoryLimit;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct($factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     public static function toRobustCommand(Factory $factory, LoggerInterface $logger): RobustCommandRunner
@@ -83,7 +52,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         return count($assignment) > 0;
     }
 
-    private function rollbackLockedJobs()
+    private function rollbackLockedJobs(): void
     {
         $rollbackStartAt = microtime(true);
         $rolledBack = $this->recruiter->rollbackLockedJobs();
@@ -133,7 +102,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         ));
     }
 
-    private function retireDeadWorkers()
+    private function retireDeadWorkers(): void
     {
         $unlockedJobs = $this->recruiter->retireDeadWorkers(
             new \DateTimeImmutable(),

@@ -12,15 +12,15 @@ use Timeless\Interval;
 class ExponentialBackoff implements RetryPolicy
 {
     use RetryPolicyBehaviour;
-    private $retryHowManyTimes;
-    private $timeToInitiallyWaitBeforeRetry;
 
-    public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60)
+    private Interval $timeToInitiallyWaitBeforeRetry;
+
+    public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function atFirstWaiting($timeToInitiallyWaitBeforeRetry)
+    public function atFirstWaiting($timeToInitiallyWaitBeforeRetry): static
     {
         return new static($this->retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
@@ -29,7 +29,7 @@ class ExponentialBackoff implements RetryPolicy
      * @params integer $interval  in seconds
      * @params integer $timeToWaitBeforeRetry  in seconds
      */
-    public static function forAnInterval($interval, $timeToInitiallyWaitBeforeRetry)
+    public static function forAnInterval($interval, $timeToInitiallyWaitBeforeRetry): static
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);
@@ -42,19 +42,18 @@ class ExponentialBackoff implements RetryPolicy
         return new static($numberOfRetries, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function __construct($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry)
+    public function __construct(private $retryHowManyTimes, int|Interval $timeToInitiallyWaitBeforeRetry)
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);
         }
-        $this->retryHowManyTimes = $retryHowManyTimes;
         $this->timeToInitiallyWaitBeforeRetry = $timeToInitiallyWaitBeforeRetry;
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         if ($job->numberOfAttempts() <= $this->retryHowManyTimes) {
-            $retryInterval = T\seconds(pow(2, $job->numberOfAttempts() - 1) * $this->timeToInitiallyWaitBeforeRetry->seconds());
+            $retryInterval = T\seconds(2 ** ($job->numberOfAttempts() - 1) * $this->timeToInitiallyWaitBeforeRetry->seconds());
             $job->scheduleIn($retryInterval);
         } else {
             $job->archive('tried-too-many-times');

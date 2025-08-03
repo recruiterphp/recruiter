@@ -10,7 +10,7 @@ class CronTest extends TestCase
     /**
      * @dataProvider cronExpressions
      */
-    public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate)
+    public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate): void
     {
         $cron = new Cron($cronExpression, \DateTime::createFromFormat('Y-m-d H:i:s', '2019-01-15 15:00:00'));
         $cron = Cron::import($cron->export());

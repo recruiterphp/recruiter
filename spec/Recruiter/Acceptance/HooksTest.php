@@ -13,13 +13,14 @@ class HooksTest extends BaseAcceptanceTestCase
     private MemoryLimit $memoryLimit;
     private array $events;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->memoryLimit = new MemoryLimit('64MB');
         parent::setUp();
     }
 
-    public function testAfterFailureWithoutRetryEventIsFired()
+    public function testAfterFailureWithoutRetryEventIsFired(): void
     {
         $this->events = [];
         $this->recruiter
@@ -32,7 +33,7 @@ class HooksTest extends BaseAcceptanceTestCase
             )
         ;
 
-        $job = (new AlwaysFail())
+        $job = new AlwaysFail()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
@@ -43,11 +44,11 @@ class HooksTest extends BaseAcceptanceTestCase
         $worker->work();
 
         $this->assertEquals(1, count($this->events));
-        $this->assertInstanceOf('Recruiter\Job\Event', $this->events[0]);
+        $this->assertInstanceOf(Event::class, $this->events[0]);
         $this->assertEquals('not-scheduled-by-retry-policy', $this->events[0]->export()['why']);
     }
 
-    public function testAfterLastFailureEventIsFired()
+    public function testAfterLastFailureEventIsFired(): void
     {
         $this->events = [];
         $this->recruiter
@@ -60,7 +61,7 @@ class HooksTest extends BaseAcceptanceTestCase
             )
         ;
 
-        $job = (new AlwaysFail())
+        $job = new AlwaysFail()
             ->asJobOf($this->recruiter)
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
             ->inBackground()
@@ -81,11 +82,11 @@ class HooksTest extends BaseAcceptanceTestCase
         $runAJob(2, $worker);
 
         $this->assertEquals(1, count($this->events));
-        $this->assertInstanceOf('Recruiter\Job\Event', $this->events[0]);
+        $this->assertInstanceOf(Event::class, $this->events[0]);
         $this->assertEquals('tried-too-many-times', $this->events[0]->export()['why']);
     }
 
-    public function testJobStartedIsFired()
+    public function testJobStartedIsFired(): void
     {
         $this->events = [];
         $this->recruiter
@@ -98,7 +99,7 @@ class HooksTest extends BaseAcceptanceTestCase
             )
         ;
 
-        $job = (new AlwaysSucceed())
+        $job = new AlwaysSucceed()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
@@ -109,10 +110,10 @@ class HooksTest extends BaseAcceptanceTestCase
         $worker->work();
 
         $this->assertEquals(1, count($this->events));
-        $this->assertInstanceOf('Recruiter\Job\Event', $this->events[0]);
+        $this->assertInstanceOf(Event::class, $this->events[0]);
     }
 
-    public function testJobEndedIsFired()
+    public function testJobEndedIsFired(): void
     {
         $this->events = [];
         $this->recruiter
@@ -125,13 +126,13 @@ class HooksTest extends BaseAcceptanceTestCase
             )
         ;
 
-        (new AlwaysSucceed())
+        new AlwaysSucceed()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
         ;
 
-        (new AlwaysFail())
+        new AlwaysFail()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
@@ -144,7 +145,7 @@ class HooksTest extends BaseAcceptanceTestCase
         $worker->work();
 
         $this->assertEquals(2, count($this->events));
-        $this->assertInstanceOf('Recruiter\Job\Event', $this->events[0]);
-        $this->assertInstanceOf('Recruiter\Job\Event', $this->events[1]);
+        $this->assertInstanceOf(Event::class, $this->events[0]);
+        $this->assertInstanceOf(Event::class, $this->events[1]);
     }
 }

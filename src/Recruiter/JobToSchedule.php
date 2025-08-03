@@ -9,14 +9,11 @@ use Timeless\Moment;
 
 class JobToSchedule
 {
-    private $job;
-
     /** @var bool */
     private $mustBeScheduled;
 
-    public function __construct(Job $job)
+    public function __construct(private readonly Job $job)
     {
-        $this->job = $job;
         $this->mustBeScheduled = false;
     }
 
@@ -67,7 +64,10 @@ class JobToSchedule
         return $this;
     }
 
-    public function inGroup($group)
+    /**
+     * @return $this
+     */
+    public function inGroup(array|string|null $group): static
     {
         if (!empty($group)) {
             $this->job->inGroup($group);
@@ -76,7 +76,7 @@ class JobToSchedule
         return $this;
     }
 
-    public function taggedAs($tags)
+    public function taggedAs(array|string $tags): static
     {
         if (!empty($tags)) {
             $this->job->taggedAs(is_array($tags) ? $tags : [$tags]);
@@ -85,21 +85,21 @@ class JobToSchedule
         return $this;
     }
 
-    public function withUrn(string $urn)
+    public function withUrn(string $urn): static
     {
         $this->job->withUrn($urn);
 
         return $this;
     }
 
-    public function scheduledBy(string $namespace, string $id, int $nth)
+    public function scheduledBy(string $namespace, string $id, int $nth): static
     {
         $this->job->scheduledBy($namespace, $id, $nth);
 
         return $this;
     }
 
-    public function execute()
+    public function execute(): string
     {
         if ($this->mustBeScheduled) {
             $this->job->save();
@@ -110,7 +110,7 @@ class JobToSchedule
         return (string) $this->job->id();
     }
 
-    private function emptyEventDispatcher()
+    private function emptyEventDispatcher(): EventDispatcher
     {
         return new EventDispatcher();
     }
@@ -122,12 +122,12 @@ class JobToSchedule
         return $this->execute();
     }
 
-    public function export()
+    public function export(): array
     {
         return $this->job->export();
     }
 
-    public static function import($document, $repository)
+    public static function import($document, $repository): self
     {
         return new self(Job::import($document, $repository));
     }

@@ -6,11 +6,11 @@ namespace Recruiter;
 
 interface Finalizable
 {
-    public function afterSuccess();
+    public function afterSuccess(): void;
 
-    public function afterFailure(\Exception $e);
+    public function afterFailure(\Exception $e): void;
 
-    public function afterLastFailure(\Exception $e);
+    public function afterLastFailure(\Exception $e): void;
 
-    public function finalize(?\Exception $e = null);
+    public function finalize(?\Exception $e = null): void;
 }

@@ -9,7 +9,7 @@ use Timeless as T;
 
 class SelectByExceptionTest extends TestCase
 {
-    public function testCanBeBuilt()
+    public function testCanBeBuilt(): void
     {
         $retryPolicy = SelectByException::create()
                      ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
@@ -20,7 +20,7 @@ class SelectByExceptionTest extends TestCase
         $this->assertInstanceOf(RetryPolicy::class, $retryPolicy);
     }
 
-    public function testCanBeExportedAndImported()
+    public function testCanBeExportedAndImported(): void
     {
         $retryPolicy = SelectByException::create()
                      ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
@@ -35,11 +35,11 @@ class SelectByExceptionTest extends TestCase
         $this->assertEquals($retryPolicyExported, $retryPolicyImported->export());
     }
 
-    public function testSelectByException()
+    public function testSelectByException(): void
     {
         $exception = new \InvalidArgumentException('something');
         $retryPolicy = new SelectByException([
-            new RetriableException(get_class($exception), RetryForever::afterSeconds(10)),
+            new RetriableException($exception::class, RetryForever::afterSeconds(10)),
         ]);
 
         $job = $this->jobFailedWith($exception);
@@ -51,7 +51,7 @@ class SelectByExceptionTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    public function testDefaultDoNotSchedule()
+    public function testDefaultDoNotSchedule(): void
     {
         $exception = new \Exception('something');
         $retryPolicy = new SelectByException([

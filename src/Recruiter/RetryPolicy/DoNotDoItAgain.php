@@ -11,7 +11,7 @@ class DoNotDoItAgain implements RetryPolicy
 {
     use RetryPolicyBehaviour;
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         // doing nothing means to avoid to reschedule the job
     }

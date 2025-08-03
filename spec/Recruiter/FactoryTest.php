@@ -17,21 +17,21 @@ class FactoryTest extends TestCase
         $this->mongoURI = MongoURI::fromEnvironment();
     }
 
-    public function testShouldCreateAMongoDatabaseConnection()
+    public function testShouldCreateAMongoDatabaseConnection(): void
     {
         $this->assertInstanceOf(
-            'MongoDB\Database',
+            Database::class,
             $this->creationOfDefaultMongoDb(),
         );
     }
 
-    public function testWriteConcernIsMajorityByDefault()
+    public function testWriteConcernIsMajorityByDefault(): void
     {
         $mongoDb = $this->creationOfDefaultMongoDb();
         $this->assertEquals('majority', $mongoDb->getWriteConcern()->getW());
     }
 
-    public function testShouldOverwriteTheWriteConcernPassedInTheOptions()
+    public function testShouldOverwriteTheWriteConcernPassedInTheOptions(): void
     {
         $mongoDb = $this->factory->getMongoDb(
             $this->mongoURI,

@@ -9,14 +9,12 @@ class WaitStrategy
     private $timeToWaitAtLeast;
     private $timeToWaitAtMost;
     private $timeToWait;
-    private $howToWait;
 
-    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, $howToWait = 'usleep')
+    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, private $howToWait = 'usleep')
     {
         $this->timeToWaitAtLeast = $timeToWaitAtLeast->milliseconds();
         $this->timeToWaitAtMost = $timeToWaitAtMost->milliseconds();
         $this->timeToWait = $timeToWaitAtLeast->milliseconds();
-        $this->howToWait = $howToWait;
     }
 
     public function reset()

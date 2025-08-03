@@ -14,13 +14,7 @@ use Timeless\Moment;
 
 class Job
 {
-    private $status;
-    private $workable;
-    private $retryPolicy;
-    private $repository;
-    private $lastJobExecution;
-
-    public static function around(Workable $workable, Repository $repository)
+    public static function around(Workable $workable, Repository $repository): self
     {
         return new self(
             self::initialize(),
@@ -32,7 +26,7 @@ class Job
         );
     }
 
-    public static function import($document, Repository $repository)
+    public static function import($document, Repository $repository): self
     {
         return new self(
             $document,
@@ -43,13 +37,13 @@ class Job
         );
     }
 
-    public function __construct($status, Workable $workable, RetryPolicy $retryPolicy, JobExecution $lastJobExecution, Repository $repository)
-    {
-        $this->status = $status;
-        $this->workable = $workable;
-        $this->retryPolicy = $retryPolicy;
-        $this->lastJobExecution = $lastJobExecution;
-        $this->repository = $repository;
+    public function __construct(
+        private array $status,
+        private readonly Workable $workable,
+        private RetryPolicy $retryPolicy,
+        private JobExecution $lastJobExecution,
+        private readonly Repository $repository,
+    ) {
     }
 
     public function id()
@@ -57,7 +51,7 @@ class Job
         return $this->status['_id'];
     }
 
-    public function createdAt()
+    public function createdAt(): Moment
     {
         return T\MongoDate::toMoment($this->status['created_at']);
     }
@@ -74,7 +68,10 @@ class Job
         return $this;
     }
 
-    public function taggedAs(array $tags)
+    /**
+     * @return $this
+     */
+    public function taggedAs(array $tags): static
     {
         if (!empty($tags)) {
             $this->status['tags'] = $tags;
@@ -83,12 +80,15 @@ class Job
         return $this;
     }
 
-    public function inGroup($group)
+    public function inGroup(array|string $group): static
     {
         if (is_array($group)) {
-            throw new \RuntimeException('Group can be only single string, for other uses use `taggedAs` method.
-                Received group: `' . var_export($group, true) . '`');
+            throw new \RuntimeException(
+                "Group can be only single string, for other uses use `taggedAs` method.
+                Received group: `" . var_export($group, true) . "`"
+            );
         }
+
         if (!empty($group)) {
             $this->status['group'] = $group;
         }
@@ -318,8 +318,7 @@ class Job
                         ['scheduled_at' => ['$lt' => T\MongoDate::now()],
                             'locked' => false,
                             'group' => $worksOn,
-                        ]
-                        ,
+                        ],
                         [
                             'projection' => ['_id' => 1],
                             'sort' => ['scheduled_at' => 1],

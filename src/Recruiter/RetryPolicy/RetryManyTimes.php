@@ -12,24 +12,23 @@ use Timeless\Interval;
 class RetryManyTimes implements RetryPolicy
 {
     use RetryPolicyBehaviour;
-    private $retryHowManyTimes;
-    private $timeToWaitBeforeRetry;
 
-    public function __construct($retryHowManyTimes, $timeToWaitBeforeRetry)
+    private Interval $timeToWaitBeforeRetry;
+
+    public function __construct(private readonly int $retryHowManyTimes, int|Interval $timeToWaitBeforeRetry)
     {
         if (!($timeToWaitBeforeRetry instanceof Interval)) {
             $timeToWaitBeforeRetry = T\seconds($timeToWaitBeforeRetry);
         }
-        $this->retryHowManyTimes = $retryHowManyTimes;
         $this->timeToWaitBeforeRetry = $timeToWaitBeforeRetry;
     }
 
-    public static function forTimes($retryHowManyTimes, $timeToWaitBeforeRetry = 60)
+    public static function forTimes($retryHowManyTimes, int|Interval $timeToWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToWaitBeforeRetry);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         if ($job->numberOfAttempts() <= $this->retryHowManyTimes) {
             $job->scheduleIn($this->timeToWaitBeforeRetry);

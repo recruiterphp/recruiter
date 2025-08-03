@@ -19,7 +19,7 @@ $db->drop();
 
 $recruiter = new Recruiter($db);
 
-(new AlwaysFail())
+new AlwaysFail()
     ->asJobOf($recruiter)
     ->retryManyTimes(5, T\seconds(1), DomainException::class)
     ->inBackground()

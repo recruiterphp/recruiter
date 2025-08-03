@@ -20,25 +20,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 class RemoveSchedulerCommand extends Command
 {
     /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var SchedulerRepository
      */
     private $schedulerRepository;
 
-    public function __construct(Factory $factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     protected function configure()

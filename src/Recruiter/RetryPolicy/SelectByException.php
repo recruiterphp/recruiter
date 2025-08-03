@@ -24,22 +24,23 @@ use Recruiter\RetryPolicy;
  */
 class SelectByException implements RetryPolicy
 {
-    /**
-     * @var array<RetriableException>
-     */
-    private $exceptions;
-
     public static function create(): SelectByExceptionBuilder
     {
         return new SelectByExceptionBuilder();
     }
 
-    public function __construct(array $exceptions)
-    {
-        $this->exceptions = $exceptions;
+    public function __construct(
+        /**
+         * @var array<RetriableException>
+         */
+        private readonly array $exceptions,
+    ) {
     }
 
-    public function schedule(JobAfterFailure $job)
+    /**
+     * @throws \Exception
+     */
+    public function schedule(JobAfterFailure $job): void
     {
         $exception = $job->causeOfFailure();
         if ($this->isRetriable($exception)) {
@@ -58,7 +59,7 @@ class SelectByException implements RetryPolicy
                 return [
                     'when' => $retriableException->exceptionClass(),
                     'then' => [
-                        'class' => get_class($retryPolicy),
+                        'class' => $retryPolicy::class,
                         'parameters' => $retryPolicy->export(),
                     ],
                 ];
@@ -89,9 +90,7 @@ class SelectByException implements RetryPolicy
         // I cannot answer to that so... true only if everybody says true
         return array_all(
             $this->exceptions,
-            function (RetriableException $retriableException) use ($job) {
-                return $retriableException->retryPolicy()->isLastRetry($job);
-            },
+            fn (RetriableException $retriableException) => $retriableException->retryPolicy()->isLastRetry($job),
         );
     }
 
@@ -101,11 +100,14 @@ class SelectByException implements RetryPolicy
             $this->retryPolicyFor($exception);
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return false;
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     private function retryPolicyFor(?object $exception): RetryPolicy
     {
         if (!is_null($exception) && is_object($exception)) {
@@ -117,7 +119,7 @@ class SelectByException implements RetryPolicy
                 }
             }
             if ($exception instanceof \Throwable) {
-                throw new \Exception('Unable to find a RetryPolicy associated to exception: ' . get_class($exception), 0, $exception);
+                throw new \Exception('Unable to find a RetryPolicy associated to exception: ' . $exception::class, 0, $exception);
             }
         }
         throw new \Exception('Unable to find a RetryPolicy associated to: ' . var_export($exception, true));

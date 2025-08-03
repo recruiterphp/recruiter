@@ -13,7 +13,7 @@ trait WorkableBehaviour
         return $recruiter->jobOf($this);
     }
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception('Workable::execute() need to be implemented');
     }

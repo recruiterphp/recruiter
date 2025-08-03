@@ -19,10 +19,10 @@ class RetriableExceptionFilterTest extends TestCase
         $this->filteredRetryPolicy = $this->createMock(RetryPolicy::class);
     }
 
-    public function testCallScheduleOnRetriableException()
+    public function testCallScheduleOnRetriableException(): void
     {
         $exception = $this->createMock(\Exception::class);
-        $classOfException = get_class($exception);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
         $this->filteredRetryPolicy
@@ -33,10 +33,10 @@ class RetriableExceptionFilterTest extends TestCase
         $filter->schedule($this->jobFailedWithException($exception));
     }
 
-    public function testDoNotCallScheduleOnNonRetriableException()
+    public function testDoNotCallScheduleOnNonRetriableException(): void
     {
         $exception = $this->createMock(\Exception::class);
-        $classOfException = get_class($exception);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
         $this->filteredRetryPolicy
@@ -47,10 +47,10 @@ class RetriableExceptionFilterTest extends TestCase
         $filter->schedule($this->jobFailedWithException(new \Exception('Test')));
     }
 
-    public function testWhenExceptionIsNotRetriableThenArchiveTheJob()
+    public function testWhenExceptionIsNotRetriableThenArchiveTheJob(): void
     {
         $exception = $this->createMock(\Exception::class);
-        $classOfException = get_class($exception);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
         $job = $this->jobFailedWithException(new \Exception('Test'));
@@ -62,7 +62,7 @@ class RetriableExceptionFilterTest extends TestCase
         $filter->schedule($job);
     }
 
-    public function testAllExceptionsAreRetriableByDefault()
+    public function testAllExceptionsAreRetriableByDefault(): void
     {
         $this->filteredRetryPolicy
             ->expects($this->once())
@@ -73,7 +73,7 @@ class RetriableExceptionFilterTest extends TestCase
         $filter->schedule($this->jobFailedWithException(new \Exception('Test')));
     }
 
-    public function testJobFailedWithSomethingThatIsNotAnException()
+    public function testJobFailedWithSomethingThatIsNotAnException(): void
     {
         $jobAfterFailure = $this->jobFailedWithException(null);
         $jobAfterFailure
@@ -85,7 +85,7 @@ class RetriableExceptionFilterTest extends TestCase
         $filter->schedule($jobAfterFailure);
     }
 
-    public function testExportFilteredRetryPolicy()
+    public function testExportFilteredRetryPolicy(): void
     {
         $this->filteredRetryPolicy
             ->expects($this->once())
@@ -99,7 +99,7 @@ class RetriableExceptionFilterTest extends TestCase
             [
                 'retriable_exceptions' => ['Exception'],
                 'filtered_retry_policy' => [
-                    'class' => get_class($this->filteredRetryPolicy),
+                    'class' => $this->filteredRetryPolicy::class,
                     'parameters' => ['key' => 'value'],
                 ],
             ],
@@ -107,7 +107,7 @@ class RetriableExceptionFilterTest extends TestCase
         );
     }
 
-    public function testImportRetryPolicy()
+    public function testImportRetryPolicy(): void
     {
         $filteredRetryPolicy = new DoNotDoItAgain();
         $filter = new RetriableExceptionFilter($filteredRetryPolicy);
@@ -119,7 +119,7 @@ class RetriableExceptionFilterTest extends TestCase
         $this->assertEquals($exported, $filter->export());
     }
 
-    public function testRetriableExceptionsThatAreNotExceptions()
+    public function testRetriableExceptionsThatAreNotExceptions(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Only subclasses of Exception can be retriable exceptions, 'StdClass' is not");

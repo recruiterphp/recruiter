@@ -8,14 +8,8 @@ use Timeless\Interval;
 
 class Cleaner
 {
-    /**
-     * @var Repository
-     */
-    private $repository;
-
-    public function __construct(Repository $repository)
+    public function __construct(private readonly Repository $repository)
     {
-        $this->repository = $repository;
     }
 
     public function cleanArchived(Interval $gracePeriod)

@@ -38,12 +38,12 @@ class CleanerTest extends TestCase
         T\clock()->start();
     }
 
-    public function testShouldCreateCleaner()
+    public function testShouldCreateCleaner(): void
     {
-        $this->assertInstanceOf('Recruiter\Cleaner', $this->cleaner);
+        $this->assertInstanceOf(Cleaner::class, $this->cleaner);
     }
 
-    public function testDelegatesTheCleanupOfArchivedJobsToTheJobsRepository()
+    public function testDelegatesTheCleanupOfArchivedJobsToTheJobsRepository(): void
     {
         $expectedUpperLimit = $this->now->before($this->interval);
 

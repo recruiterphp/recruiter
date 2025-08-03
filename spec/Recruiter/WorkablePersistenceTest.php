@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class WorkablePersistenceTest extends TestCase
 {
-    public function testCanBeExportedAndImported()
+    public function testCanBeExportedAndImported(): void
     {
         $job = new SomethingWorkable(['key' => 'value']);
         $this->assertEquals(

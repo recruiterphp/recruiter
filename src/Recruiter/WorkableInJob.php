@@ -55,7 +55,7 @@ class WorkableInJob
 
     private static function classNameOf($workable)
     {
-        $workableClassName = get_class($workable);
+        $workableClassName = $workable::class;
         if (method_exists($workable, 'getClass')) {
             $workableClassName = $workable->getClass();
         }

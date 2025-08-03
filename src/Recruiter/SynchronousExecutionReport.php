@@ -10,16 +10,10 @@ namespace Recruiter;
 class SynchronousExecutionReport
 {
     /**
-     * @var array
-     */
-    private $data;
-
-    /**
      * @param array $data = []
      */
-    public function __construct(array $data = [])
+    public function __construct(private readonly array $data = [])
     {
-        $this->data = $data;
     }
 
     /**
@@ -32,9 +26,7 @@ class SynchronousExecutionReport
 
     public function isThereAFailure(): bool
     {
-        return array_any($this->data, function ($jobExecution, $jobId) {
-            return $jobExecution->isFailed();
-        });
+        return array_any($this->data, fn ($jobExecution, $jobId) => $jobExecution->isFailed());
     }
 
     public function toArray()

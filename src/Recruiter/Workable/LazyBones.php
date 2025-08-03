@@ -25,7 +25,7 @@ class LazyBones implements Workable
 
     public function execute(): void
     {
-        usleep($this->usToSleep + rand(intval(-$this->usOfDelta), $this->usOfDelta));
+        usleep($this->usToSleep + random_int(intval(-$this->usOfDelta), $this->usOfDelta));
     }
 
     public function export(): array

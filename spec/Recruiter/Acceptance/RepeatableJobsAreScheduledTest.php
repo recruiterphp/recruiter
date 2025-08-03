@@ -15,7 +15,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 {
     use ArraySubsetAsserts;
 
-    public function testARepeatableJobIsScheduledAtExpectedScheduledTime()
+    public function testARepeatableJobIsScheduledAtExpectedScheduledTime(): void
     {
         $expectedScheduleDate = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDate);
@@ -34,7 +34,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
             'attempts' => 0,
             'group' => 'generic',
             'workable' => [
-                'class' => 'Recruiter\Workable\SampleRepeatableCommand',
+                'class' => SampleRepeatableCommand::class,
                 'parameters' => [],
                 'method' => 'execute',
             ],
@@ -47,7 +47,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
                 'executions' => 1,
             ],
             'retry_policy' => [
-                'class' => 'Recruiter\RetryPolicy\ExponentialBackoff',
+                'class' => ExponentialBackoff::class,
                 'parameters' => [
                     'retry_how_many_times' => 2,
                     'seconds_to_initially_wait_before_retry' => 5,
@@ -56,7 +56,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         ], $jobData);
     }
 
-    public function testOnlyASingleJobAreScheduledForTheSameSchedulingTime()
+    public function testOnlyASingleJobAreScheduledForTheSameSchedulingTime(): void
     {
         $expectedScheduleDate = strtotime('2019-05-16T14:00:00');
         $schedulePolicy = new FixedSchedulePolicy($expectedScheduleDate);
@@ -75,7 +75,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         );
     }
 
-    public function testAJobIsScheduledForEverySchedulingTime()
+    public function testAJobIsScheduledForEverySchedulingTime(): void
     {
         $expectedScheduleDates = [
             strtotime('2019-05-16T14:00:00'),
@@ -93,7 +93,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->assertEquals(1, $jobs[1]->export()['scheduled']['executions']);
     }
 
-    public function testANewJobIsNotScheduledIfItShouldBeUniqueAndTheOldOneIsStillRunning()
+    public function testANewJobIsNotScheduledIfItShouldBeUniqueAndTheOldOneIsStillRunning(): void
     {
         $schedulePolicy = new FixedSchedulePolicy([
             strtotime('2019-05-16T14:00:00'),
@@ -108,7 +108,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->assertEquals(1, count($jobs));
     }
 
-    public function testSchedulersAreUniqueOnUrn()
+    public function testSchedulersAreUniqueOnUrn(): void
     {
         $aSchedulerAlreadyHaveSomeAttempts = 3;
         $this->IHaveAScheduleWithALongStory('unique-urn', $aSchedulerAlreadyHaveSomeAttempts);
@@ -149,7 +149,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
             $schedulePolicy = new FixedSchedulePolicy(strtotime('2023-02-18T17:00:00'));
         }
 
-        $scheduler = (new SampleRepeatableCommand())
+        $scheduler = new SampleRepeatableCommand()
             ->asRepeatableJobOf($this->recruiter)
             ->repeatWithPolicy($schedulePolicy)
             ->retryWithPolicy(ExponentialBackoff::forTimes(2, 5))
@@ -185,16 +185,14 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 class FixedSchedulePolicy implements SchedulePolicy
 {
     private array $timestamps;
-    private int $index;
 
-    public function __construct($timestamps, $index = 0)
+    public function __construct($timestamps, private int $index = 0)
     {
         if (!is_array($timestamps)) {
             $timestamps = [$timestamps];
         }
 
         $this->timestamps = $timestamps;
-        $this->index = $index;
     }
 
     public function next(): Moment
