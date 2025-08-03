@@ -22,4 +22,9 @@ class StoppedClock implements ClockInterface
     {
         return clock(new Clock());
     }
+
+    public function stop(): ClockInterface
+    {
+        return clock($this);
+    }
 }
