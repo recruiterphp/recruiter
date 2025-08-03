@@ -51,7 +51,7 @@ class RemoveSchedulerCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                MongoURI::fromEnvironment(),
+                (string) MongoURI::fromEnvironment(),
             )
         ;
     }

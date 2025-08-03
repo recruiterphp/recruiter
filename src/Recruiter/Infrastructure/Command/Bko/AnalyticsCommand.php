@@ -35,7 +35,7 @@ class AnalyticsCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                MongoURI::fromEnvironment(),
+                (string) MongoURI::fromEnvironment(),
             )
             ->addOption(
                 'group',

@@ -114,7 +114,7 @@ class WorkerCommand implements RobustCommand
 
     public function definition(): InputDefinition
     {
-        $defaultMongoUri = MongoURI::fromEnvironment();
+        $defaultMongoUri = (string) MongoURI::fromEnvironment();
         return new InputDefinition([
             new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', $defaultMongoUri),
             new InputOption('backoff-to', 'b', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling', '6400ms'),
