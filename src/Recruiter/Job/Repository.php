@@ -4,13 +4,15 @@ namespace Recruiter\Job;
 
 use MongoDB;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection;
+use MongoDB\Driver\CursorInterface;
 use Recruiter\Job;
 use Timeless as T;
 
 class Repository
 {
-    private $scheduled;
-    private $archived;
+    private Collection $scheduled;
+    private Collection $archived;
 
     public function __construct(MongoDB\Database $db)
     {
@@ -18,7 +20,7 @@ class Repository
         $this->archived = $db->selectCollection('archived');
     }
 
-    public function all()
+    public function all(): array
     {
         return $this->map(
             $this->scheduled->find([], [
@@ -27,14 +29,14 @@ class Repository
         );
     }
 
-    public function archiveAll()
+    public function archiveAll(): void
     {
         foreach ($this->all() as $job) {
             $this->archive($job);
         }
     }
 
-    public function scheduled($id)
+    public function scheduled(string|ObjectId $id): Job
     {
         if (is_string($id)) {
             $id = new ObjectId($id);
@@ -49,7 +51,7 @@ class Repository
         return $found[0];
     }
 
-    public function archived($id)
+    public function archived(string|ObjectId $id): Job
     {
         if (is_string($id)) {
             $id = new ObjectId($id);
@@ -64,7 +66,7 @@ class Repository
         return $found[0];
     }
 
-    public function save(Job $job)
+    public function save(Job $job): void
     {
         $document = $job->export();
         $this->scheduled->replaceOne(
@@ -74,14 +76,14 @@ class Repository
         );
     }
 
-    public function archive(Job $job)
+    public function archive(Job $job): void
     {
         $document = $job->export();
         $this->scheduled->deleteOne(['_id' => $document['_id']]);
         $this->archived->replaceOne(['_id' => $document['_id']], $document, ['upsert' => true]);
     }
 
-    public function releaseAll($jobIds)
+    public function releaseAll($jobIds): int
     {
         $result = $this->scheduled->updateMany(
             ['_id' => ['$in' => $jobIds]],
@@ -93,10 +95,10 @@ class Repository
 
     public function countArchived(): int
     {
-        return $this->archived->count();
+        return $this->archived->countDocuments();
     }
 
-    public function cleanArchived(T\Moment $upperLimit)
+    public function cleanArchived(T\Moment $upperLimit): int
     {
         $documents = $this->archived->find(
             [
@@ -116,7 +118,7 @@ class Repository
         return $deleted;
     }
 
-    public function cleanScheduled(T\Moment $upperLimit)
+    public function cleanScheduled(T\Moment $upperLimit): int
     {
         $result = $this->scheduled->deleteMany([
             'created_at' => [
@@ -132,7 +134,7 @@ class Repository
         ?T\Moment $at = null,
         ?T\Moment $from = null,
         array $query = [],
-    ) {
+    ): int {
         if (null === $at) {
             $at = T\now();
         }
@@ -150,7 +152,7 @@ class Repository
         return $this->scheduled->count($query);
     }
 
-    public function postponed($group = null, ?T\Moment $at = null, array $query = [])
+    public function postponed($group = null, ?T\Moment $at = null, array $query = []): int
     {
         if (null === $at) {
             $at = T\now();
@@ -162,19 +164,19 @@ class Repository
             $query['group'] = $group;
         }
 
-        return $this->scheduled->count($query);
+        return $this->scheduled->countDocuments($query);
     }
 
-    public function scheduledCount($group = null, array $query = [])
+    public function scheduledCount($group = null, array $query = []): int
     {
         if (null !== $group) {
             $query['group'] = $group;
         }
 
-        return $this->scheduled->count($query);
+        return $this->scheduled->countDocuments($query);
     }
 
-    public function queuedGroupedBy($field, array $query = [], $group = null)
+    public function queuedGroupedBy($field, array $query = [], $group = null): array
     {
         $query['scheduled_at']['$lte'] = T\MongoDate::from(T\now());
         if (null !== $group) {
@@ -197,7 +199,7 @@ class Repository
         return $distinctAndCount;
     }
 
-    public function recentHistory($group = null, ?T\Moment $at = null, array $query = [])
+    public function recentHistory($group = null, ?T\Moment $at = null, array $query = []): array
     {
         if (null === $at) {
             $at = T\now();
@@ -305,7 +307,7 @@ class Repository
         ]);
     }
 
-    public function delayedScheduledJobs(T\Moment $lowerLimit)
+    public function delayedScheduledJobs(T\Moment $lowerLimit): array
     {
         return $this->map(
             $this->scheduled->find([
@@ -319,7 +321,7 @@ class Repository
     public function recentJobsWithManyAttempts(
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
-    ) {
+    ): array {
         $archived = $this->map(
             $this->recentArchivedOrScheduledJobsWithManyAttempts(
                 $lowerLimit,
@@ -342,7 +344,7 @@ class Repository
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
         $secondsToConsiderJobAsSlow = 5,
-    ) {
+    ): array {
         $archived = [];
         $archivedArray = $this->slowArchivedRecentJobs(
             $lowerLimit,
@@ -369,7 +371,7 @@ class Repository
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
         $secondsToConsiderJobAsSlow,
-    ) {
+    ): array {
         return $this->archived->aggregate([
             [
                 '$match' => [
@@ -413,7 +415,7 @@ class Repository
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
         $secondsToConsiderJobAsSlow,
-    ) {
+    ): array {
         return $this->scheduled->aggregate([
             [
                 '$match' => [
@@ -464,7 +466,7 @@ class Repository
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
         $collectionName,
-    ) {
+    ): int {
         return count($this->recentArchivedOrScheduledJobsWithManyAttempts(
             $lowerLimit,
             $upperLimit,
@@ -488,7 +490,10 @@ class Repository
         ]);
     }
 
-    private function map($cursor)
+    /**
+     * @return array<Job>
+     */
+    private function map(CursorInterface $cursor): array
     {
         $jobs = [];
         foreach ($cursor as $document) {
