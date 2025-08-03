@@ -2,9 +2,7 @@
 
 namespace Recruiter\SchedulePolicy;
 
-use DateInterval;
 use Recruiter\SchedulePolicy;
-
 use Timeless\Moment;
 
 class EveryMinutes implements SchedulePolicy

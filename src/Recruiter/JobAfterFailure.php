@@ -2,9 +2,8 @@
 
 namespace Recruiter;
 
-use Timeless\Moment;
 use Timeless\Interval;
-use Timeless\MongoDate;
+use Timeless\Moment;
 
 class JobAfterFailure
 {
@@ -76,8 +75,10 @@ class JobAfterFailure
     {
         if (!$this->hasBeenScheduled && !$this->hasBeenArchived) {
             $this->archive('not-scheduled-by-retry-policy');
+
             return true;
         }
+
         return false;
     }
 

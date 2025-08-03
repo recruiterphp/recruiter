@@ -2,10 +2,10 @@
 
 namespace Sink;
 
-use Iterator;
 use ArrayAccess;
+use Iterator;
 
-class BlackHole implements Iterator, ArrayAccess
+class BlackHole implements \Iterator, \ArrayAccess
 {
     public function __construct()
     {

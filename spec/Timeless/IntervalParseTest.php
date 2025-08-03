@@ -2,7 +2,6 @@
 
 namespace Timeless;
 
-use DateInterval;
 use PHPUnit\Framework\TestCase;
 
 class IntervalParseTest extends TestCase
@@ -88,9 +87,9 @@ class IntervalParseTest extends TestCase
 
     public function testFromDateInterval()
     {
-        $this->assertEquals(days(2), Interval::fromDateInterval(new DateInterval('P2D')));
-        $this->assertEquals(minutes(10), Interval::fromDateInterval(new DateInterval('PT10M')));
-        $this->assertEquals(days(2)->add(minutes(10)), Interval::fromDateInterval(new DateInterval('P2DT10M')));
+        $this->assertEquals(days(2), Interval::fromDateInterval(new \DateInterval('P2D')));
+        $this->assertEquals(minutes(10), Interval::fromDateInterval(new \DateInterval('PT10M')));
+        $this->assertEquals(days(2)->add(minutes(10)), Interval::fromDateInterval(new \DateInterval('P2DT10M')));
     }
 
     public function testNumberAsIntervalFormat()

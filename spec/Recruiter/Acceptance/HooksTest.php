@@ -1,16 +1,18 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use Recruiter\Infrastructure\Memory\MemoryLimit;
+use Recruiter\Job\Event;
+use Recruiter\RetryPolicy\RetryManyTimes;
 use Recruiter\Workable\AlwaysFail;
 use Recruiter\Workable\AlwaysSucceed;
-use Recruiter\RetryPolicy\RetryManyTimes;
-use Recruiter\Job\Event;
 
 class HooksTest extends BaseAcceptanceTestCase
 {
     private MemoryLimit $memoryLimit;
     private array $events;
+
     protected function setUp(): void
     {
         $this->memoryLimit = new MemoryLimit('64MB');
@@ -26,13 +28,15 @@ class HooksTest extends BaseAcceptanceTestCase
                 'job.failure.last',
                 function (Event $event): void {
                     $this->events[] = $event;
-                }
-            );
+                },
+            )
+        ;
 
         $job = (new AlwaysFail())
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $worker = $this->recruiter->hire($this->memoryLimit);
         $this->recruiter->assignJobsToWorkers();
@@ -52,21 +56,23 @@ class HooksTest extends BaseAcceptanceTestCase
                 'job.failure.last',
                 function (Event $event): void {
                     $this->events[] = $event;
-                }
-            );
+                },
+            )
+        ;
 
         $job = (new AlwaysFail())
             ->asJobOf($this->recruiter)
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $runAJob = function ($howManyTimes, $worker): void {
             for ($i = 0; $i < $howManyTimes;) {
-                list($_, $assigned) = $this->recruiter->assignJobsToWorkers();
+                [$_, $assigned] = $this->recruiter->assignJobsToWorkers();
                 $worker->work();
                 if ($assigned > 0) {
-                    $i++;
+                    ++$i;
                 }
             }
         };
@@ -88,13 +94,15 @@ class HooksTest extends BaseAcceptanceTestCase
                 'job.started',
                 function (Event $event): void {
                     $this->events[] = $event;
-                }
-            );
+                },
+            )
+        ;
 
         $job = (new AlwaysSucceed())
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $worker = $this->recruiter->hire($this->memoryLimit);
         $this->recruiter->assignJobsToWorkers();
@@ -113,18 +121,21 @@ class HooksTest extends BaseAcceptanceTestCase
                 'job.ended',
                 function (Event $event): void {
                     $this->events[] = $event;
-                }
-            );
+                },
+            )
+        ;
 
         (new AlwaysSucceed())
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         (new AlwaysFail())
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $worker = $this->recruiter->hire($this->memoryLimit);
         $this->recruiter->assignJobsToWorkers();

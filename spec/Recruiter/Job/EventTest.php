@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Job;
 
 use PHPUnit\Framework\TestCase;
@@ -9,7 +10,7 @@ class EventTest extends TestCase
     {
         $event = new Event([
             'group' => 'generic',
-            'tags' =>[
+            'tags' => [
                 1 => 'billing-notification',
             ],
         ]);
@@ -21,7 +22,7 @@ class EventTest extends TestCase
     {
         $event = new Event([
             'group' => 'generic',
-            'tags' =>[
+            'tags' => [
                 1 => 'billing-notification',
             ],
         ]);

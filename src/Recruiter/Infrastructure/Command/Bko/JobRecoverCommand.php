@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command\Bko;
 
-use DateTime;
 use MongoDB\BSON\ObjectId;
 use Psr\Log\LoggerInterface;
 use Recruiter\Factory;
@@ -13,11 +13,9 @@ use Recruiter\Job\Repository as JobRepository;
 use Recruiter\Recruiter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Terminal;
 use Timeless as T;
 use Timeless\Moment;
 
@@ -26,10 +24,6 @@ class JobRecoverCommand extends Command
     private Recruiter $recruiter;
     private JobRepository $jobRepository;
 
-    /**
-     * @param Factory $factory
-     * @param LoggerInterface $logger
-     */
     public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
@@ -45,18 +39,18 @@ class JobRecoverCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                'mongodb://localhost:27017/recruiter'
+                'mongodb://localhost:27017/recruiter',
             )
             ->addOption(
                 'scheduleAt',
                 's',
                 InputOption::VALUE_REQUIRED,
-                're-scheduling the job at specific datetime'
+                're-scheduling the job at specific datetime',
             )
             ->addArgument(
                 'jobId',
                 InputArgument::REQUIRED,
-                'the id of the job in archived collection to be recovered'
+                'the id of the job in archived collection to be recovered',
             )
         ;
     }
@@ -80,14 +74,15 @@ class JobRecoverCommand extends Command
         if ($input->getOption('scheduleAt')) {
             /** @var string */
             $scheduleAt = $input->getOption('scheduleAt');
-            $job->scheduleAt(Moment::fromDateTime(new DateTime($scheduleAt)));
+            $job->scheduleAt(Moment::fromDateTime(new \DateTime($scheduleAt)));
         } else {
             $job->scheduleAt(T\now());
         }
 
         $job
             ->scheduledBy('recovering-archived-job', $archivedJobId, -1)
-            ->save();
+            ->save()
+        ;
 
         $output->writeln("<info>Job recovered, new job id is `</info><comment>{$job->id()}</comment><info>`</info>");
 

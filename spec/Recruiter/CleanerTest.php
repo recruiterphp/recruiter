@@ -2,12 +2,11 @@
 
 namespace Recruiter;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Timeless\Interval;
-use Timeless\Clock;
-use Timeless\Moment;
+use PHPUnit\Framework\TestCase;
 use Timeless as T;
+use Timeless\Interval;
+use Timeless\Moment;
 
 class CleanerTest extends TestCase
 {
@@ -25,7 +24,8 @@ class CleanerTest extends TestCase
         $this->jobRepository = $this
             ->getMockBuilder('Recruiter\Job\Repository')
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->cleaner = new Cleaner($this->jobRepository);
 
@@ -50,11 +50,12 @@ class CleanerTest extends TestCase
             ->expects($this->once())
             ->method('cleanArchived')
             ->with($expectedUpperLimit)
-            ->will($this->returnValue($jobsCleaned = 10));
+            ->will($this->returnValue($jobsCleaned = 10))
+        ;
 
         $this->assertEquals(
             $jobsCleaned,
-            $this->cleaner->cleanArchived($this->interval)
+            $this->cleaner->cleanArchived($this->interval),
         );
     }
 }

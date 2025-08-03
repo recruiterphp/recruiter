@@ -5,7 +5,6 @@ namespace Recruiter\Worker;
 use MongoDB;
 use MongoDB\BSON\UTCDateTime as MongoUTCDateTime;
 use Recruiter\Recruiter;
-use Recruiter\Worker;
 
 class Repository
 {
@@ -24,7 +23,7 @@ class Repository
         $result = $this->roster->replaceOne(
             ['_id' => $document['_id']],
             $document,
-            ['upsert' => true]
+            ['upsert' => true],
         );
     }
 
@@ -32,14 +31,14 @@ class Repository
     {
         $this->roster->updateOne(
             ['_id' => $worker->id()],
-            ['$set' => $changeSet]
+            ['$set' => $changeSet],
         );
     }
 
     public function refresh($worker)
     {
         $worker->updateWith(
-            $this->roster->findOne(['_id' => $worker->id()])
+            $this->roster->findOne(['_id' => $worker->id()]),
         );
     }
 
@@ -47,9 +46,9 @@ class Repository
     {
         return $this->roster->find(
             ['last_seen_at' => [
-                '$lt' => new MongoUTCDateTime($consideredDeadAt->format('U') * 1000)]
+                '$lt' => new MongoUTCDateTime($consideredDeadAt->format('U') * 1000)],
             ],
-            ['projection' => ['_id' => true, 'assigned_to' => true]]
+            ['projection' => ['_id' => true, 'assigned_to' => true]],
         );
     }
 

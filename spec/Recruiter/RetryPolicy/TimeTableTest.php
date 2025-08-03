@@ -2,7 +2,6 @@
 
 namespace Recruiter\RetryPolicy;
 
-use Exception;
 use PHPUnit\Framework\TestCase;
 use Timeless as T;
 
@@ -26,7 +25,8 @@ class TimeTableTest extends TestCase
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
@@ -37,7 +37,8 @@ class TimeTableTest extends TestCase
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
@@ -48,7 +49,8 @@ class TimeTableTest extends TestCase
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
@@ -64,7 +66,8 @@ class TimeTableTest extends TestCase
         $job = $this->createMock('Recruiter\Job');
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue(T\hours(3)->ago()));
+            ->will($this->returnValue(T\hours(3)->ago()))
+        ;
 
         $tt = new TimeTable([
             '1 minute ago' => '1 minute',
@@ -78,30 +81,31 @@ class TimeTableTest extends TestCase
         $job = $this->createMock('Recruiter\Job');
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue(T\hours(3)->ago()));
+            ->will($this->returnValue(T\hours(3)->ago()))
+        ;
 
         $tt = new TimeTable([
             '1 hour ago' => '1 minute',
-            '24 hours ago' => '1 minute'
+            '24 hours ago' => '1 minute',
         ]);
         $this->assertFalse($tt->isLastRetry($job));
     }
 
     public function testInvalidTimeTableBecauseTimeWindow()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute' => '1 second']);
     }
 
     public function testInvalidTimeTableBecauseRescheduleTime()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '1 second ago']);
     }
 
     public function testInvalidTimeTableBecauseRescheduleTimeIsGreaterThanTimeWindow()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '2 minutes']);
     }
 
@@ -110,10 +114,13 @@ class TimeTableTest extends TestCase
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
             ->disableOriginalConstructor()
             ->setMethods(['createdAt', 'scheduleAt'])
-            ->getMock();
+            ->getMock()
+        ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt));
+            ->will($this->returnValue($wasCreatedAt))
+        ;
+
         return $job;
     }
 
@@ -123,10 +130,12 @@ class TimeTableTest extends TestCase
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
             ->disableOriginalConstructor()
             ->setMethods(['createdAt', 'scheduleAt'])
-            ->getMock();
+            ->getMock()
+        ;
         $job->expects($this->any())
             ->method('createdAt')
             ->will($this->returnValue($wasCreatedAt));
+
         return $job;
     }
 }

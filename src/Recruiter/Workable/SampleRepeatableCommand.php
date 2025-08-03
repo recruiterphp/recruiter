@@ -3,15 +3,14 @@
 namespace Recruiter\Workable;
 
 use Recruiter\Repeatable;
-use Recruiter\SchedulePolicy\EveryMinutes;
-use Recruiter\SchedulePolicy;
+use Recruiter\RepeatableBehaviour;
 use Recruiter\Workable;
 use Recruiter\WorkableBehaviour;
-use Recruiter\RepeatableBehaviour;
 
 class SampleRepeatableCommand implements Workable, Repeatable
 {
-    use WorkableBehaviour, RepeatableBehaviour;
+    use WorkableBehaviour;
+    use RepeatableBehaviour;
 
     public function execute()
     {

@@ -17,7 +17,7 @@ class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTestCase
         $this->assertEquals(
             $numberOfWorkersBefore,
             $numberOfWorkersCurrently,
-            "The number of workers before was $numberOfWorkersBefore and now after starting and stopping 1 we have $numberOfWorkersCurrently"
+            "The number of workers before was $numberOfWorkersBefore and now after starting and stopping 1 we have $numberOfWorkersCurrently",
         );
     }
 }

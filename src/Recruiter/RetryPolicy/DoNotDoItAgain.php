@@ -3,9 +3,9 @@
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
 
 class DoNotDoItAgain implements RetryPolicy
 {

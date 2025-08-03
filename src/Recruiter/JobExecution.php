@@ -3,7 +3,6 @@
 namespace Recruiter;
 
 use Timeless as T;
-use Throwable;
 
 class JobExecution
 {
@@ -25,7 +24,7 @@ class JobExecution
         $this->startedAt = T\now();
     }
 
-    public function failedWith(Throwable $exception)
+    public function failedWith(\Throwable $exception)
     {
         $this->endedAt = T\now();
         $this->failedWith = $exception;
@@ -57,9 +56,10 @@ class JobExecution
         if ($this->startedAt && $this->endedAt && ($this->startedAt <= $this->endedAt)) {
             return T\seconds(
                 $this->endedAt->seconds() -
-                $this->startedAt-> seconds()
+                $this->startedAt->seconds(),
             );
         }
+
         return T\seconds(0);
     }
 
@@ -78,6 +78,7 @@ class JobExecution
                 $lastExecution->startedAt = T\MongoDate::toMoment($lastExecutionDocument['started_at']);
             }
         }
+
         return $lastExecution;
     }
 
@@ -111,7 +112,7 @@ class JobExecution
     private function traceOf($result)
     {
         $trace = 'ok';
-        if ($result instanceof Throwable) {
+        if ($result instanceof \Throwable) {
             $trace = $result->getTraceAsString();
         } elseif (is_object($result) && method_exists($result, 'trace')) {
             $trace = $result->trace();
@@ -120,6 +121,7 @@ class JobExecution
         } elseif (is_string($result) || is_numeric($result)) {
             $trace = $result;
         }
+
         return substr($trace, 0, 4096);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Workable;
 
 use PHPUnit\Framework\TestCase;
@@ -9,7 +10,8 @@ class FactoryMethodCommandTest extends TestCase
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()
-            ->myMethod('answer', 42);
+            ->myMethod('answer', 42)
+        ;
         $this->assertEquals('42', $workable->execute());
     }
 
@@ -17,10 +19,11 @@ class FactoryMethodCommandTest extends TestCase
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()
-            ->myMethod('answer', 42);
+            ->myMethod('answer', 42)
+        ;
         $this->assertEquals(
             $workable,
-            FactoryMethodCommand::import($workable->export())
+            FactoryMethodCommand::import($workable->export()),
         );
     }
 
@@ -28,7 +31,8 @@ class FactoryMethodCommandTest extends TestCase
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()
-            ->myNeedyMethod();
+            ->myNeedyMethod()
+        ;
         $this->assertEquals(2, $workable->execute(['retry_number' => 2]));
     }
 }

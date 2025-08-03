@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Workable;
 
 use PHPUnit\Framework\TestCase;
@@ -16,7 +17,7 @@ class ShellCommandTest extends TestCase
         $workable = ShellCommand::fromCommandLine('echo 42');
         $this->assertEquals(
             $workable,
-            ShellCommand::import($workable->export())
+            ShellCommand::import($workable->export()),
         );
     }
 }

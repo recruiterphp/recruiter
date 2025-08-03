@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use Recruiter\Workable\AlwaysFail;
@@ -26,7 +27,8 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
         (new AlwaysFail())
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $report = $this->recruiter->flushJobsSynchronously();
 
@@ -40,7 +42,8 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
             ->asJobOf($this->recruiter)
             ->scheduleAt($scheduledAt)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 }
 

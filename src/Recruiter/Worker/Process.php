@@ -3,7 +3,6 @@
 namespace Recruiter\Worker;
 
 use Sink\BlackHole;
-use Recruiter\Worker\Repository;
 
 class Process
 {
@@ -31,6 +30,7 @@ class Process
         if ($this->isAlive()) {
             return new BlackHole();
         }
+
         return $this;
     }
 

@@ -2,16 +2,9 @@
 
 namespace Recruiter;
 
-use MongoDB\BSON\ObjectId;
-use Recruiter\Scheduler\Repository;
 use Recruiter\Job\Repository as JobsRepository;
-use Recruiter\RetryPolicy;
-use RuntimeException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Throwable;
+use Recruiter\Scheduler\Repository;
 use Timeless as T;
-use Timeless\Interval;
-use Timeless\Moment;
 
 class Scheduler
 {
@@ -31,15 +24,14 @@ class Scheduler
     {
         $retryPolicy = ($repeatable instanceof Retriable) ?
             $repeatable->retryWithPolicy() :
-            new RetryPolicy\DoNotDoItAgain()
-        ;
+            new RetryPolicy\DoNotDoItAgain();
 
         return new self(
             self::initialize(),
             $repeatable,
             null,
             $retryPolicy,
-            $repository
+            $repository,
         );
     }
 
@@ -50,7 +42,7 @@ class Scheduler
             RepeatableInJob::import($document['job']),
             SchedulePolicyInJob::import($document),
             RetryPolicyInJob::import($document['job']),
-            $repository
+            $repository,
         );
     }
 
@@ -59,7 +51,7 @@ class Scheduler
         Repeatable $repeatable,
         ?SchedulePolicy $schedulePolicy,
         ?RetryPolicy $retryPolicy,
-        Repository $schedulers
+        Repository $schedulers,
     ) {
         $this->status = $status;
         $this->repeatable = $repeatable;
@@ -103,9 +95,9 @@ class Scheduler
             [
                 'job' => array_merge(
                     WorkableInJob::export($this->repeatable, 'execute'),
-                    RetryPolicyInJob::export($this->retryPolicy)
+                    RetryPolicyInJob::export($this->retryPolicy),
                 ),
-            ]
+            ],
         );
     }
 
@@ -128,8 +120,9 @@ class Scheduler
 
         try {
             $alreadyScheduledJob = $jobs->scheduled($this->status['last_scheduling']['job_id']);
+
             return true;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -137,7 +130,7 @@ class Scheduler
     public function schedule(JobsRepository $jobs)
     {
         if (!$this->schedulePolicy) {
-            throw new RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
+            throw new \RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
         }
 
         $nextScheduling = $this->schedulePolicy->next();
@@ -151,7 +144,7 @@ class Scheduler
 
         $this->status['last_scheduling']['scheduled_at'] = T\MongoDate::from($nextScheduling);
         $this->status['last_scheduling']['job_id'] = null;
-        $this->status['attempts'] += 1;
+        ++$this->status['attempts'];
         $this->schedulers->save($this);
 
         $jobToSchedule = (new JobToSchedule(Job::around($this->repeatable, $jobs)))
@@ -169,7 +162,7 @@ class Scheduler
     {
         $this->retryPolicy = $this->filterForRetriableExceptions(
             $retryPolicy,
-            $retriableExceptionTypes
+            $retriableExceptionTypes,
         );
 
         return $this;

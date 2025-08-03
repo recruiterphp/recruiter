@@ -1,12 +1,12 @@
 <?php
+
 namespace Recruiter;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Job\Repository;
 use Recruiter\Workable\AlwaysFail;
-use RuntimeException;
-use Recruiter\Infrastructure\Memory\MemoryLimit;
 
 class JobTest extends TestCase
 {
@@ -17,12 +17,13 @@ class JobTest extends TestCase
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     public function testRetryStatisticsOnFirstExecution()
     {
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         $retryStatistics = $job->retryStatistics();
         $this->assertIsArray($retryStatistics);
         $this->assertArrayHasKey('job_id', $retryStatistics);
@@ -38,7 +39,7 @@ class JobTest extends TestCase
      */
     public function testRetryStatisticsOnSubsequentExecutions()
     {
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         // maybe make the argument optional
         $job->execute($this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'));
         $job = Job::import($job->export(), $this->repository);
@@ -53,14 +54,14 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('message', $lastExecution);
         $this->assertArrayHasKey('trace', $lastExecution);
         $this->assertEquals("Sorry, I'm good for nothing", $lastExecution['message']);
-        $this->assertMatchesRegularExpression("/.*AlwaysFail->execute.*/", $lastExecution['trace']);
+        $this->assertMatchesRegularExpression('/.*AlwaysFail->execute.*/', $lastExecution['trace']);
     }
 
     public function testArrayAsGroupIsNotAllowed()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $memoryLimit = new MemoryLimit(1);
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         $job->inGroup(['test']);
     }
 }

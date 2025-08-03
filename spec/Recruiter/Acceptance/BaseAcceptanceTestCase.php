@@ -1,11 +1,11 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
-use DateTimeImmutable;
 use MongoDB\Collection;
 use MongoDB\Database;
-use Recruiter\Concurrency\Timeout;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Concurrency\Timeout;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
@@ -84,9 +84,11 @@ abstract class BaseAcceptanceTestCase extends TestCase
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
-                $this->recruiter->retireDeadWorkers(new DateTimeImmutable(), T\seconds(0));
+                $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
+
                 return $this->numberOfWorkers() == $expectedNumber;
-            });
+            })
+        ;
     }
 
     protected function startRecruiter(): array
@@ -101,13 +103,16 @@ abstract class BaseAcceptanceTestCase extends TestCase
 
         $process = proc_open('exec php bin/recruiter start:recruiter --backoff-to 5000ms --lease-time 10s --considered-dead-after 20s >> /tmp/recruiter.log 2>&1', $descriptors, $pipes, $cwd);
 
-        Timeout::inSeconds(1, "recruiter to be up")
+        Timeout::inSeconds(1, 'recruiter to be up')
             ->until(function () use ($process) {
                 $status = proc_get_status($process);
+
                 return $status['running'];
-            });
+            })
+        ;
 
         $this->processRecruiter = [$process, $pipes, 'recruiter'];
+
         return $this->processRecruiter;
     }
 
@@ -120,11 +125,13 @@ abstract class BaseAcceptanceTestCase extends TestCase
         ];
         $cwd = __DIR__ . '/../../../';
         $process = proc_open('exec php bin/recruiter start:cleaner --wait-at-least=5s --wait-at-most=1m --lease-time 20s >> /tmp/cleaner.log 2>&1', $descriptors, $pipes, $cwd);
-        Timeout::inSeconds(1, "cleaner to be up")
+        Timeout::inSeconds(1, 'cleaner to be up')
             ->until(function () use ($process) {
                 $status = proc_get_status($process);
+
                 return $status['running'];
-            });
+            })
+        ;
         $this->processCleaner = [$process, $pipes, 'cleaner'];
 
         return $this->processCleaner;
@@ -147,62 +154,68 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $cwd = __DIR__ . '/../../../';
         $process = proc_open("exec php bin/recruiter start:worker $options >> /tmp/worker.log 2>&1", $descriptors, $pipes, $cwd);
 
-        Timeout::inSeconds(1, "worker to be up")
+        Timeout::inSeconds(1, 'worker to be up')
             ->until(function () use ($process) {
                 $status = proc_get_status($process);
+
                 return $status['running'];
-            });
+            })
+        ;
         // proc_get_status($process);
 
         $this->processWorkers[] = [$process, $pipes, 'worker'];
+
         return end($this->processWorkers);
     }
 
     protected function stopProcessWithSignal(array $processAndPipes, $signal): void
     {
-        list($process, $pipes, $name) = $processAndPipes;
+        [$process, $pipes, $name] = $processAndPipes;
         proc_terminate($process, $signal);
         $this->lastStatus = proc_get_status($process);
-        Timeout
-            ::inSeconds(30, function () use ($signal) {
-                return 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it";
-            })
+        Timeout::inSeconds(30, function () use ($signal) {
+            return 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it";
+        })
             ->until(function () use ($process) {
                 $this->lastStatus = proc_get_status($process);
-                return $this->lastStatus['running'] == false;
-            });
+
+                return false == $this->lastStatus['running'];
+            })
+        ;
     }
 
     /**
-     * @param integer $duration  milliseconds
+     * @param int $duration milliseconds
      */
     protected function enqueueJob($duration = 10, $tag = 'generic'): void
     {
-        $workable = ShellCommand::fromCommandLine("sleep " . ($duration / 1000));
+        $workable = ShellCommand::fromCommandLine('sleep ' . ($duration / 1000));
         $workable
             ->asJobOf($this->recruiter)
             ->inGroup($tag)
             ->inBackground()
-            ->execute();
-        $this->jobs++;
+            ->execute()
+        ;
+        ++$this->jobs;
     }
 
     protected function enqueueJobWithRetryPolicy(int $duration, RetryPolicy $retryPolicy): void
     {
-        $workable = ShellCommand::fromCommandLine("sleep " . ($duration / 1000));
+        $workable = ShellCommand::fromCommandLine('sleep ' . ($duration / 1000));
         $workable
             ->asJobOf($this->recruiter)
             ->retryWithPolicy($retryPolicy)
             ->inBackground()
-            ->execute();
-        $this->jobs++;
+            ->execute()
+        ;
+        ++$this->jobs;
     }
 
     protected function start(int $workers): void
     {
         $this->startRecruiter();
         $this->startCleaner();
-        for ($i = 0; $i < $workers; $i++) {
+        for ($i = 0; $i < $workers; ++$i) {
             $this->startWorker();
         }
     }
@@ -252,12 +265,13 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $logs = '';
         if (getenv('TEST_DUMP')) {
             foreach ($this->files as $file) {
-                $logs .= $file. ":". PHP_EOL;
+                $logs .= $file . ':' . PHP_EOL;
                 $logs .= file_get_contents($file);
             }
         } else {
             $logs .= var_export($this->files, true);
         }
+
         return $logs;
     }
 
@@ -267,7 +281,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
 
         foreach ($options as $option => $value) {
             $optionsString .= " --$option=$value";
-        };
+        }
 
         return $optionsString;
     }

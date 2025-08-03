@@ -1,13 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Filesystem;
 
 use Recruiter\Recruiter;
-use UnexpectedValueException;
 
 /**
- * Class BootstrapFile
+ * Class BootstrapFile.
  */
 class BootstrapFile
 {
@@ -21,9 +21,9 @@ class BootstrapFile
         $this->filePath = $this->validate($filePath);
     }
 
-    public static function fromFilePath(string $filePath): Self
+    public static function fromFilePath(string $filePath): self
     {
-        return new Static($filePath);
+        return new static($filePath);
     }
 
     public function load(Recruiter $recruiter)
@@ -38,7 +38,7 @@ class BootstrapFile
         }
 
         if (!is_readable($filePath)) {
-            $this->throwBecauseFile($filePath, "is not readable");
+            $this->throwBecauseFile($filePath, 'is not readable');
         }
 
         return $filePath;
@@ -46,12 +46,6 @@ class BootstrapFile
 
     private function throwBecauseFile($filePath, $reason)
     {
-        throw new UnexpectedValueException(
-            sprintf(
-                "Bootstrap file has an invalid value: file '%s' %s",
-                $filePath,
-                $reason
-            )
-        );
+        throw new \UnexpectedValueException(sprintf("Bootstrap file has an invalid value: file '%s' %s", $filePath, $reason));
     }
 }

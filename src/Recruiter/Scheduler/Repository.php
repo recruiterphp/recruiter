@@ -1,14 +1,9 @@
 <?php
+
 namespace Recruiter\Scheduler;
 
-use Exception;
 use MongoDB;
-use Recruiter\Job;
-use Recruiter\JobToSchedule;
-use Recruiter\Recruiter;
 use Recruiter\Scheduler;
-use RuntimeException;
-use Timeless as T;
 
 class Repository
 {
@@ -24,7 +19,7 @@ class Repository
         return $this->map(
             $this->schedulers->find([], [
                 'sort' => ['scheduled_at' => -1],
-            ])
+            ]),
         );
     }
 
@@ -34,7 +29,7 @@ class Repository
         $this->schedulers->replaceOne(
             ['_id' => $document['_id']],
             $document,
-            ['upsert' => true]
+            ['upsert' => true],
         );
     }
 
@@ -55,7 +50,7 @@ class Repository
 
             $this->schedulers->updateOne(
                 ['urn' => $scheduler->urn()],
-                ['$set' => $document]
+                ['$set' => $document],
             );
         }
     }

@@ -1,18 +1,16 @@
 <?php
-namespace Timeless;
 
-use DateInterval;
-use DateTimeImmutable;
+namespace Timeless;
 
 class Interval
 {
-    const int MILLISECONDS_IN_SECONDS = 1000;
-    const int MILLISECONDS_IN_MINUTES = 60000;
-    const int MILLISECONDS_IN_HOURS = 3600000;
-    const int MILLISECONDS_IN_DAYS = 86400000;
-    const int MILLISECONDS_IN_WEEKS = 604800000;
-    const int MILLISECONDS_IN_MONTHS = 2592000000;
-    const int MILLISECONDS_IN_YEARS = 31104000000;
+    public const int MILLISECONDS_IN_SECONDS = 1000;
+    public const int MILLISECONDS_IN_MINUTES = 60000;
+    public const int MILLISECONDS_IN_HOURS = 3600000;
+    public const int MILLISECONDS_IN_DAYS = 86400000;
+    public const int MILLISECONDS_IN_WEEKS = 604800000;
+    public const int MILLISECONDS_IN_MONTHS = 2592000000;
+    public const int MILLISECONDS_IN_YEARS = 31104000000;
 
     public function __construct(private readonly int $ms)
     {
@@ -136,9 +134,10 @@ class Interval
             }
 
             $amountOfTime = call_user_func($callable);
-            $unitOfTime = $amountOfTime === 1 ?
+            $unitOfTime = 1 === $amountOfTime ?
                 $availableFormatsTable[$format][2] :
                 $availableFormatsTable[$format][1];
+
             return sprintf('%d%s', $amountOfTime, $unitOfTime);
         }
         throw new InvalidIntervalFormat("'{$format}' is not a valid Interval format");
@@ -146,7 +145,7 @@ class Interval
 
     public function toDateInterval()
     {
-        return new DateInterval("PT{$this->seconds()}S");
+        return new \DateInterval("PT{$this->seconds()}S");
     }
 
     public static function parse($string)
@@ -163,7 +162,7 @@ class Interval
                 'years' => 'years', 'year' => 'years', 'y' => 'years',
             ];
             $units = implode('|', array_keys($tokenToFunction));
-            if (preg_match("/^[^\d]*(?P<quantity>\d+)\s*(?P<unit>{$units})(?:\W.*|$)/", $string, $matches)) {
+            if (preg_match("/^[^\\d]*(?P<quantity>\\d+)\\s*(?P<unit>{$units})(?:\\W.*|$)/", $string, $matches)) {
                 $callable = 'Timeless\\' . $tokenToFunction[$matches['unit']];
                 if (is_callable($callable)) {
                     return call_user_func($callable, $matches['quantity']);
@@ -182,10 +181,11 @@ class Interval
         throw new InvalidIntervalFormat('You need to use strings');
     }
 
-    public static function fromDateInterval(DateInterval $interval): self
+    public static function fromDateInterval(\DateInterval $interval): self
     {
-        $startTime = new DateTimeImmutable();
+        $startTime = new \DateTimeImmutable();
         $endTime = $startTime->add($interval);
+
         return new self(($endTime->getTimestamp() - $startTime->getTimestamp()) * 1000);
     }
 }

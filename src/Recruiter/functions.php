@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter;
 
 function array_group_by($array, ?callable $f = null): array
@@ -6,6 +7,7 @@ function array_group_by($array, ?callable $f = null): array
     $f = $f ?: function ($value) {
         return $value;
     };
+
     return array_reduce(
         $array,
         function ($buckets, $x) use ($f) {
@@ -14,8 +16,9 @@ function array_group_by($array, ?callable $f = null): array
                 $buckets[$key] = [];
             }
             $buckets[$key][] = $x;
+
             return $buckets;
         },
-        []
+        [],
     );
 }

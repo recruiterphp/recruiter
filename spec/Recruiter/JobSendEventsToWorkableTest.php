@@ -3,8 +3,8 @@
 namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;
 use Recruiter\Job\Repository;
@@ -20,7 +20,8 @@ class JobSendEventsToWorkableTest extends TestCase
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
@@ -37,8 +38,9 @@ class JobSendEventsToWorkableTest extends TestCase
             ->withConsecutive(
                 [$this->equalTo('job.started'), $this->anything()],
                 [$this->equalTo('job.ended'), $this->anything()],
-                [$this->equalTo('job.failure.last'), $this->anything()]
-            );
+                [$this->equalTo('job.failure.last'), $this->anything()],
+            )
+        ;
         $workable = new WorkableThatIsAlsoAnEventListener($listener);
 
         $job = Job::around($workable, $this->repository);

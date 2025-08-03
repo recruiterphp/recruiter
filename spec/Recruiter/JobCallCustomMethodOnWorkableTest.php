@@ -2,9 +2,8 @@
 
 namespace Recruiter;
 
-use Exception;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Repository;
 
 class JobCallCustomMethodOnWorkableTest extends TestCase
@@ -18,12 +17,14 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
         $this->workable = $this
             ->getMockBuilder(Workable::class)
             ->setMethods(['export', 'import', 'asJobOf', 'send'])
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->job = Job::around($this->workable, $this->repository);
     }
@@ -37,7 +38,7 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
 
     public function testRaiseExceptionWhenConfigureMethodToCallOnWorkableThatDoNotExists()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $this->job->methodToCallOnWorkable('methodThatDoNotExists');
     }
 

@@ -18,7 +18,8 @@ class JobToBePassedRetryStatisticsTest extends TestCase
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     /**
@@ -30,7 +31,7 @@ class JobToBePassedRetryStatisticsTest extends TestCase
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->createMock(EventDispatcherInterface::class));
-        $this->assertTrue($job->done(), "Job requiring retry statistics was not executed correctly: " . var_export($job->export(), true));
+        $this->assertTrue($job->done(), 'Job requiring retry statistics was not executed correctly: ' . var_export($job->export(), true));
     }
 }
 

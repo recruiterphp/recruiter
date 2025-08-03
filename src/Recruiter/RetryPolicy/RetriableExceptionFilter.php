@@ -2,11 +2,9 @@
 
 namespace Recruiter\RetryPolicy;
 
-use InvalidArgumentException;
-
 use Recruiter\Job;
-use Recruiter\RetryPolicy;
 use Recruiter\JobAfterFailure;
+use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilter implements RetryPolicy
 {
@@ -14,7 +12,8 @@ class RetriableExceptionFilter implements RetryPolicy
     private $retriableExceptions;
 
     /**
-     * @param string $exceptionClass  fully qualified class or interface name
+     * @param string $exceptionClass fully qualified class or interface name
+     *
      * @return self
      */
     public static function onlyFor($exceptionClass, RetryPolicy $retryPolicy)
@@ -43,8 +42,8 @@ class RetriableExceptionFilter implements RetryPolicy
             'retriable_exceptions' => $this->retriableExceptions,
             'filtered_retry_policy' => [
                 'class' => get_class($this->filteredRetryPolicy),
-                'parameters' => $this->filteredRetryPolicy->export()
-            ]
+                'parameters' => $this->filteredRetryPolicy->export(),
+            ],
         ];
     }
 
@@ -52,9 +51,10 @@ class RetriableExceptionFilter implements RetryPolicy
     {
         $filteredRetryPolicy = $parameters['filtered_retry_policy'];
         $retriableExceptions = $parameters['retriable_exceptions'];
+
         return new self(
             $filteredRetryPolicy['class']::import($filteredRetryPolicy['parameters']),
-            $retriableExceptions
+            $retriableExceptions,
         );
     }
 
@@ -67,11 +67,10 @@ class RetriableExceptionFilter implements RetryPolicy
     {
         foreach ($exceptions as $exception) {
             if (!is_a($exception, 'Throwable', true)) {
-                throw new InvalidArgumentException(
-                    "Only subclasses of Exception can be retriable exceptions, '{$exception}' is not"
-                );
+                throw new \InvalidArgumentException("Only subclasses of Exception can be retriable exceptions, '{$exception}' is not");
             }
         }
+
         return $exceptions;
     }
 
@@ -81,10 +80,11 @@ class RetriableExceptionFilter implements RetryPolicy
             return array_any(
                 $this->retriableExceptions,
                 function ($retriableExceptionType) use ($exception) {
-                    return ($exception instanceof $retriableExceptionType);
-                }
+                    return $exception instanceof $retriableExceptionType;
+                },
             );
         }
+
         return false;
     }
 }

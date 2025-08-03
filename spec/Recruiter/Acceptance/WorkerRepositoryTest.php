@@ -3,17 +3,17 @@
 namespace Recruiter\Acceptance;
 
 use Recruiter\Worker\Repository;
-use Recruiter\Recruiter;
 
 class WorkerRepositoryTest extends BaseAcceptanceTestCase
 {
     private Repository $repository;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->repository = new Repository(
             $this->recruiterDb,
-            $this->recruiter
+            $this->recruiter,
         );
     }
 

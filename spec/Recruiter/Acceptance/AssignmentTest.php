@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use Recruiter\Infrastructure\Memory\MemoryLimit;
@@ -12,10 +13,11 @@ class AssignmentTest extends BaseAcceptanceTestCase
         LazyBones::waitForMs(200, 100)
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $worker = $this->recruiter->hire($memoryLimit);
-        list ($assignments, $totalNumber) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $totalNumber] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         $this->assertEquals(1, $totalNumber);
         $this->assertTrue((bool) $worker->work());

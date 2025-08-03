@@ -2,11 +2,9 @@
 
 namespace Recruiter;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Timeless as T;
-use Timeless\Clock;
-use Recruiter\RetryPolicy;
 
 class JobToScheduleTest extends TestCase
 {
@@ -19,7 +17,8 @@ class JobToScheduleTest extends TestCase
         $this->job = $this
             ->getMockBuilder(Job::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     protected function tearDown(): void
@@ -33,12 +32,14 @@ class JobToScheduleTest extends TestCase
             ->expects($this->once())
             ->method('scheduleAt')
             ->with(
-                $this->equalTo($this->clock->now())
-            );
+                $this->equalTo($this->clock->now()),
+            )
+        ;
 
         (new JobToSchedule($this->job))
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 
     public function testScheduledInShouldScheduleInCertainAmountOfTime()
@@ -48,12 +49,14 @@ class JobToScheduleTest extends TestCase
             ->expects($this->once())
             ->method('scheduleAt')
             ->with(
-                $this->equalTo($amountOfTime->fromNow())
-            );
+                $this->equalTo($amountOfTime->fromNow()),
+            )
+        ;
 
         (new JobToSchedule($this->job))
             ->scheduleIn($amountOfTime)
-            ->execute();
+            ->execute()
+        ;
     }
 
     public function testConfigureRetryPolicy()
@@ -63,12 +66,14 @@ class JobToScheduleTest extends TestCase
         $this->job
             ->expects($this->once())
             ->method('retryWithPolicy')
-            ->with($doNotDoItAgain);
+            ->with($doNotDoItAgain)
+        ;
 
         (new JobToSchedule($this->job))
             ->inBackground()
             ->retryWithPolicy($doNotDoItAgain)
-            ->execute();
+            ->execute()
+        ;
     }
 
     public function tesShortcutToConfigureJobToNotBeRetried()
@@ -76,43 +81,51 @@ class JobToScheduleTest extends TestCase
         $this->job
             ->expects($this->once())
             ->method('retryWithPolicy')
-            ->with($this->isInstanceOf('Recruiter\RetryPolicy\DoNotDoItAgain'));
+            ->with($this->isInstanceOf('Recruiter\RetryPolicy\DoNotDoItAgain'))
+        ;
 
         (new JobToSchedule($this->job))
             ->inBackground()
             ->doNotRetry()
-            ->execute();
+            ->execute()
+        ;
     }
 
     public function testShouldNotExecuteJobWhenScheduled()
     {
         $this->job
             ->expects($this->once())
-            ->method('save');
+            ->method('save')
+        ;
 
         $this->job
             ->expects($this->never())
-            ->method('execute');
+            ->method('execute')
+        ;
 
         (new JobToSchedule($this->job))
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 
     public function testShouldExecuteJobWhenNotScheduled()
     {
         $this->job
             ->expects($this->never())
-            ->method('scheduleAt');
+            ->method('scheduleAt')
+        ;
 
         $this->job
             ->expects($this->once())
-            ->method('execute');
+            ->method('execute')
+        ;
 
         (new JobToSchedule($this->job))
             ->execute(
-                $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-            );
+                $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'),
+            )
+        ;
     }
 
     public function testConfigureMethodToCallOnWorkableInJob()
@@ -120,10 +133,12 @@ class JobToScheduleTest extends TestCase
         $this->job
             ->expects($this->once())
             ->method('methodToCallOnWorkable')
-            ->with('send');
+            ->with('send')
+        ;
 
         (new JobToSchedule($this->job))
-            ->send();
+            ->send()
+        ;
     }
 
     public function testReturnsJobId()
@@ -131,14 +146,15 @@ class JobToScheduleTest extends TestCase
         $this->job
             ->expects($this->any())
             ->method('id')
-            ->will($this->returnValue('42'));
+            ->will($this->returnValue('42'))
+        ;
 
         $this->assertEquals(
             '42',
             (new JobToSchedule($this->job))
                 ->execute(
-                    $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-                )
+                    $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'),
+                ),
         );
     }
 }

@@ -2,11 +2,9 @@
 
 namespace Recruiter;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Repository;
-use Timeless as T;
-use Recruiter\Taggable;
 
 class TaggableWorkableTest extends TestCase
 {
@@ -17,7 +15,8 @@ class TaggableWorkableTest extends TestCase
         $this->repository = $this
                           ->getMockBuilder(Repository::class)
                           ->disableOriginalConstructor()
-                          ->getMock();
+                          ->getMock()
+        ;
     }
 
     public function testWorkableExportsTags()

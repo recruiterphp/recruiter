@@ -21,7 +21,7 @@ class FactoryTest extends TestCase
     {
         $this->assertInstanceOf(
             'MongoDB\Database',
-            $this->creationOfDefaultMongoDb()
+            $this->creationOfDefaultMongoDb(),
         );
     }
 
@@ -38,7 +38,7 @@ class FactoryTest extends TestCase
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',
-            ]
+            ],
         );
 
         $this->assertEquals('majority', $mongoDb->getWriteConcern()->getW());
@@ -51,7 +51,7 @@ class FactoryTest extends TestCase
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',
-            ]
+            ],
         );
     }
 }

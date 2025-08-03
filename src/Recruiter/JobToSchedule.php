@@ -2,8 +2,6 @@
 
 namespace Recruiter;
 
-use Recruiter\Job;
-use Recruiter\RetryPolicy;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;
 use Timeless\Interval;
@@ -32,9 +30,10 @@ class JobToSchedule
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
                 new RetryPolicy\RetryManyTimes($howManyTimes, $timeToWaitBeforeRetry),
-                $retriableExceptionTypes
-            )
+                $retriableExceptionTypes,
+            ),
         );
+
         return $this;
     }
 
@@ -43,9 +42,10 @@ class JobToSchedule
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
                 $retryPolicy,
-                $retriableExceptionTypes
-            )
+                $retriableExceptionTypes,
+            ),
         );
+
         return $this;
     }
 
@@ -63,6 +63,7 @@ class JobToSchedule
     {
         $this->mustBeScheduled = true;
         $this->job->scheduleAt($momentInTime);
+
         return $this;
     }
 
@@ -105,6 +106,7 @@ class JobToSchedule
         } else {
             $this->job->execute($this->emptyEventDispatcher());
         }
+
         return (string) $this->job->id();
     }
 
@@ -116,6 +118,7 @@ class JobToSchedule
     public function __call($name, $arguments)
     {
         $this->job->methodToCallOnWorkable($name);
+
         return $this->execute();
     }
 
@@ -137,6 +140,7 @@ class JobToSchedule
         if (!empty($retriableExceptionTypes)) {
             $retryPolicy = new RetryPolicy\RetriableExceptionFilter($retryPolicy, $retriableExceptionTypes);
         }
+
         return $retryPolicy;
     }
 }

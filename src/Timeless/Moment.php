@@ -2,9 +2,6 @@
 
 namespace Timeless;
 
-use DateTime;
-use DateTimeZone;
-
 readonly class Moment
 {
     public static function fromTimestamp(int $ts): self
@@ -12,7 +9,7 @@ readonly class Moment
         return new self($ts * 1000);
     }
 
-    public static function fromDateTime(DateTime $dateTime): self
+    public static function fromDateTime(\DateTime $dateTime): self
     {
         return self::fromTimestamp($dateTime->getTimestamp());
     }
@@ -68,11 +65,11 @@ readonly class Moment
 
     public function format(): string
     {
-        return new DateTime('@' . $this->s(), new DateTimeZone('UTC'))->format(DateTime::RFC3339);
+        return new \DateTime('@' . $this->s(), new \DateTimeZone('UTC'))->format(\DateTime::RFC3339);
     }
 
-    public function toDateTime(): DateTime
+    public function toDateTime(): \DateTime
     {
-        return new DateTime('@' . $this->s(), new DateTimeZone('UTC'));
+        return new \DateTime('@' . $this->s(), new \DateTimeZone('UTC'));
     }
 }
