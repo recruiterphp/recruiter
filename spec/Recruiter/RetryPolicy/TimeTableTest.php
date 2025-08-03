@@ -113,7 +113,7 @@ class TimeTableTest extends TestCase
     {
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
             ->disableOriginalConstructor()
-            ->setMethods(['createdAt', 'scheduleAt'])
+            ->onlyMethods(['createdAt', 'scheduleAt'])
             ->getMock()
         ;
         $job->expects($this->any())
@@ -129,7 +129,7 @@ class TimeTableTest extends TestCase
         $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
             ->disableOriginalConstructor()
-            ->setMethods(['createdAt', 'scheduleAt'])
+            ->onlyMethods(['createdAt', 'scheduleAt'])
             ->getMock()
         ;
         $job->expects($this->any())
