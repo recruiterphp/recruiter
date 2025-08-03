@@ -18,7 +18,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->recruiter->bookJobsForWorkers();
         $this->recruiter->rollbackLockedJobs();
         [$assignments, $totalNumber] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         $this->assertEquals(1, $totalNumber);
     }
 
@@ -35,7 +35,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->waitForNumberOfWorkersToBe(1);
 
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         sleep(2);
         $jobDocument = current($this->scheduled->find()->toArray());
         $this->assertEquals(1, $jobDocument['attempts']);
@@ -44,7 +44,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         sleep(2);
         $jobDocument = current($this->archived->find()->toArray());
         $this->assertEquals(2, $jobDocument['attempts']);
@@ -53,7 +53,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(0, count($assignments));
+        $this->assertCount(0, $assignments);
     }
 
     public function testRetryPolicyMustBeAppliedEvenWhenWorkerDies(): void
@@ -106,7 +106,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         // because found crashed and because it has been already
         // executed 2 times
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         sleep(1);
         // The worker is not dead and the job is not scheduled anymore
         $this->assertEquals(0, $this->recruiter->queued());
