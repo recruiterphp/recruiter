@@ -2,7 +2,6 @@
 
 namespace Recruiter;
 
-use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Event;
@@ -26,25 +25,19 @@ class JobSendEventsToWorkableTest extends TestCase
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
-    /**
-     * @throws Exception
-     */
     public function testTakeRetryPolicyFromRetriableInstance()
     {
-        $listener = $this->createPartialMock(EventListener::class, ['onEvent']);
-        $listener
-            ->expects($this->exactly(3))
-            ->method('onEvent')
-            ->withConsecutive(
-                [$this->equalTo('job.started'), $this->anything()],
-                [$this->equalTo('job.ended'), $this->anything()],
-                [$this->equalTo('job.failure.last'), $this->anything()],
-            )
-        ;
+        $listener = new EventListenerSpy();
         $workable = new WorkableThatIsAlsoAnEventListener($listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $events = $listener->events;
+        $this->assertCount(3, $events);
+        $this->assertSame('job.started', $events[0][0]);
+        $this->assertSame('job.ended', $events[1][0]);
+        $this->assertSame('job.failure.last', $events[2][0]);
     }
 }
 
@@ -54,6 +47,7 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
 
     public function __construct(private readonly EventListener $listener)
     {
+        $this->parameters = [];
     }
 
     public function onEvent($channel, Event $ev)
@@ -64,5 +58,15 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
     public function execute()
     {
         throw new \Exception();
+    }
+}
+
+class EventListenerSpy implements EventListener
+{
+    public array $events = [];
+
+    public function onEvent($channel, Event $ev): void
+    {
+        $this->events[] = [$channel, $ev];
     }
 }

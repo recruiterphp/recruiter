@@ -2,8 +2,12 @@
 
 namespace Recruiter;
 
+use MongoDB\BSON\Int64;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
+use MongoDB\Driver\CursorInterface;
+use MongoDB\Driver\Server;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -12,14 +16,12 @@ class PickAvailableWorkersTest extends TestCase
     private MockObject&Collection $repository;
     private int $workersPerUnit;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
-        $this->repository = $this
-            ->getMockBuilder(Collection::class)
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-
+        $this->repository = $this->createMock(Collection::class);
         $this->workersPerUnit = 42;
     }
 
@@ -32,7 +34,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals([], $picked);
     }
 
-    public function testFewWorkersWithNoSpecifiSkill()
+    public function testFewWorkersWithNoSpecificSkill(): void
     {
         $callbackHasBeenCalled = false;
         $this->withAvailableWorkers(['*' => 3]);
@@ -41,7 +43,7 @@ class PickAvailableWorkersTest extends TestCase
 
         [$worksOn, $workers] = $picked[0];
         $this->assertEquals('*', $worksOn);
-        $this->assertEquals(3, count($workers));
+        $this->assertCount(3, $workers);
     }
 
     public function testFewWorkersWithSameSkill()
@@ -86,7 +88,10 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals($this->workersPerUnit, $totalWorkersGiven);
     }
 
-    private function withAvailableWorkers($workers)
+    /**
+     * @throws Exception
+     */
+    private function withAvailableWorkers($workers): void
     {
         $workersThatShouldBeFound = [];
         foreach ($workers as $skill => $quantity) {
@@ -102,7 +107,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository
             ->expects($this->any())
             ->method('find')
-            ->will($this->returnValue(new \ArrayIterator($workersThatShouldBeFound)))
+            ->willReturn(new FakeCursor($workersThatShouldBeFound))
         ;
     }
 
@@ -111,7 +116,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository
             ->expects($this->any())
             ->method('find')
-            ->will($this->returnValue(new \ArrayIterator([])))
+            ->willReturn(new FakeCursor())
         ;
     }
 
@@ -120,5 +125,65 @@ class PickAvailableWorkersTest extends TestCase
         sort($expected);
         sort($given);
         $this->assertEquals($expected, $given);
+    }
+}
+
+class FakeCursor implements CursorInterface, \Iterator
+{
+    private array $data;
+
+    public function __construct(array $data = [])
+    {
+        $this->data = array_values($data);
+    }
+
+    public function getId(): Int64
+    {
+        return new Int64(42);
+    }
+
+    public function getServer(): Server
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    public function isDead(): bool
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    public function setTypeMap(array $typemap): void
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    public function toArray(): array
+    {
+        throw new \LogicException('Not implemented');
+    }
+
+    public function current(): object|array|null
+    {
+        return current($this->data);
+    }
+
+    public function next(): void
+    {
+        next($this->data);
+    }
+
+    public function key(): ?int
+    {
+        return key($this->data);
+    }
+
+    public function valid(): bool
+    {
+        return null !== key($this->data);
+    }
+
+    public function rewind(): void
+    {
+        reset($this->data);
     }
 }

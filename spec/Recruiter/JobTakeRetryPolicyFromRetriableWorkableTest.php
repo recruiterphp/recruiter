@@ -46,6 +46,7 @@ class WorkableThatIsAlsoRetriable implements Workable, Retriable
 
     public function __construct(private readonly RetryPolicy $retryWithPolicy)
     {
+        $this->parameters = [];
     }
 
     public function retryWithPolicy(): RetryPolicy
