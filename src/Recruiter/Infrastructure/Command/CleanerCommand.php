@@ -124,8 +124,7 @@ class CleanerCommand implements RobustCommand
 
     public function definition(): InputDefinition
     {
-        $defaultMongoUri = getenv('MONGODB_URI') ?: 'mongodb://localhost:27017';
-
+        $defaultMongoUri = MongoURI::fromEnvironment();
         return new InputDefinition([
             new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', $defaultMongoUri),
             new InputOption('clean-after', 'c', InputOption::VALUE_REQUIRED, 'delete jobs after :period', '5days'),

@@ -31,7 +31,7 @@ class RepositoryTest extends TestCase
     protected function setUp(): void
     {
         $factory = new Factory();
-        $this->recruiterDb = $factory->getMongoDb(MongoURI::from(getenv('MONGODB_URI') ?: MongoURI::DEFAULT_URI), []);
+        $this->recruiterDb = $factory->getMongoDb(MongoURI::fromEnvironment(), []);
         $this->recruiterDb->drop();
         $this->repository = new Repository($this->recruiterDb);
         $this->clock = T\clock()->stop();

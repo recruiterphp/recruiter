@@ -14,7 +14,7 @@ class FactoryTest extends TestCase
     protected function setUp(): void
     {
         $this->factory = new Factory();
-        $this->mongoURI = MongoURI::from(getenv('MONGODB_URI') ?: MongoURI::DEFAULT_URI);
+        $this->mongoURI = MongoURI::fromEnvironment();
     }
 
     public function testShouldCreateAMongoDatabaseConnection()
