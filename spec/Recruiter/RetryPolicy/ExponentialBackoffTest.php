@@ -3,6 +3,7 @@
 namespace Recruiter\RetryPolicy;
 
 use PHPUnit\Framework\TestCase;
+use Recruiter\JobAfterFailure;
 use Timeless as T;
 
 class ExponentialBackoffTest extends TestCase
@@ -53,7 +54,7 @@ class ExponentialBackoffTest extends TestCase
 
     private function jobExecutedFor($times)
     {
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')->disableOriginalConstructor()->getMock();
+        $job = $this->getMockBuilder(JobAfterFailure::class)->disableOriginalConstructor()->getMock();
         $job->expects($this->any())
             ->method('numberOfAttempts')
             ->will($this->returnValue($times))

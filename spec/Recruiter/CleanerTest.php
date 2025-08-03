@@ -4,6 +4,7 @@ namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Job\Repository;
 use Timeless as T;
 use Timeless\Interval;
 use Timeless\Moment;
@@ -22,7 +23,7 @@ class CleanerTest extends TestCase
         $this->now = $this->clock->now();
 
         $this->jobRepository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;

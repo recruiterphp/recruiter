@@ -10,7 +10,9 @@ use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Job;
+use Recruiter\JobExecution;
 use Recruiter\JobToSchedule;
+use Recruiter\Workable;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
 use Timeless\Interval;
@@ -440,7 +442,7 @@ class RepositoryTest extends TestCase
     private function workableMock()
     {
         return $this
-            ->getMockBuilder('Recruiter\Workable')
+            ->getMockBuilder(Workable::class)
             ->getMock()
         ;
     }
@@ -460,7 +462,7 @@ class RepositoryTest extends TestCase
     private function jobExecutionMock($executionParameters)
     {
         $jobExecutionMock = $this
-            ->getMockBuilder('Recruiter\JobExecution')
+            ->getMockBuilder(JobExecution::class)
             ->getMock()
         ;
         $jobExecutionMock->expects($this->once())
