@@ -24,7 +24,7 @@ class RepositoryTest extends TestCase
     private Database $recruiterDb;
     private Repository $repository;
     private T\ClockInterface $clock;
-    private EventDispatcherInterface $eventDispatcher;
+    private MockObject&EventDispatcherInterface $eventDispatcher;
 
     /**
      * @throws Exception
@@ -448,13 +448,13 @@ class RepositoryTest extends TestCase
         ;
     }
 
-    private function workableMockWithCustomParameters($parameters)
+    private function workableMockWithCustomParameters(array $parameters): MockObject&Workable
     {
         $workable = $this->workableMock();
         $workable
             ->expects($this->any())
             ->method('export')
-            ->will($this->returnValue($parameters))
+            ->willReturn($parameters)
         ;
 
         return $workable;
