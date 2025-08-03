@@ -3,6 +3,7 @@
 namespace Recruiter\RetryPolicy;
 
 use PHPUnit\Framework\TestCase;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Timeless as T;
 
@@ -66,7 +67,7 @@ class SelectByExceptionTest extends TestCase
 
     private function jobFailedWith(\Exception $exception)
     {
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')->disableOriginalConstructor()->getMock();
+        $job = $this->getMockBuilder(JobAfterFailure::class)->disableOriginalConstructor()->getMock();
         $job->expects($this->any())
             ->method('causeOfFailure')
             ->will($this->returnValue($exception))

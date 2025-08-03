@@ -5,6 +5,7 @@ namespace Recruiter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Repository;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobCallCustomMethodOnWorkableTest extends TestCase
 {
@@ -33,7 +34,7 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
     {
         $this->workable->expects($this->once())->method('send');
         $this->job->methodToCallOnWorkable('send');
-        $this->job->execute($this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'));
+        $this->job->execute($this->createMock(EventDispatcherInterface::class));
     }
 
     public function testRaiseExceptionWhenConfigureMethodToCallOnWorkableThatDoNotExists()

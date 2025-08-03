@@ -4,6 +4,7 @@ namespace Recruiter\RetryPolicy;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilterTest extends TestCase
@@ -130,7 +131,7 @@ class RetriableExceptionFilterTest extends TestCase
     private function jobFailedWithException($exception)
     {
         $jobAfterFailure = $this
-            ->getMockBuilder('Recruiter\JobAfterFailure')
+            ->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;

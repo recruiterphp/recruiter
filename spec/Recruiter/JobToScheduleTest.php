@@ -4,6 +4,7 @@ namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
 
 class JobToScheduleTest extends TestCase
@@ -123,7 +124,7 @@ class JobToScheduleTest extends TestCase
 
         (new JobToSchedule($this->job))
             ->execute(
-                $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'),
+                $this->createMock(EventDispatcherInterface::class),
             )
         ;
     }
@@ -153,7 +154,7 @@ class JobToScheduleTest extends TestCase
             '42',
             (new JobToSchedule($this->job))
                 ->execute(
-                    $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'),
+                    $this->createMock(EventDispatcherInterface::class),
                 ),
         );
     }

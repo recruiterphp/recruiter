@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Job\Repository;
 use Recruiter\Workable\AlwaysFail;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobTest extends TestCase
 {
@@ -41,7 +42,7 @@ class JobTest extends TestCase
     {
         $job = Job::around(new AlwaysFail(), $this->repository);
         // maybe make the argument optional
-        $job->execute($this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'));
+        $job->execute($this->createMock(EventDispatcherInterface::class));
         $job = Job::import($job->export(), $this->repository);
         $retryStatistics = $job->retryStatistics();
         $this->assertEquals(1, $retryStatistics['retry_number']);

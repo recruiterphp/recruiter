@@ -3,6 +3,8 @@
 namespace Recruiter\RetryPolicy;
 
 use PHPUnit\Framework\TestCase;
+use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Timeless as T;
 
 class TimeTableTest extends TestCase
@@ -63,7 +65,7 @@ class TimeTableTest extends TestCase
 
     public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen()
     {
-        $job = $this->createMock('Recruiter\Job');
+        $job = $this->createMock(Job::class);
         $job->expects($this->any())
             ->method('createdAt')
             ->will($this->returnValue(T\hours(3)->ago()))
@@ -78,7 +80,7 @@ class TimeTableTest extends TestCase
 
     public function testIsLastRetryReturnFalseIfJobWasCreatedLessThanLastTimeSpen()
     {
-        $job = $this->createMock('Recruiter\Job');
+        $job = $this->createMock(Job::class);
         $job->expects($this->any())
             ->method('createdAt')
             ->will($this->returnValue(T\hours(3)->ago()))
@@ -111,7 +113,7 @@ class TimeTableTest extends TestCase
 
     private function givenJobThat(T\Moment $wasCreatedAt)
     {
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
+        $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['createdAt', 'scheduleAt'])
             ->getMock()
@@ -127,7 +129,7 @@ class TimeTableTest extends TestCase
     private function jobThatWasCreated($relativeTime)
     {
         $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
+        $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['createdAt', 'scheduleAt'])
             ->getMock()
