@@ -96,7 +96,10 @@ class Job
         return $this;
     }
 
-    public function scheduleAt(Moment $at)
+    /**
+     * @return $this
+     */
+    public function scheduleAt(Moment $at): static
     {
         $this->status['locked'] = false;
         $this->status['scheduled_at'] = T\MongoDate::from($at);
@@ -104,14 +107,20 @@ class Job
         return $this;
     }
 
-    public function withUrn(string $urn)
+    /**
+     * @return $this
+     */
+    public function withUrn(string $urn): static
     {
         $this->status['urn'] = $urn;
 
         return $this;
     }
 
-    public function scheduledBy(string $namespace, string $id, int $executions)
+    /**
+     * @return $this
+     */
+    public function scheduledBy(string $namespace, string $id, int $executions): static
     {
         $this->status['scheduled'] = [
             'by' => [
@@ -132,7 +141,7 @@ class Job
         $this->status['workable']['method'] = $method;
     }
 
-    public function execute(EventDispatcherInterface $eventDispatcher)
+    public function execute(EventDispatcherInterface $eventDispatcher): JobExecution
     {
         $methodToCall = $this->status['workable']['method'];
         try {
@@ -148,7 +157,7 @@ class Job
         return $this->lastJobExecution;
     }
 
-    public function retryStatistics()
+    public function retryStatistics(): array
     {
         return [
             'job_id' => (string) $this->id(),

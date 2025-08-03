@@ -2,6 +2,7 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Timeless as T;
@@ -11,15 +12,13 @@ class JobToScheduleTest extends TestCase
     private T\ClockInterface $clock;
     private MockObject&Job $job;
 
+    /**
+     * @throws Exception
+     */
     protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
-        $this->job = $this
-            ->getMockBuilder(Job::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['send'])
-            ->getMock()
-        ;
+        $this->job = $this->createMock(Job::class);
     }
 
     protected function tearDown(): void
