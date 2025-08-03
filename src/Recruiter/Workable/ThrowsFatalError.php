@@ -11,6 +11,7 @@ class ThrowsFatalError implements Workable
 
     public function execute(): void
     {
+        /** @phpstan-ignore-next-line */
         new ThisClassDoesnNotExists();
     }
 }

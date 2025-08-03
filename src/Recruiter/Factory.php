@@ -3,12 +3,13 @@
 namespace Recruiter;
 
 use MongoDB\Client;
+use MongoDB\Database;
 use MongoDB\Driver\Exception\RuntimeException as DriverRuntimeException;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI;
 
 class Factory
 {
-    public function getMongoDb(URI $uri, array $options = [])
+    public function getMongoDb(URI $uri, array $options = []): Database
     {
         try {
             $optionsWithMajorityConcern = ['w' => 'majority'];
