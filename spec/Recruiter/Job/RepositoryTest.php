@@ -2,6 +2,7 @@
 namespace Recruiter\Job;
 
 use MongoDB\BSON\ObjectId;
+use MongoDB\Database;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -11,11 +12,17 @@ use Recruiter\Job;
 use Recruiter\JobToSchedule;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
+use Timeless\Clock;
 use Timeless\Interval;
 use Timeless\Moment;
 
 class RepositoryTest extends TestCase
 {
+    private Database $recruiterDb;
+    private Repository $repository;
+    private T\ClockInterface $clock;
+    private EventDispatcherInterface $eventDispatcher;
+
     /**
      * @throws Exception
      */

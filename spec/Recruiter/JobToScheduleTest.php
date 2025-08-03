@@ -3,16 +3,21 @@
 namespace Recruiter;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Timeless as T;
+use Timeless\Clock;
 use Recruiter\RetryPolicy;
 
 class JobToScheduleTest extends TestCase
 {
+    private T\ClockInterface $clock;
+    private MockObject&Job $job;
+
     protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
         $this->job = $this
-            ->getMockBuilder('Recruiter\Job')
+            ->getMockBuilder(Job::class)
             ->disableOriginalConstructor()
             ->getMock();
     }

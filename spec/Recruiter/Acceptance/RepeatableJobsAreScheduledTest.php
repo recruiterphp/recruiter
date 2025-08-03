@@ -183,8 +183,8 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 
 class FixedSchedulePolicy implements SchedulePolicy
 {
-    private $timestamp;
-    private $index;
+    private array $timestamps;
+    private int $index;
 
     public function __construct($timestamps, $index = 0)
     {

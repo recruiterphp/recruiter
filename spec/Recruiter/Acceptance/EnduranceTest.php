@@ -16,6 +16,9 @@ class EnduranceTest extends BaseAcceptanceTestCase
 {
     use Eris\TestTrait;
 
+    private Repository $jobRepository;
+    private string $actionLog;
+
     protected function setUp(): void
     {
         parent::setUp();

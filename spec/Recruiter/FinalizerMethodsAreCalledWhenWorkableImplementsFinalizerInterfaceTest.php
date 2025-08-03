@@ -4,19 +4,26 @@ namespace Recruiter;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Recruiter\Job\Repository;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest extends TestCase
 {
+    private MockObject&Repository $repository;
+    private EventDispatcherInterface $dispatcher;
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->dispatcher = $this->createMock(
-            'Symfony\Component\EventDispatcher\EventDispatcherInterface'
-        );
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
     public function testFinalizableFailureMethodsAreCalledWhenJobFails()

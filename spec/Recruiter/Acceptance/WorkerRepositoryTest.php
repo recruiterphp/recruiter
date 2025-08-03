@@ -7,6 +7,7 @@ use Recruiter\Recruiter;
 
 class WorkerRepositoryTest extends BaseAcceptanceTestCase
 {
+    private Repository $repository;
     protected function setUp(): void
     {
         parent::setUp();

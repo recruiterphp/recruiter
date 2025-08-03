@@ -7,9 +7,14 @@ use Timeless as T;
 
 class WaitStrategyTest extends TestCase
 {
+    private T\Interval $waited;
+    private \Closure $howToWait;
+    private T\Interval $timeToWaitAtLeast;
+    private T\Interval $timeToWaitAtMost;
+
     protected function setUp(): void
     {
-        $this->waited = 0;
+        $this->waited = T\milliseconds(0);
         $this->howToWait = function($microseconds): void {
             $this->waited = T\milliseconds($microseconds/1000);
         };

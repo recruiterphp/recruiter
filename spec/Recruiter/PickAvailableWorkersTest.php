@@ -4,14 +4,19 @@ namespace Recruiter;
 
 use ArrayIterator;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PickAvailableWorkersTest extends TestCase
 {
+    private MockObject&Collection $repository;
+    private int $workersPerUnit;
+
     protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('MongoDB\Collection')
+            ->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
             ->getMock();
 

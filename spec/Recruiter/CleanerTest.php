@@ -3,11 +3,20 @@
 namespace Recruiter;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 use Timeless\Interval;
+use Timeless\Clock;
+use Timeless\Moment;
 use Timeless as T;
 
 class CleanerTest extends TestCase
 {
+    private T\ClockInterface $clock;
+    private Moment $now;
+    private MockObject $jobRepository;
+    private Cleaner $cleaner;
+    private Interval $interval;
+
     protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
