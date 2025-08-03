@@ -72,7 +72,7 @@ class WorkerProcessTest extends TestCase
     private function givenWorkerProcess($alive)
     {
         $process = $this->getMockBuilder('Recruiter\Worker\Process')
-            ->setMethods(['isAlive'])
+            ->onlyMethods(['isAlive'])
             ->setConstructorArgs([$this->pid])
             ->getMock()
         ;

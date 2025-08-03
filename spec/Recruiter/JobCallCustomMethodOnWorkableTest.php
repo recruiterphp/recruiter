@@ -16,7 +16,7 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
     {
         $this->workable = $this
             ->getMockBuilder(Workable::class)
-            ->setMethods(['export', 'import', 'asJobOf', 'send'])
+            ->onlyMethods(['export', 'import', 'asJobOf', 'send'])
             ->getMock()
         ;
 
