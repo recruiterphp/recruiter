@@ -5,7 +5,7 @@ namespace Recruiter\Acceptance;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\RetryPolicy\RetryManyTimes;
 use Recruiter\Workable\FailsInConstructor;
-use Recruiter\Workable\ThrowsFatalError;
+use Recruiter\Workable\ExitsAbruptly;
 use Timeless as T;
 
 class FaultToleranceTest extends BaseAcceptanceTestCase
@@ -63,7 +63,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         // executions. The problem is that the retry policy is
         // evaluated after the execution but fatal errors are not
         // catchable and so the job will stay scheduled forever
-        new ThrowsFatalError()
+        new ExitsAbruptly()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
