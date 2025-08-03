@@ -7,22 +7,27 @@ use Timeless as T;
 use Timeless\Interval;
 use Timeless\Moment;
 
+/**
+ * @method send() to make PHPStan happy in tests
+ */
 class JobToSchedule
 {
-    /** @var bool */
-    private $mustBeScheduled;
+    private bool $mustBeScheduled;
 
     public function __construct(private readonly Job $job)
     {
         $this->mustBeScheduled = false;
     }
 
-    public function doNotRetry()
+    public function doNotRetry(): static
     {
         return $this->retryWithPolicy(new RetryPolicy\DoNotDoItAgain());
     }
 
-    public function retryManyTimes($howManyTimes, Interval $timeToWaitBeforeRetry, $retriableExceptionTypes = [])
+    /**
+     * @return $this
+     */
+    public function retryManyTimes($howManyTimes, Interval $timeToWaitBeforeRetry, $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -34,7 +39,10 @@ class JobToSchedule
         return $this;
     }
 
-    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
+    /**
+     * @return $this
+     */
+    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -46,17 +54,26 @@ class JobToSchedule
         return $this;
     }
 
-    public function inBackground()
+    /**
+     * @return $this
+     */
+    public function inBackground(): static
     {
         return $this->scheduleAt(T\now());
     }
 
-    public function scheduleIn(Interval $duration)
+    /**
+     * @return $this
+     */
+    public function scheduleIn(Interval $duration): static
     {
         return $this->scheduleAt($duration->fromNow());
     }
 
-    public function scheduleAt(Moment $momentInTime)
+    /**
+     * @return $this
+     */
+    public function scheduleAt(Moment $momentInTime): static
     {
         $this->mustBeScheduled = true;
         $this->job->scheduleAt($momentInTime);
@@ -115,7 +132,10 @@ class JobToSchedule
         return new EventDispatcher();
     }
 
-    public function __call($name, $arguments)
+    /**
+     * @throws \Exception
+     */
+    public function __call(string $name, array $arguments)
     {
         $this->job->methodToCallOnWorkable($name);
 

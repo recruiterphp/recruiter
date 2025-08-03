@@ -18,13 +18,17 @@ class StoppedClock implements ClockInterface
         $this->now = $this->now->after(seconds($seconds));
     }
 
-    public function start(): ClockInterface
+    public function start(): Clock
     {
-        return clock(new Clock());
+        clock($clock = new Clock());
+
+        return $clock;
     }
 
-    public function stop(): ClockInterface
+    public function stop(): self
     {
-        return clock($this);
+        clock($this);
+
+        return $this;
     }
 }

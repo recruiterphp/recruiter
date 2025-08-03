@@ -124,7 +124,7 @@ class Job
         return $this;
     }
 
-    public function methodToCallOnWorkable($method)
+    public function methodToCallOnWorkable($method): void
     {
         if (!method_exists($this->workable, $method)) {
             throw new \Exception("Unknown method '$method' on workable instance");

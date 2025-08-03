@@ -23,7 +23,7 @@ class RepositoryTest extends TestCase
 {
     private Database $recruiterDb;
     private Repository $repository;
-    private T\ClockInterface $clock;
+    private T\StoppedClock $clock;
     private MockObject&EventDispatcherInterface $eventDispatcher;
 
     /**

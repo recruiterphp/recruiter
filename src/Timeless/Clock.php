@@ -4,14 +4,18 @@ namespace Timeless;
 
 class Clock implements ClockInterface
 {
-    public function start(): ClockInterface
+    public function start(): self
     {
-        return clock($this);
+        clock($this);
+
+        return $this;
     }
 
-    public function stop(): ClockInterface
+    public function stop(): StoppedClock
     {
-        return clock(new StoppedClock($this->now()));
+        clock($clock = new StoppedClock($this->now()));
+
+        return $clock;
     }
 
     public function now(): Moment

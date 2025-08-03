@@ -1,5 +1,5 @@
 parameters:
-  level: 1
+  level: 2
   paths:
     - src
     - spec
@@ -9,5 +9,5 @@ parameters:
     - '#Function recruiter_became_master not found.#'
     - '#Function recruiter_stept_back not found.#'
     - '#Unsafe usage of new static\(\).#'
-    - '#Call to an undefined static method Sink\\BlackHole::whateverStaticMethod\(\).#'
+    - '#to an undefined .* Sink\\BlackHole#'
   inferPrivatePropertyTypeFromConstructor: true

@@ -6,7 +6,7 @@ interface ClockInterface
 {
     public function now(): Moment;
 
-    public function start(): ClockInterface;
+    public function start(): Clock;
 
-    public function stop(): ClockInterface;
+    public function stop(): StoppedClock;
 }
