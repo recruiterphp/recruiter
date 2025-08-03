@@ -16,7 +16,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
 {
     use Eris\TestTrait;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->jobRepository = new Repository($this->recruiterDb);
