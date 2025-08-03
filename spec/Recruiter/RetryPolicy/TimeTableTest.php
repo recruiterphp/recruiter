@@ -119,7 +119,7 @@ class TimeTableTest extends TestCase
 
     private function jobThatWasCreated($relativeTime)
     {
-        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime), T\now()->seconds());
+        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
             ->disableOriginalConstructor()
             ->setMethods(['createdAt', 'scheduleAt'])
