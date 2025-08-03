@@ -23,35 +23,16 @@ use Timeless\Moment;
 
 class JobRecoverCommand extends Command
 {
-    /**
-     * @var Recruiter
-     */
-    private $recruiter;
-
-    /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var JobRepository
-     */
-    private $jobRepository;
+    private Recruiter $recruiter;
+    private JobRepository $jobRepository;
 
     /**
      * @param Factory $factory
      * @param LoggerInterface $logger
      */
-    public function __construct(Factory $factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -80,7 +61,7 @@ class JobRecoverCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string */
         $target = $input->getOption('target');
@@ -109,6 +90,8 @@ class JobRecoverCommand extends Command
             ->save();
 
         $output->writeln("<info>Job recovered, new job id is `</info><comment>{$job->id()}</comment><info>`</info>");
+
+        return self::SUCCESS;
     }
 
     private function createJobFromAnArchivedJob(Job $archivedJob, JobRepository $repository): Job

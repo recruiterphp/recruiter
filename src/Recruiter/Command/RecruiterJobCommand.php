@@ -1,25 +1,21 @@
 <?php
 namespace Recruiter\Command;
 
+use Recruiter\Recruiter;
+use Recruiter\Workable\ShellCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
-use Recruiter\Workable\ShellCommand;
-use Recruiter\Recruiter;
 
 class RecruiterJobCommand extends Command
 {
-    private $recruiter;
-
-    public function __construct(Recruiter $recruiter)
+    public function __construct(private readonly Recruiter $recruiter)
     {
         parent::__construct();
-        $this->recruiter = $recruiter;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('recruiter:command')
@@ -32,11 +28,13 @@ class RecruiterJobCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         ShellCommand::fromCommandLine($input->getArgument('shell_command'))
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute();
+
+        return self::SUCCESS;
     }
 }

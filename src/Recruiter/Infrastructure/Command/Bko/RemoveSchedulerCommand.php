@@ -72,12 +72,12 @@ class RemoveSchedulerCommand extends Command
         $this->schedulerRepository = new SchedulerRepository($db);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $outputData = $this->buildOutputData();
         if (!$outputData) {
             $output->writeln('There are no schedulers yet.');
-            return null;
+            return self::SUCCESS;
         }
 
         $this->printTable($outputData, $output);
@@ -89,6 +89,8 @@ class RemoveSchedulerCommand extends Command
             $this->schedulerRepository->deleteByUrn($selectedUrn);
             $this->logger->info("[Recruiter] the scheduler with urn `$selectedUrn` was deleted!");
         }
+
+        return self::SUCCESS;
     }
 
     private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output)

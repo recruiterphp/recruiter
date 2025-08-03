@@ -22,27 +22,11 @@ class AnalyticsCommand extends Command
     /**
      * @var Recruiter
      */
-    private $recruiter;
+    private Recruiter $recruiter;
 
-    /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param Factory $factory
-     * @param LoggerInterface $logger
-     */
-    public function __construct(Factory $factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     protected function configure()
@@ -66,7 +50,7 @@ class AnalyticsCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string */
         $target = $input->getOption('target');
@@ -96,6 +80,8 @@ class AnalyticsCommand extends Command
             $table->render();
             echo PHP_EOL;
         }
+
+        return self::SUCCESS;
     }
 
     private function calculateColumnsWidth(array $analytics): int
