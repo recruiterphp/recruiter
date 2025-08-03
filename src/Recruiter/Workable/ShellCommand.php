@@ -4,7 +4,6 @@ namespace Recruiter\Workable;
 
 use Recruiter\Workable;
 use Recruiter\WorkableBehaviour;
-use RuntimeException;
 
 class ShellCommand implements Workable
 {
@@ -26,9 +25,10 @@ class ShellCommand implements Workable
     {
         exec($this->commandLine, $output, $returnCode);
         $output = implode(PHP_EOL, $output);
-        if ($returnCode != 0) {
-            throw new RuntimeException("Command execution failed (return code $returnCode). Output: " . $output);
+        if (0 != $returnCode) {
+            throw new \RuntimeException("Command execution failed (return code $returnCode). Output: " . $output);
         }
+
         return $output;
     }
 

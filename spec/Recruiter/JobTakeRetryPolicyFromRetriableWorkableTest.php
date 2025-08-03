@@ -3,12 +3,10 @@
 namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Repository;
 use Recruiter\RetryPolicy\BaseRetryPolicy;
-use Timeless as T;
-use Recruiter\RetryPolicy;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobTakeRetryPolicyFromRetriableWorkableTest extends TestCase
@@ -21,7 +19,8 @@ class JobTakeRetryPolicyFromRetriableWorkableTest extends TestCase
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }

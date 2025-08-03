@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Workable;
 
 use Recruiter\Workable;

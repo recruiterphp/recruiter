@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command\Bko;
@@ -9,9 +10,7 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableStyle;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,9 +18,6 @@ use Symfony\Component\Console\Terminal;
 
 class AnalyticsCommand extends Command
 {
-    /**
-     * @var Recruiter
-     */
     private Recruiter $recruiter;
 
     public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
@@ -39,13 +35,13 @@ class AnalyticsCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                'mongodb://localhost:27017/recruiter'
+                'mongodb://localhost:27017/recruiter',
             )
             ->addOption(
                 'group',
                 'g',
                 InputOption::VALUE_REQUIRED,
-                'limit analytics to a specific job group'
+                'limit analytics to a specific job group',
             )
         ;
     }
@@ -72,7 +68,7 @@ class AnalyticsCommand extends Command
                 ->setRows([array_values($analytic)])
             ;
 
-            for ($i = 0; $i < count($analytic); $i++) {
+            for ($i = 0; $i < count($analytic); ++$i) {
                 $table->setColumnStyle($i, $rightAligned);
                 $table->setColumnWidth($i, $columnsWidth);
             }

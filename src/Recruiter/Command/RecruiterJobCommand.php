@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Command;
 
 use Recruiter\Recruiter;
@@ -23,7 +24,7 @@ class RecruiterJobCommand extends Command
             ->addArgument(
                 'shell_command',
                 InputArgument::REQUIRED,
-                'The command to run'
+                'The command to run',
             )
         ;
     }
@@ -33,7 +34,8 @@ class RecruiterJobCommand extends Command
         ShellCommand::fromCommandLine($input->getArgument('shell_command'))
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         return self::SUCCESS;
     }

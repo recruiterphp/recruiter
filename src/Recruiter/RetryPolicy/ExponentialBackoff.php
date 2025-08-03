@@ -3,19 +3,17 @@
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
-
 use Timeless as T;
 use Timeless\Interval;
 
 class ExponentialBackoff implements RetryPolicy
 {
+    use RetryPolicyBehaviour;
     private $retryHowManyTimes;
     private $timeToInitiallyWaitBeforeRetry;
-
-    use RetryPolicyBehaviour;
 
     public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60)
     {
@@ -38,8 +36,9 @@ class ExponentialBackoff implements RetryPolicy
         }
         $numberOfRetries = round(
             log($interval / $timeToInitiallyWaitBeforeRetry->seconds())
-            / log(2)
+            / log(2),
         );
+
         return new static($numberOfRetries, $timeToInitiallyWaitBeforeRetry);
     }
 
@@ -66,7 +65,7 @@ class ExponentialBackoff implements RetryPolicy
     {
         return [
             'retry_how_many_times' => $this->retryHowManyTimes,
-            'seconds_to_initially_wait_before_retry' => $this->timeToInitiallyWaitBeforeRetry->seconds()
+            'seconds_to_initially_wait_before_retry' => $this->timeToInitiallyWaitBeforeRetry->seconds(),
         ];
     }
 
@@ -74,7 +73,7 @@ class ExponentialBackoff implements RetryPolicy
     {
         return new self(
             $parameters['retry_how_many_times'],
-            T\seconds($parameters['seconds_to_initially_wait_before_retry'])
+            T\seconds($parameters['seconds_to_initially_wait_before_retry']),
         );
     }
 

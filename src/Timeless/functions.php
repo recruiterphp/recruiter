@@ -10,6 +10,7 @@ function clock(?ClockInterface $clock = null): ClockInterface
         $clock ?: (
             $__2852bec4cda046fca0e5e21dc007935c ?: new Clock()
         );
+
     return $__2852bec4cda046fca0e5e21dc007935c;
 }
 

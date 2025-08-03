@@ -1,17 +1,18 @@
 <?php
+
 namespace Recruiter\Workable;
 
-use Recruiter\Workable;
-use Recruiter\Recruiter;
 use Recruiter\JobToSchedule;
+use Recruiter\Recruiter;
+use Recruiter\Workable;
 
 class FactoryMethodCommand implements Workable
 {
-    public static function from(/*$callable[, $argument, $argument...]*/)
+    public static function from(/* $callable[, $argument, $argument...] */)
     {
         $arguments = func_get_args();
         $callable = array_shift($arguments);
-        list ($class, $method) = explode("::", $callable);
+        [$class, $method] = explode('::', $callable);
 
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }
@@ -19,7 +20,7 @@ class FactoryMethodCommand implements Workable
     private static function singleStep($step)
     {
         return new self([
-            $step
+            $step,
         ]);
     }
 
@@ -59,7 +60,7 @@ class FactoryMethodCommand implements Workable
                 $callable = [$result, $step['method']];
             }
             if (!is_callable($callable)) {
-                $message = "The following step does not result in a callable: " . var_export($step, true) . ".";
+                $message = 'The following step does not result in a callable: ' . var_export($step, true) . '.';
                 if (is_object($result)) {
                     $message .= ' Reached object: ' . get_class($result);
                 } else {
@@ -73,9 +74,10 @@ class FactoryMethodCommand implements Workable
             }
             $result = call_user_func_array(
                 $callable,
-                $arguments
+                $arguments,
             );
         }
+
         return $result;
     }
 
@@ -95,6 +97,7 @@ class FactoryMethodCommand implements Workable
             $step['arguments'] = $arguments;
         }
         $this->steps[] = $step;
+
         return $this;
     }
 

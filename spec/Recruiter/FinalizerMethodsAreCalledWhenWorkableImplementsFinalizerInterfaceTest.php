@@ -2,9 +2,8 @@
 
 namespace Recruiter;
 
-use Exception;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Repository;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -22,7 +21,8 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
         $this->repository = $this
             ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->listener = new ListenerSpy();
@@ -51,7 +51,6 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
         $this->assertSame('finalize', $calls[2][0]);
         $this->assertSame($exception, $calls[2][1]);
     }
-
 
     public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone()
     {
@@ -98,6 +97,7 @@ class FinalizableWorkable implements Workable, Finalizable
     public function execute()
     {
         $whatToDo = $this->whatToDo;
+
         return $whatToDo();
     }
 
@@ -106,17 +106,17 @@ class FinalizableWorkable implements Workable, Finalizable
         $this->listener->methodWasCalled(__FUNCTION__);
     }
 
-    public function afterFailure(Exception $e)
+    public function afterFailure(\Exception $e)
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function afterLastFailure(Exception $e)
+    public function afterLastFailure(\Exception $e)
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function finalize(?Exception $e = null)
+    public function finalize(?\Exception $e = null)
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }

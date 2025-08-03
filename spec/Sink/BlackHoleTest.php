@@ -60,7 +60,7 @@ class BlackHoleTest extends TestCase
         $instance = new BlackHole();
         $this->assertInstanceOf('Sink\BlackHole', $instance[42]);
         $this->assertInstanceOf('Sink\BlackHole', $instance['aString']);
-        $this->assertInstanceOf('Sink\BlackHole', $instance[[1,2,3]]);
+        $this->assertInstanceOf('Sink\BlackHole', $instance[[1, 2, 3]]);
     }
 
     /* public function testIsAccessibleAsAnArrayExists() */

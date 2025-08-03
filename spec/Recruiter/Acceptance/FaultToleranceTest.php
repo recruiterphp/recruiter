@@ -1,11 +1,11 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use Recruiter\Infrastructure\Memory\MemoryLimit;
-use Recruiter\Workable\LazyBones;
-use Recruiter\Workable\ThrowsFatalError;
-use Recruiter\Workable\FailsInConstructor;
 use Recruiter\RetryPolicy\RetryManyTimes;
+use Recruiter\Workable\FailsInConstructor;
+use Recruiter\Workable\ThrowsFatalError;
 use Timeless as T;
 
 class FaultToleranceTest extends BaseAcceptanceTestCase
@@ -17,7 +17,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $worker = $this->recruiter->hire($memoryLimit);
         $this->recruiter->bookJobsForWorkers();
         $this->recruiter->rollbackLockedJobs();
-        list ($assignments, $totalNumber) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $totalNumber] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         $this->assertEquals(1, $totalNumber);
     }
@@ -28,30 +28,31 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
-            ->execute();
+            ->execute()
+        ;
 
         $worker = $this->startWorker();
         $this->waitForNumberOfWorkersToBe(1);
 
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         sleep(2);
         $jobDocument = current($this->scheduled->find()->toArray());
         $this->assertEquals(1, $jobDocument['attempts']);
-        $this->assertEquals('Recruiter\\Workable\\FailsInConstructor', $jobDocument['workable']['class']);
+        $this->assertEquals('Recruiter\Workable\FailsInConstructor', $jobDocument['workable']['class']);
         $this->assertStringContainsString('This job failed while instantiating a workable', $jobDocument['last_execution']['message']);
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         sleep(2);
         $jobDocument = current($this->archived->find()->toArray());
         $this->assertEquals(2, $jobDocument['attempts']);
-        $this->assertEquals('Recruiter\\Workable\\FailsInConstructor', $jobDocument['workable']['class']);
+        $this->assertEquals('Recruiter\Workable\FailsInConstructor', $jobDocument['workable']['class']);
         $this->assertStringContainsString('This job failed while instantiating a workable', $jobDocument['last_execution']['message']);
         $this->assertStringContainsString('I am supposed to fail in constructor code for testing purpose', $jobDocument['last_execution']['message']);
 
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(0, count($assignments));
     }
 
@@ -66,7 +67,8 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->retryWithPolicy(RetryManyTimes::forTimes(1, 0))
-            ->execute();
+            ->execute()
+        ;
 
         // Right now we recover for dead jobs when we
         // Recruiter::retireDeadWorkers and when we
@@ -78,7 +80,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         // First execution of the job
         $worker = $this->startWorker();
         $this->waitForNumberOfWorkersToBe(1);
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         sleep(2);
         // The worker is dead and the job is not properly scheduled
@@ -89,7 +91,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $worker = $this->startWorker();
         $this->waitForNumberOfWorkersToBe(1);
         // Here the job is assigned and rescheduled by the retry policy because found crashed
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         sleep(2);
         // The worker is dead and the job is not properly scheduled
@@ -103,7 +105,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         // Here the job is assigned and archived by the retry policy
         // because found crashed and because it has been already
         // executed 2 times
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         sleep(1);
         // The worker is not dead and the job is not scheduled anymore

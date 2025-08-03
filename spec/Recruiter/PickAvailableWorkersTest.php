@@ -2,11 +2,10 @@
 
 namespace Recruiter;
 
-use ArrayIterator;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
 class PickAvailableWorkersTest extends TestCase
 {
@@ -18,7 +17,8 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository = $this
             ->getMockBuilder(Collection::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->workersPerUnit = 42;
     }
@@ -39,7 +39,7 @@ class PickAvailableWorkersTest extends TestCase
 
         $picked = Worker::pickAvailableWorkers($this->repository, $this->workersPerUnit);
 
-        list ($worksOn, $workers) = $picked[0];
+        [$worksOn, $workers] = $picked[0];
         $this->assertEquals('*', $worksOn);
         $this->assertEquals(3, count($workers));
     }
@@ -51,7 +51,7 @@ class PickAvailableWorkersTest extends TestCase
 
         $picked = Worker::pickAvailableWorkers($this->repository, $this->workersPerUnit);
 
-        list ($worksOn, $workers) = $picked[0];
+        [$worksOn, $workers] = $picked[0];
         $this->assertEquals('send-emails', $worksOn);
         $this->assertEquals(3, count($workers));
     }
@@ -64,7 +64,7 @@ class PickAvailableWorkersTest extends TestCase
         $allSkillsGiven = [];
         $totalWorkersGiven = 0;
         foreach ($picked as $pickedRow) {
-            list ($worksOn, $workers) = $pickedRow;
+            [$worksOn, $workers] = $pickedRow;
             $allSkillsGiven[] = $worksOn;
             $totalWorkersGiven += count($workers);
         }
@@ -80,7 +80,7 @@ class PickAvailableWorkersTest extends TestCase
 
         $totalWorkersGiven = 0;
         foreach ($picked as $pickedRow) {
-            list ($worksOn, $workers) = $pickedRow;
+            [$worksOn, $workers] = $pickedRow;
             $totalWorkersGiven += count($workers);
         }
         $this->assertEquals($this->workersPerUnit, $totalWorkersGiven);
@@ -90,11 +90,11 @@ class PickAvailableWorkersTest extends TestCase
     {
         $workersThatShouldBeFound = [];
         foreach ($workers as $skill => $quantity) {
-            for ($counter = 0; $counter < $quantity; $counter++) {
+            for ($counter = 0; $counter < $quantity; ++$counter) {
                 $workerId = new ObjectId();
-                $workersThatShouldBeFound[(string)$workerId] = [
+                $workersThatShouldBeFound[(string) $workerId] = [
                     '_id' => $workerId,
-                    'work_on' => $skill
+                    'work_on' => $skill,
                 ];
             }
         }
@@ -102,7 +102,8 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository
             ->expects($this->any())
             ->method('find')
-            ->will($this->returnValue(new ArrayIterator($workersThatShouldBeFound)));
+            ->will($this->returnValue(new \ArrayIterator($workersThatShouldBeFound)))
+        ;
     }
 
     private function withNoAvailableWorkers()
@@ -110,7 +111,8 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository
             ->expects($this->any())
             ->method('find')
-            ->will($this->returnValue(new ArrayIterator([])));
+            ->will($this->returnValue(new \ArrayIterator([])))
+        ;
     }
 
     private function assertArrayAreEquals($expected, $given)

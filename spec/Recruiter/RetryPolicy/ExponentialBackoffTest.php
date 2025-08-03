@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\RetryPolicy;
 
 use PHPUnit\Framework\TestCase;
@@ -13,7 +14,8 @@ class ExponentialBackoffTest extends TestCase
 
         $job->expects($this->once())
             ->method('scheduleIn')
-            ->with(T\seconds(5));
+            ->with(T\seconds(5))
+        ;
         $retryPolicy->schedule($job);
     }
 
@@ -24,7 +26,8 @@ class ExponentialBackoffTest extends TestCase
 
         $job->expects($this->once())
             ->method('scheduleIn')
-            ->with(T\seconds(10));
+            ->with(T\seconds(10))
+        ;
         $retryPolicy->schedule($job);
     }
 
@@ -35,7 +38,8 @@ class ExponentialBackoffTest extends TestCase
 
         $job->expects($this->once())
             ->method('archive')
-            ->with('tried-too-many-times');
+            ->with('tried-too-many-times')
+        ;
         $retryPolicy->schedule($job);
     }
 
@@ -43,7 +47,7 @@ class ExponentialBackoffTest extends TestCase
     {
         $this->assertEquals(
             ExponentialBackoff::forAnInterval(1025, T\seconds(1)),
-            new ExponentialBackoff(10, 1)
+            new ExponentialBackoff(10, 1),
         );
     }
 
@@ -52,7 +56,9 @@ class ExponentialBackoffTest extends TestCase
         $job = $this->getMockBuilder('Recruiter\JobAfterFailure')->disableOriginalConstructor()->getMock();
         $job->expects($this->any())
             ->method('numberOfAttempts')
-            ->will($this->returnValue($times));
+            ->will($this->returnValue($times))
+        ;
+
         return $job;
     }
 }

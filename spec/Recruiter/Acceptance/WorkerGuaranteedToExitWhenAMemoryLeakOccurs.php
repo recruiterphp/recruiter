@@ -10,6 +10,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance
+     *
      * @dataProvider provideMemoryConsumptions
      */
     public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak($withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive)
@@ -20,7 +21,8 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         ]))
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $this->startRecruiter();
 
@@ -35,8 +37,10 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
             ->until(function () {
                 $at = T\now();
                 $statistics = $this->recruiter->statistics($tag = null, $at);
-                return $statistics['jobs']['queued'] == 0;
-            });
+
+                return 0 == $statistics['jobs']['queued'];
+            })
+        ;
 
         $numberOfWorkersCurrently = $this->numberOfWorkers();
 
@@ -49,14 +53,14 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         $this->assertEquals(
             $numberOfExpectedWorkers,
             $numberOfWorkersCurrently,
-            "The number of workers before was $numberOfWorkersBefore and now after starting 1 and execute a job we have $numberOfWorkersCurrently"
+            "The number of workers before was $numberOfWorkersBefore and now after starting 1 and execute a job we have $numberOfWorkersCurrently",
         );
     }
 
     public static function provideMemoryConsumptions()
     {
         return [
-            //legend: [$withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive],
+            // legend: [$withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive],
             [false, 2000000, '20MB', true],
             [true, 2000000, '20MB', false],
             [true, 2000000, '128MB', true],

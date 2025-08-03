@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter;
-
-use Exception;
 
 trait FinalizableBehaviour
 {
@@ -11,15 +10,15 @@ trait FinalizableBehaviour
     {
     }
 
-    public function afterFailure(Exception $e)
+    public function afterFailure(\Exception $e)
     {
     }
 
-    public function afterLastFailure(Exception $e)
+    public function afterLastFailure(\Exception $e)
     {
     }
 
-    public function finalize(?Exception $e = null)
+    public function finalize(?\Exception $e = null)
     {
     }
 }

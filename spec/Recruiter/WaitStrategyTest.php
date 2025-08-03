@@ -15,8 +15,8 @@ class WaitStrategyTest extends TestCase
     protected function setUp(): void
     {
         $this->waited = T\milliseconds(0);
-        $this->howToWait = function($microseconds): void {
-            $this->waited = T\milliseconds($microseconds/1000);
+        $this->howToWait = function ($microseconds): void {
+            $this->waited = T\milliseconds($microseconds / 1000);
         };
         $this->timeToWaitAtLeast = T\milliseconds(250);
         $this->timeToWaitAtMost = T\seconds(30);
@@ -27,7 +27,7 @@ class WaitStrategyTest extends TestCase
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
             $this->timeToWaitAtMost,
-            $this->howToWait
+            $this->howToWait,
         );
         $ws->wait();
         $this->assertEquals($this->timeToWaitAtLeast, $this->waited);
@@ -38,7 +38,7 @@ class WaitStrategyTest extends TestCase
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
             $this->timeToWaitAtMost,
-            $this->howToWait
+            $this->howToWait,
         );
         $ws->wait();
         $this->assertEquals($this->timeToWaitAtLeast, $this->waited);
@@ -64,7 +64,7 @@ class WaitStrategyTest extends TestCase
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
             $this->timeToWaitAtMost,
-            $this->howToWait
+            $this->howToWait,
         );
         $ws->backOff();
         $ws->goForward();
@@ -77,7 +77,7 @@ class WaitStrategyTest extends TestCase
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
             $this->timeToWaitAtMost,
-            $this->howToWait
+            $this->howToWait,
         );
         $ws->backOff();
         $ws->backOff();
@@ -93,7 +93,7 @@ class WaitStrategyTest extends TestCase
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
             $this->timeToWaitAtMost,
-            $this->howToWait
+            $this->howToWait,
         );
         $ws->goForward();
         $ws->goForward();

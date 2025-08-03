@@ -1,4 +1,5 @@
 <?php
+
 namespace Recruiter\Job;
 
 use Symfony\Contracts\EventDispatcher;
@@ -17,6 +18,7 @@ class Event extends EventDispatcher\Event
     public function hasTag(string $wantedTag): bool
     {
         $tags = array_key_exists('tags', $this->jobExport) ? $this->jobExport['tags'] : [];
+
         return in_array($wantedTag, $tags);
     }
 }

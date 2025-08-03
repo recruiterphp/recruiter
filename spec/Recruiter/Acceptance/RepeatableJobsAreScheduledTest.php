@@ -1,14 +1,13 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
 use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\RetryPolicy\ExponentialBackoff;
 use Recruiter\SchedulePolicy;
-use Recruiter\SchedulePolicy\EveryMinutes;
 use Recruiter\Scheduler\Repository as SchedulersRepository;
 use Recruiter\Workable\SampleRepeatableCommand;
-use Symfony\Component\EventDispatcher\Event;
 use Timeless as T;
 use Timeless\Moment;
 
@@ -35,7 +34,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
             'attempts' => 0,
             'group' => 'generic',
             'workable' => [
-                'class' => 'Recruiter\\Workable\\SampleRepeatableCommand',
+                'class' => 'Recruiter\Workable\SampleRepeatableCommand',
                 'parameters' => [],
                 'method' => 'execute',
             ],
@@ -48,12 +47,12 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
                 'executions' => 1,
             ],
             'retry_policy' => [
-                'class' => 'Recruiter\\RetryPolicy\\ExponentialBackoff',
+                'class' => 'Recruiter\RetryPolicy\ExponentialBackoff',
                 'parameters' => [
                     'retry_how_many_times' => 2,
                     'seconds_to_initially_wait_before_retry' => 5,
                 ],
-            ]
+            ],
         ], $jobData);
     }
 
@@ -72,7 +71,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 
         $this->assertEquals(
             T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
-            $jobs[0]->export()['scheduled_at']
+            $jobs[0]->export()['scheduled_at'],
         );
     }
 
@@ -134,8 +133,8 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
     private function IHaveAScheduleWithALongStory(string $urn, $attempts)
     {
         $scheduleTimes = [];
-        for ($i = 1; $i <= $attempts; $i++) {
-            $scheduleTimes[] = strtotime("2018-05-" . $i . "T15:00:00");
+        for ($i = 1; $i <= $attempts; ++$i) {
+            $scheduleTimes[] = strtotime('2018-05-' . $i . 'T15:00:00');
         }
 
         $schedulePolicy = new FixedSchedulePolicy($scheduleTimes);
@@ -171,12 +170,14 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
     private function fetchScheduledJobs()
     {
         $jobsRepository = new JobsRepository($this->recruiterDb);
+
         return $jobsRepository->all();
     }
 
     private function fetchSchedulers()
     {
         $schedulersRepository = new SchedulersRepository($this->recruiterDb);
+
         return $schedulersRepository->all();
     }
 }

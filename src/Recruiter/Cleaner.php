@@ -3,8 +3,8 @@
 namespace Recruiter;
 
 use Recruiter\Job\Repository;
-use Timeless\Interval;
 use Timeless as T;
+use Timeless\Interval;
 
 class Cleaner
 {

@@ -9,7 +9,6 @@ class LazyBones implements Workable
 {
     use WorkableBehaviour;
 
-
     public static function waitFor(int $timeInSeconds, int $deltaInSeconds = 0): self
     {
         return new self($timeInSeconds * 1000000, $deltaInSeconds * 1000000);
@@ -26,7 +25,7 @@ class LazyBones implements Workable
 
     public function execute(): void
     {
-        usleep($this->usToSleep + (rand(intval(-$this->usOfDelta), $this->usOfDelta)));
+        usleep($this->usToSleep + rand(intval(-$this->usOfDelta), $this->usOfDelta));
     }
 
     public function export(): array
@@ -41,7 +40,7 @@ class LazyBones implements Workable
     {
         return new self(
             $parameters['us_to_sleep'],
-            $parameters['us_of_delta']
+            $parameters['us_of_delta'],
         );
     }
 }

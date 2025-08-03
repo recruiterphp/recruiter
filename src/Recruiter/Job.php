@@ -1,20 +1,14 @@
 <?php
+
 namespace Recruiter;
 
-use Exception;
-use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use MongoDB\Driver\Exception\BulkWriteException;
-use Recruiter\Finalizable;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;
 use Recruiter\Job\Repository;
-use Recruiter\RetryPolicy;
-use Recruiter\Taggable;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Throwable;
 use Timeless as T;
 use Timeless\Moment;
 
@@ -34,7 +28,7 @@ class Job
             ($workable instanceof Retriable) ?
                 $workable->retryWithPolicy() : new RetryPolicy\DoNotDoItAgain(),
             new JobExecution(),
-            $repository
+            $repository,
         );
     }
 
@@ -45,7 +39,7 @@ class Job
             WorkableInJob::import($document),
             RetryPolicyInJob::import($document),
             JobExecution::import($document),
-            $repository
+            $repository,
         );
     }
 
@@ -76,6 +70,7 @@ class Job
     public function retryWithPolicy(RetryPolicy $retryPolicy)
     {
         $this->retryPolicy = $retryPolicy;
+
         return $this;
     }
 
@@ -91,14 +86,13 @@ class Job
     public function inGroup($group)
     {
         if (is_array($group)) {
-            throw new RuntimeException(
-                "Group can be only single string, for other uses use `taggedAs` method.
-                Received group: `" . var_export($group, true) . "`"
-            );
+            throw new \RuntimeException('Group can be only single string, for other uses use `taggedAs` method.
+                Received group: `' . var_export($group, true) . '`');
         }
         if (!empty($group)) {
             $this->status['group'] = $group;
         }
+
         return $this;
     }
 
@@ -106,12 +100,14 @@ class Job
     {
         $this->status['locked'] = false;
         $this->status['scheduled_at'] = T\MongoDate::from($at);
+
         return $this;
     }
 
     public function withUrn(string $urn)
     {
         $this->status['urn'] = $urn;
+
         return $this;
     }
 
@@ -131,7 +127,7 @@ class Job
     public function methodToCallOnWorkable($method)
     {
         if (!method_exists($this->workable, $method)) {
-            throw new Exception("Unknown method '$method' on workable instance");
+            throw new \Exception("Unknown method '$method' on workable instance");
         }
         $this->status['workable']['method'] = $method;
     }
@@ -145,7 +141,7 @@ class Job
                 $result = $this->workable->$methodToCall($this->retryStatistics());
                 $this->afterExecution($result, $eventDispatcher);
             }
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->afterFailure($exception, $eventDispatcher);
         }
 
@@ -184,19 +180,20 @@ class Job
             $this->lastJobExecution->export(),
             $this->tagsToUseFor($this->workable),
             WorkableInJob::export($this->workable, $this->status['workable']['method']),
-            RetryPolicyInJob::export($this->retryPolicy)
+            RetryPolicyInJob::export($this->retryPolicy),
         );
     }
 
     public function beforeExecution(EventDispatcherInterface $eventDispatcher)
     {
-        $this->status['attempts'] += 1;
+        ++$this->status['attempts'];
         $this->lastJobExecution = new JobExecution();
         $this->lastJobExecution->started($this->scheduledAt());
         $this->emit('job.started', $eventDispatcher);
         if ($this->hasBeenScheduled()) {
             $this->save();
         }
+
         return $this;
     }
 
@@ -209,6 +206,7 @@ class Job
         if ($this->hasBeenScheduled()) {
             $this->archive('done');
         }
+
         return $this;
     }
 
@@ -222,6 +220,7 @@ class Job
         if ($this->lastJobExecution->isCrashed()) {
             return !$archived = $this->afterFailure(new WorkerDiedInTheLineOfDutyException(), $eventDispatcher);
         }
+
         return true;
     }
 
@@ -238,6 +237,7 @@ class Job
             $this->emit('job.failure.last', $eventDispatcher);
             $this->triggerOnWorkable('afterLastFailure', $exception);
         }
+
         return $archived;
     }
 
@@ -250,7 +250,7 @@ class Job
         }
     }
 
-    private function triggerOnWorkable($method, ?Throwable $e = null)
+    private function triggerOnWorkable($method, ?\Throwable $e = null)
     {
         if ($this->workable instanceof Finalizable) {
             $this->workable->$method($e);
@@ -285,6 +285,7 @@ class Job
         if (!empty($tagsToUse)) {
             return ['tags' => array_values(array_unique($tagsToUse))];
         }
+
         return [];
     }
 
@@ -300,7 +301,7 @@ class Job
                 'group' => 'generic',
             ],
             WorkableInJob::initialize(),
-            RetryPolicyInJob::initialize()
+            RetryPolicyInJob::initialize(),
         );
     }
 
@@ -310,24 +311,23 @@ class Job
             iterator_to_array(
                 $collection
                     ->find(
-                        (
-                            Worker::canWorkOnAnyJobs($worksOn) ?
-                            [   'scheduled_at' => ['$lt' => T\MongoDate::now()],
-                                'locked' => false,
-                            ] :
-                            [   'scheduled_at' => ['$lt' => T\MongoDate::now()],
-                                'locked' => false,
-                                'group' => $worksOn,
-                            ]
-                        ),
+                        Worker::canWorkOnAnyJobs($worksOn) ?
+                        ['scheduled_at' => ['$lt' => T\MongoDate::now()],
+                            'locked' => false,
+                        ] :
+                        ['scheduled_at' => ['$lt' => T\MongoDate::now()],
+                            'locked' => false,
+                            'group' => $worksOn,
+                        ]
+                        ,
                         [
                             'projection' => ['_id' => 1],
                             'sort' => ['scheduled_at' => 1],
                             'limit' => count($workers),
-                        ]
-                    )
+                        ],
+                    ),
             ),
-            '_id'
+            '_id',
         );
 
         if (count($jobs) > 0) {
@@ -347,13 +347,13 @@ class Job
                     '$set' => [
                         'locked' => false,
                         'last_execution.crashed' => true,
-                    ]
-                ]
+                    ],
+                ],
             );
 
             return $result->getModifiedCount();
         } catch (BulkWriteException $e) {
-            throw new InvalidArgumentException("Not valid excluded jobs filter: " . var_export($excluded, true), -1, $e);
+            throw new \InvalidArgumentException('Not valid excluded jobs filter: ' . var_export($excluded, true), -1, $e);
         }
     }
 
@@ -361,7 +361,7 @@ class Job
     {
         $collection->updateMany(
             ['_id' => ['$in' => array_values($jobs)]],
-            ['$set' => ['locked' => true]]
+            ['$set' => ['locked' => true]],
         );
     }
 }

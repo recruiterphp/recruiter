@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command\Bko;
@@ -9,17 +10,12 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Scheduler\Repository as SchedulerRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Helper\TableStyle;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Terminal;
-use Timeless as T;
 
 class RemoveSchedulerCommand extends Command
 {
@@ -38,10 +34,6 @@ class RemoveSchedulerCommand extends Command
      */
     private $schedulerRepository;
 
-    /**
-     * @param Factory $factory
-     * @param LoggerInterface $logger
-     */
     public function __construct(Factory $factory, LoggerInterface $logger)
     {
         parent::__construct();
@@ -59,7 +51,7 @@ class RemoveSchedulerCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                'mongodb://localhost:27017/recruiter'
+                'mongodb://localhost:27017/recruiter',
             )
         ;
     }
@@ -77,6 +69,7 @@ class RemoveSchedulerCommand extends Command
         $outputData = $this->buildOutputData();
         if (!$outputData) {
             $output->writeln('There are no schedulers yet.');
+
             return self::SUCCESS;
         }
 
@@ -99,7 +92,7 @@ class RemoveSchedulerCommand extends Command
         $question = new ChoiceQuestion(
             'Please select the scheduler which you want delete',
             $urns,
-            null
+            null,
         );
         $question->setErrorMessage('scheduler %s is invalid.');
 
@@ -137,7 +130,7 @@ class RemoveSchedulerCommand extends Command
         $i = 0;
 
         $schedulers = $this->schedulerRepository->all();
-        if (! $schedulers) {
+        if (!$schedulers) {
             return null;
         }
 
@@ -146,7 +139,7 @@ class RemoveSchedulerCommand extends Command
 
             $info = [
                 'createdAt' => $data['created_at']->toDateTime()->format('c'),
-                'lastScheduling' => ($data['last_scheduling']['scheduled_at'])->toDateTime()->format('c'),
+                'lastScheduling' => $data['last_scheduling']['scheduled_at']->toDateTime()->format('c'),
                 'workable' => $data['job']['workable']['class'],
                 'policy' => $scheduler->schedulePolicy()->export(),
             ];
@@ -166,7 +159,7 @@ class RemoveSchedulerCommand extends Command
             }
 
             $outputData[] = [
-                '' => "<info>" . $i++ . "</info>",
+                '' => '<info>' . $i++ . '</info>',
                 'urn' => $data['urn'],
                 'info' => $infoString,
             ];

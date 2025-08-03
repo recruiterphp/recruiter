@@ -1,16 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Persistence\Mongodb;
 
-use UnexpectedValueException;
-
 /**
- * Class URI
+ * Class URI.
  */
 class URI
 {
-    const DEFAULT_URI = 'mongodb://127.0.0.1:27017/recruiter';
+    public const DEFAULT_URI = 'mongodb://127.0.0.1:27017/recruiter';
 
     /**
      * @var string

@@ -22,6 +22,7 @@ class WaitStrategy
     public function reset()
     {
         $this->timeToWait = $this->timeToWaitAtLeast;
+
         return $this;
     }
 
@@ -29,8 +30,9 @@ class WaitStrategy
     {
         $this->timeToWait = max(
             $this->timeToWait / 2,
-            $this->timeToWaitAtLeast
+            $this->timeToWaitAtLeast,
         );
+
         return $this;
     }
 
@@ -38,14 +40,16 @@ class WaitStrategy
     {
         $this->timeToWait = min(
             $this->timeToWait * 2,
-            $this->timeToWaitAtMost
+            $this->timeToWaitAtMost,
         );
+
         return $this;
     }
 
     public function wait()
     {
         call_user_func($this->howToWait, $this->timeToWait * 1000);
+
         return $this;
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Timeless;
 
 use Eris;
@@ -13,14 +14,15 @@ class MongoDateTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\choose(0, 1500 * 1000 * 1000)
+                Generator\choose(0, 1500 * 1000 * 1000),
             )
             ->then(function ($milliseconds): void {
                 $moment = new Moment($milliseconds);
                 $this->assertEquals(
                     $moment,
-                    MongoDate::toMoment(MongoDate::from($moment))
+                    MongoDate::toMoment(MongoDate::from($moment)),
                 );
-            });
+            })
+        ;
     }
 }

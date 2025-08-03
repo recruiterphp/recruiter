@@ -2,11 +2,9 @@
 
 namespace Recruiter;
 
-use Exception;
-
 trait WorkableBehaviour
 {
-    public final function __construct(protected array $parameters = [])
+    final public function __construct(protected array $parameters = [])
     {
     }
 
@@ -17,7 +15,7 @@ trait WorkableBehaviour
 
     public function execute()
     {
-        throw new Exception('Workable::execute() need to be implemented');
+        throw new \Exception('Workable::execute() need to be implemented');
     }
 
     public function export(): array

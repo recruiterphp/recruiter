@@ -1,12 +1,9 @@
 <?php
+
 namespace Recruiter\RetryPolicy;
 
-use Recruiter\Job;
-use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
-use InvalidArgumentException;
 use Symfony\Component\Console\Exception\LogicException;
-use Throwable;
 
 class SelectByExceptionBuilder
 {
@@ -29,6 +26,7 @@ class SelectByExceptionBuilder
     public function when(string $exceptionClass): self
     {
         $this->currentException = $exceptionClass;
+
         return $this;
     }
 
@@ -39,6 +37,7 @@ class SelectByExceptionBuilder
         }
         $this->exceptions[] = new RetriableException($this->currentException, $retryPolicy);
         $this->currentException = null;
+
         return $this;
     }
 
@@ -50,6 +49,7 @@ class SelectByExceptionBuilder
         if (empty($this->exceptions)) {
             throw new LogicException('No retry policies has been specified. Use `$builder->when($e)->then($r)`');
         }
+
         return new SelectByException($this->exceptions);
     }
 }

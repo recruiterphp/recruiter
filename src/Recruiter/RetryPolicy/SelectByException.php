@@ -3,14 +3,12 @@
 namespace Recruiter\RetryPolicy;
 
 use Exception;
-use InvalidArgumentException;
 use Recruiter\Job;
 use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
-use Throwable;
 
 /**
- * Select retry policies based on the raised exception
+ * Select retry policies based on the raised exception.
  *
  * If a job fails with an exception it's possible to select a retry
  * policy instance based on the class of the exception. The exception
@@ -41,9 +39,6 @@ class SelectByException implements RetryPolicy
         $this->exceptions = $exceptions;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function schedule(JobAfterFailure $job)
     {
         $exception = $job->causeOfFailure();
@@ -54,56 +49,49 @@ class SelectByException implements RetryPolicy
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function export(): array
     {
         return array_map(
-            function(RetriableException $retriableException) {
+            function (RetriableException $retriableException) {
                 $retryPolicy = $retriableException->retryPolicy();
+
                 return [
                     'when' => $retriableException->exceptionClass(),
                     'then' => [
                         'class' => get_class($retryPolicy),
-                        'parameters' => $retryPolicy->export()
-                    ]
+                        'parameters' => $retryPolicy->export(),
+                    ],
                 ];
             },
-            $this->exceptions
+            $this->exceptions,
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public static function import(array $parameters): RetryPolicy
     {
         return new self(
             array_reduce(
                 $parameters,
-                function($exceptions, $parameters) {
+                function ($exceptions, $parameters) {
                     $exceptionClass = $parameters['when'];
                     $retryPolicyClass = $parameters['then']['class'];
                     $retryPolicyParameters = $parameters['then']['parameters'];
                     $exceptions[] = new RetriableException($exceptionClass, $retryPolicyClass::import($retryPolicyParameters));
+
                     return $exceptions;
-                }
-            )
+                },
+            ),
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isLastRetry(Job $job): bool
     {
         // I cannot answer to that so... true only if everybody says true
         return array_all(
             $this->exceptions,
-            function(RetriableException $retriableException) use ($job) {
+            function (RetriableException $retriableException) use ($job) {
                 return $retriableException->retryPolicy()->isLastRetry($job);
-            }
+            },
         );
     }
 
@@ -111,8 +99,9 @@ class SelectByException implements RetryPolicy
     {
         try {
             $this->retryPolicyFor($exception);
+
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -127,14 +116,10 @@ class SelectByException implements RetryPolicy
                     return $retriableException->retryPolicy();
                 }
             }
-            if ($exception instanceof Throwable) {
-                throw new Exception(
-                    'Unable to find a RetryPolicy associated to exception: ' . get_class($exception), 0, $exception
-                );
+            if ($exception instanceof \Throwable) {
+                throw new \Exception('Unable to find a RetryPolicy associated to exception: ' . get_class($exception), 0, $exception);
             }
         }
-        throw new Exception(
-            'Unable to find a RetryPolicy associated to: ' . var_export($exception, true)
-        );
+        throw new \Exception('Unable to find a RetryPolicy associated to: ' . var_export($exception, true));
     }
 }

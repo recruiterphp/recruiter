@@ -2,8 +2,8 @@
 
 namespace Recruiter;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Recruiter\Worker\Process;
 use Recruiter\Worker\Repository;
 use Sink\BlackHole;
@@ -19,7 +19,8 @@ class WorkerProcessTest extends TestCase
 
         $this->repository = $this->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
     public function testIfNotAliveWhenIsNotAliveReturnsItself()
@@ -39,7 +40,8 @@ class WorkerProcessTest extends TestCase
         $this->repository
             ->expects($this->once())
             ->method('retireWorkerWithPid')
-            ->with($this->pid);
+            ->with($this->pid)
+        ;
 
         $process = $this->givenWorkerProcessDead();
         $process->cleanUp($this->repository);
@@ -50,12 +52,12 @@ class WorkerProcessTest extends TestCase
         $this->repository
             ->expects($this->never())
             ->method('retireWorkerWithPid')
-            ->with($this->pid);
+            ->with($this->pid)
+        ;
 
         $process = $this->givenWorkerProcessAlive();
         $process->cleanUp($this->repository);
     }
-
 
     private function givenWorkerProcessAlive()
     {
@@ -72,11 +74,13 @@ class WorkerProcessTest extends TestCase
         $process = $this->getMockBuilder('Recruiter\Worker\Process')
             ->setMethods(['isAlive'])
             ->setConstructorArgs([$this->pid])
-            ->getMock();
+            ->getMock()
+        ;
 
         $process->expects($this->any())
             ->method('isAlive')
-            ->will($this->returnValue($alive));
+            ->will($this->returnValue($alive))
+        ;
 
         return $process;
     }

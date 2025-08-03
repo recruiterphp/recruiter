@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter;
 
 /**
- * Class SynchronousExecutionReport
+ * Class SynchronousExecutionReport.
  */
 class SynchronousExecutionReport
 {
@@ -21,9 +22,8 @@ class SynchronousExecutionReport
         $this->data = $data;
     }
 
-
     /**
-     *. @params array $data : key value array where key are the id of the job and value is the JobExecution
+     *. @params array $data : key value array where key are the id of the job and value is the JobExecution.
      */
     public static function fromArray(array $data): SynchronousExecutionReport
     {
