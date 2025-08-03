@@ -8,7 +8,7 @@ return new PhpCsFixer\Config()
         'array_indentation' => true,
         'array_syntax' => ['syntax' => 'short'],
         'concat_space' => ['spacing' => 'one'],
-        'declare_strict_types' => true,
+        /* 'declare_strict_types' => true, */
         'string_implicit_backslashes' => true,
         'list_syntax' => ['syntax' => 'short'],
         'multiline_whitespace_before_semicolons' => ['strategy' => 'new_line_for_chained_calls'],
