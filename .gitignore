@@ -1,5 +1,4 @@
-.*
-!.github
+.*.cache
 composer.phar
 composer.lock
 vendor/
