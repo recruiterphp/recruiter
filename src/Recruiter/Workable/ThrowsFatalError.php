@@ -9,7 +9,7 @@ class ThrowsFatalError implements Workable
 {
     use WorkableBehaviour;
 
-    public function execute()
+    public function execute(): void
     {
         new ThisClassDoesnNotExists();
     }
