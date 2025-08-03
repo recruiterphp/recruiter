@@ -17,6 +17,7 @@ class JobToScheduleTest extends TestCase
         $this->job = $this
             ->getMockBuilder(Job::class)
             ->disableOriginalConstructor()
+            ->addMethods(['send'])
             ->getMock()
         ;
     }

@@ -9,6 +9,7 @@ use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Scheduler\Repository as SchedulerRepository;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -76,6 +77,7 @@ class RemoveSchedulerCommand extends Command
 
     private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output)
     {
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
         $question = new ChoiceQuestion(
             'Please select the scheduler which you want delete',
@@ -94,7 +96,7 @@ class RemoveSchedulerCommand extends Command
         return $selectedUrn;
     }
 
-    private function printTable(array $data, OutputInterface $output)
+    private function printTable(array $data, OutputInterface $output): void
     {
         $rows = [];
         foreach ($data as $row) {
@@ -112,7 +114,7 @@ class RemoveSchedulerCommand extends Command
         echo PHP_EOL;
     }
 
-    protected function buildOutputData()
+    protected function buildOutputData(): ?array
     {
         $outputData = [];
         $i = 0;
