@@ -3,14 +3,21 @@
 namespace Recruiter;
 
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Recruiter\Worker\Process;
+use Recruiter\Worker\Repository;
+use Sink\BlackHole;
 
 class WorkerProcessTest extends TestCase
 {
+    private int $pid;
+    private MockObject&Repository $repository;
+
     protected function setUp(): void
     {
         $this->pid = 4242;
 
-        $this->repository = $this->getMockBuilder('Recruiter\Worker\Repository')
+        $this->repository = $this->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -18,13 +25,13 @@ class WorkerProcessTest extends TestCase
     public function testIfNotAliveWhenIsNotAliveReturnsItself()
     {
         $process = $this->givenWorkerProcessDead();
-        $this->assertInstanceOf('Recruiter\Worker\Process', $process->ifDead());
+        $this->assertInstanceOf(Process::class, $process->ifDead());
     }
 
     public function testIfNotAliveWhenIsAliveReturnsBlackHole()
     {
         $process = $this->givenWorkerProcessAlive();
-        $this->assertInstanceOf('Sink\BlackHole', $process->ifDead());
+        $this->assertInstanceOf(BlackHole::class, $process->ifDead());
     }
 
     public function testRetireWorkerIfNotAlive()

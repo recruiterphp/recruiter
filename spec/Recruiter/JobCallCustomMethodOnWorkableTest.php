@@ -4,18 +4,24 @@ namespace Recruiter;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Recruiter\Job\Repository;
 
 class JobCallCustomMethodOnWorkableTest extends TestCase
 {
+    private MockObject&Workable $workable;
+    private MockObject&Repository $repository;
+    private Job $job;
+
     protected function setUp(): void
     {
         $this->workable = $this
-            ->getMockBuilder('Recruiter\Workable')
+            ->getMockBuilder(Workable::class)
             ->setMethods(['export', 'import', 'asJobOf', 'send'])
             ->getMock();
 
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
             ->getMock();
 

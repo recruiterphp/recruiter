@@ -5,17 +5,24 @@ namespace Recruiter\RetryPolicy;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilterTest extends TestCase
 {
+    private MockObject&RetryPolicy $filteredRetryPolicy;
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
     protected function setUp(): void
     {
-        $this->filteredRetryPolicy = $this->createMock('Recruiter\RetryPolicy');
+        $this->filteredRetryPolicy = $this->createMock(RetryPolicy::class);
     }
 
     public function testCallScheduleOnRetriableException()
     {
-        $exception = $this->createMock('Exception');
+        $exception = $this->createMock(Exception::class);
         $classOfException = get_class($exception);
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
@@ -28,7 +35,7 @@ class RetriableExceptionFilterTest extends TestCase
 
     public function testDoNotCallScheduleOnNonRetriableException()
     {
-        $exception = $this->createMock('Exception');
+        $exception = $this->createMock(Exception::class);
         $classOfException = get_class($exception);
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
@@ -41,7 +48,7 @@ class RetriableExceptionFilterTest extends TestCase
 
     public function testWhenExceptionIsNotRetriableThenArchiveTheJob()
     {
-        $exception = $this->createMock('Exception');
+        $exception = $this->createMock(Exception::class);
         $classOfException = get_class($exception);
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 

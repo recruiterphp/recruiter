@@ -22,6 +22,8 @@ abstract class BaseAcceptanceTestCase extends TestCase
     protected Collection $archived;
     protected Collection $roster;
     protected Collection $schedulers;
+    protected array $files;
+    protected int $jobs;
     private ?array $processRecruiter;
     private ?array $processCleaner;
     private array $processWorkers;
