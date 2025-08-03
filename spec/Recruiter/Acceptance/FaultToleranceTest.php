@@ -81,7 +81,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $worker = $this->startWorker();
         $this->waitForNumberOfWorkersToBe(1);
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         sleep(2);
         // The worker is dead and the job is not properly scheduled
         $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
@@ -92,7 +92,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->waitForNumberOfWorkersToBe(1);
         // Here the job is assigned and rescheduled by the retry policy because found crashed
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
-        $this->assertEquals(1, count($assignments));
+        $this->assertCount(1, $assignments);
         sleep(2);
         // The worker is dead and the job is not properly scheduled
         $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
@@ -112,10 +112,10 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertEquals(0, $this->recruiter->queued());
     }
 
-    private function assertJobIsMarkedAsCrashed()
+    private function assertJobIsMarkedAsCrashed(): void
     {
         $jobs = iterator_to_array($this->recruiterDb->selectCollection('scheduled')->find());
-        $this->assertEquals(1, count($jobs));
+        $this->assertCount(1, $jobs);
         foreach ($jobs as $job) {
             $this->assertArrayHasKey('last_execution', $job);
             $this->assertArrayHasKey('crashed', $job['last_execution']);

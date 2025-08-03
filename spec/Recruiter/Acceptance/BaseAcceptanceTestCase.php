@@ -166,7 +166,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return end($this->processWorkers);
     }
 
-    protected function stopProcessWithSignal(array $processAndPipes, $signal): void
+    protected function stopProcessWithSignal(array $processAndPipes, int $signal): void
     {
         [$process, $pipes, $name] = $processAndPipes;
         proc_terminate($process, $signal);
@@ -183,7 +183,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
     /**
      * @param int $duration milliseconds
      */
-    protected function enqueueJob($duration = 10, $tag = 'generic'): void
+    protected function enqueueJob(int $duration = 10, $tag = 'generic'): void
     {
         $workable = ShellCommand::fromCommandLine('sleep ' . ($duration / 1000));
         $workable
