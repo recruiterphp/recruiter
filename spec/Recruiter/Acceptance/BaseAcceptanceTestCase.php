@@ -32,8 +32,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
     protected function setUp(): void
     {
         $factory = new Factory();
-        $uri = getenv('MONGODB_URI') ?: URI::DEFAULT_URI;
-        $this->recruiterDb = $factory->getMongoDb(MongoURI::from($uri), []);
+        $this->recruiterDb = $factory->getMongoDb(URI::fromEnvironment(), []);
         $this->cleanDb();
         $this->files = ['/tmp/recruiter.log', '/tmp/worker.log'];
         $this->cleanLogs();

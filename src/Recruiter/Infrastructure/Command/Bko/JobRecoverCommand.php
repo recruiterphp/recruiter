@@ -39,7 +39,7 @@ class JobRecoverCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                'mongodb://localhost:27017/recruiter',
+                MongoURI::fromEnvironment(),
             )
             ->addOption(
                 'scheduleAt',
