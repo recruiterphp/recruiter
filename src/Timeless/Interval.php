@@ -6,19 +6,16 @@ use DateTimeImmutable;
 
 class Interval
 {
-    const MILLISECONDS_IN_SECONDS = 1000;
-    const MILLISECONDS_IN_MINUTES = 60000;
-    const MILLISECONDS_IN_HOURS = 3600000;
-    const MILLISECONDS_IN_DAYS = 86400000;
-    const MILLISECONDS_IN_WEEKS = 604800000;
-    const MILLISECONDS_IN_MONTHS = 2592000000;
-    const MILLISECONDS_IN_YEARS = 31104000000;
+    const int MILLISECONDS_IN_SECONDS = 1000;
+    const int MILLISECONDS_IN_MINUTES = 60000;
+    const int MILLISECONDS_IN_HOURS = 3600000;
+    const int MILLISECONDS_IN_DAYS = 86400000;
+    const int MILLISECONDS_IN_WEEKS = 604800000;
+    const int MILLISECONDS_IN_MONTHS = 2592000000;
+    const int MILLISECONDS_IN_YEARS = 31104000000;
 
-    private $ms;
-
-    public function __construct($ms)
+    public function __construct(private readonly int $ms)
     {
-        $this->ms = intval($ms);
     }
 
     public function us(): int
@@ -101,7 +98,7 @@ class Interval
         return $reference->after($this);
     }
 
-    public function multiplyBy($multiplier): self
+    public function multiplyBy(int $multiplier): self
     {
         return new self($this->ms * $multiplier);
     }
@@ -111,43 +108,40 @@ class Interval
         return new self($this->ms + $interval->ms);
     }
 
-    public function format($format)
+    public function format(string $format): string
     {
-        if (is_string($format)) {
-            $availableFormatsTable = [
-                'ms' => ['milliseconds', 'ms', 'ms'],
-                's' => ['seconds', 's', 's'],
-                'm' => ['minutes', 'm', 'm'],
-                'h' => ['hours', 'h', 'h'],
-                'd' => ['days', 'd', 'd'],
-                'w' => ['weeks', 'w', 'w'],
-                'mo' => ['months', 'mo', 'mo'],
-                'y' => ['years', 'y', 'y'],
-                'milliseconds' => ['milliseconds', ' milliseconds', ' millisecond'],
-                'seconds' => ['seconds', ' seconds', ' second'],
-                'minutes' => ['minutes', ' minutes', ' minute'],
-                'hours' => ['hours', ' hours', ' hour'],
-                'days' => ['days', ' days', ' day'],
-                'weeks' => ['weeks', ' weeks', ' week'],
-                'months' => ['months', ' months', ' month'],
-                'years' => ['years', ' years', ' year'],
-            ];
-            $format = trim($format);
-            if (array_key_exists($format, $availableFormatsTable)) {
-                $callable = [$this, $availableFormatsTable[$format][0]];
-                if (!is_callable($callable)) {
-                    throw new \RuntimeException("function `{$availableFormatsTable[$format][0]}` does not exists");
-                }
-
-                $amountOfTime = call_user_func($callable);
-                $unitOfTime = $amountOfTime === 1 ?
-                    $availableFormatsTable[$format][2] :
-                    $availableFormatsTable[$format][1];
-                return sprintf('%d%s', $amountOfTime, $unitOfTime);
+        $availableFormatsTable = [
+            'ms' => ['milliseconds', 'ms', 'ms'],
+            's' => ['seconds', 's', 's'],
+            'm' => ['minutes', 'm', 'm'],
+            'h' => ['hours', 'h', 'h'],
+            'd' => ['days', 'd', 'd'],
+            'w' => ['weeks', 'w', 'w'],
+            'mo' => ['months', 'mo', 'mo'],
+            'y' => ['years', 'y', 'y'],
+            'milliseconds' => ['milliseconds', ' milliseconds', ' millisecond'],
+            'seconds' => ['seconds', ' seconds', ' second'],
+            'minutes' => ['minutes', ' minutes', ' minute'],
+            'hours' => ['hours', ' hours', ' hour'],
+            'days' => ['days', ' days', ' day'],
+            'weeks' => ['weeks', ' weeks', ' week'],
+            'months' => ['months', ' months', ' month'],
+            'years' => ['years', ' years', ' year'],
+        ];
+        $format = trim($format);
+        if (array_key_exists($format, $availableFormatsTable)) {
+            $callable = [$this, $availableFormatsTable[$format][0]];
+            if (!is_callable($callable)) {
+                throw new \RuntimeException("function `{$availableFormatsTable[$format][0]}` does not exists");
             }
-            throw new InvalidIntervalFormat("'{$format}' is not a valid Interval format");
+
+            $amountOfTime = call_user_func($callable);
+            $unitOfTime = $amountOfTime === 1 ?
+                $availableFormatsTable[$format][2] :
+                $availableFormatsTable[$format][1];
+            return sprintf('%d%s', $amountOfTime, $unitOfTime);
         }
-        throw new InvalidIntervalFormat('You need to use strings');
+        throw new InvalidIntervalFormat("'{$format}' is not a valid Interval format");
     }
 
     public function toDateInterval()
@@ -188,7 +182,7 @@ class Interval
         throw new InvalidIntervalFormat('You need to use strings');
     }
 
-    public static function fromDateInterval(DateInterval $interval)
+    public static function fromDateInterval(DateInterval $interval): self
     {
         $startTime = new DateTimeImmutable();
         $endTime = $startTime->add($interval);

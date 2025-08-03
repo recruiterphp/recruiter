@@ -6,7 +6,7 @@ use Recruiter\Workable\LazyBones;
 
 class AssignmentTest extends BaseAcceptanceTestCase
 {
-    public function testAJobCanBeAssignedAndExecuted()
+    public function testAJobCanBeAssignedAndExecuted(): void
     {
         $memoryLimit = new MemoryLimit('64MB');
         LazyBones::waitForMs(200, 100)
