@@ -5,7 +5,6 @@ namespace Recruiter\RetryPolicy;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\JobAfterFailure;
-use Recruiter\RetryPolicy;
 use Timeless as T;
 
 class SelectByExceptionTest extends TestCase
@@ -17,6 +16,8 @@ class SelectByExceptionTest extends TestCase
              ->when(\LogicException::class)->then(new DoNotDoItAgain())
              ->build()
         ;
+
+        $this->expectNotToPerformAssertions();
     }
 
     public function testCanBeExportedAndImported(): void
