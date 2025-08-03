@@ -96,7 +96,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         sleep(2);
         // The worker is dead and the job is not properly scheduled
         $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
-        $this->waitForNumberOfWorkersToBe(0);
+        $this->waitForNumberOfWorkersToBe(0, 2);
         $this->assertJobIsMarkedAsCrashed();
 
         // Third execution of the job
