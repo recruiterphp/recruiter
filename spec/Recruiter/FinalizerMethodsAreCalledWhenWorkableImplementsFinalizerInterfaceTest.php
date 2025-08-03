@@ -12,6 +12,7 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
 {
     private MockObject&Repository $repository;
     private EventDispatcherInterface $dispatcher;
+    private ListenerSpy $listener;
 
     /**
      * @throws \PHPUnit\Framework\MockObject\Exception
@@ -24,44 +25,57 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
             ->getMock();
 
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->listener = new ListenerSpy();
     }
 
-    public function testFinalizableFailureMethodsAreCalledWhenJobFails()
+    public function testFinalizableFailureMethodsAreCalledWhenJobFails(): void
     {
         $exception = new \Exception('job was failed');
-        $listener = $this->createPartialMock('StdClass', ['methodWasCalled']);
-        $listener
-            ->expects($this->exactly(3))
-            ->method('methodWasCalled')
-            ->withConsecutive(
-                [$this->equalTo('afterFailure'), $exception],
-                [$this->equalTo('afterLastFailure'), $exception],
-                [$this->equalTo('finalize'), $exception]
-            );
+
         $workable = new FinalizableWorkable(function () use ($exception): void {
             throw $exception;
-        }, $listener);
+        }, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $calls = $this->listener->calls;
+        $this->assertCount(3, $calls);
+
+        $this->assertSame('afterFailure', $calls[0][0]);
+        $this->assertSame($exception, $calls[0][1]);
+
+        $this->assertSame('afterLastFailure', $calls[1][0]);
+        $this->assertSame($exception, $calls[1][1]);
+
+        $this->assertSame('finalize', $calls[2][0]);
+        $this->assertSame($exception, $calls[2][1]);
     }
+
 
     public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone()
     {
-        $listener = $this->createPartialMock('StdClass', ['methodWasCalled']);
-        $listener
-            ->expects($this->exactly(2))
-            ->method('methodWasCalled')
-            ->withConsecutive(
-                [$this->equalTo('afterSuccess')],
-                [$this->equalTo('finalize')]
-            );
         $workable = new FinalizableWorkable(function () {
             return true;
-        }, $listener);
+        }, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $calls = $this->listener->calls;
+        $this->assertCount(2, $calls);
+        $this->assertSame('afterSuccess', $calls[0][0]);
+        $this->assertSame('finalize', $calls[1][0]);
+    }
+}
+
+class ListenerSpy
+{
+    public array $calls = [];
+
+    public function methodWasCalled(string $name, ?\Throwable $exception = null): void
+    {
+        $this->calls[] = [$name, $exception];
     }
 }
 
@@ -76,6 +90,7 @@ class FinalizableWorkable implements Workable, Finalizable
 
     public function __construct(callable $whatToDo, $listener)
     {
+        $this->parameters = [];
         $this->listener = $listener;
         $this->whatToDo = $whatToDo;
     }
