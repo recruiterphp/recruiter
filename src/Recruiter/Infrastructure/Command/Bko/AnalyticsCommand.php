@@ -87,8 +87,8 @@ class AnalyticsCommand extends Command
             $maxColumns = max($maxColumns, count($analytic));
         }
 
-        // casual constants, found by try and error
-        $terminalWidth = (new Terminal())->getWidth() - (($maxColumns + 2) * 2);
+        // casual constants, found by trial and error
+        $terminalWidth = new Terminal()->getWidth() - (($maxColumns + 2) * 2);
 
         return intval(floor($terminalWidth / $maxColumns));
     }

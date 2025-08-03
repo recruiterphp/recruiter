@@ -7,7 +7,7 @@ class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTestCase
     /**
      * @group acceptance
      */
-    public function testRetireAfterAskedToStop()
+    public function testRetireAfterAskedToStop(): void
     {
         $numberOfWorkersBefore = $this->numberOfWorkers();
         $processAndPipes = $this->startWorker();

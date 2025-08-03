@@ -6,31 +6,31 @@ use Timeless as T;
 
 class JobExecution
 {
-    private $isCrashed;
-    private $scheduledAt;
-    private $startedAt;
-    private $endedAt;
+    private bool $isCrashed = false;
+    private ?T\Moment $scheduledAt = null;
+    private ?T\Moment $startedAt = null;
+    private ?T\Moment $endedAt = null;
     private $completedWith;
-    private $failedWith;
+    private ?\Throwable $failedWith = null;
 
-    public function isCrashed()
+    public function isCrashed(): bool
     {
         return $this->isCrashed;
     }
 
-    public function started($scheduledAt = null)
+    public function started(?T\Moment $scheduledAt = null): void
     {
         $this->scheduledAt = $scheduledAt;
         $this->startedAt = T\now();
     }
 
-    public function failedWith(\Throwable $exception)
+    public function failedWith(\Throwable $exception): void
     {
         $this->endedAt = T\now();
         $this->failedWith = $exception;
     }
 
-    public function completedWith($result)
+    public function completedWith($result): void
     {
         $this->endedAt = T\now();
         $this->completedWith = $result;
@@ -41,17 +41,17 @@ class JobExecution
         return $this->completedWith;
     }
 
-    public function causeOfFailure()
+    public function causeOfFailure(): ?\Throwable
     {
         return $this->failedWith;
     }
 
-    public function isFailed()
+    public function isFailed(): bool
     {
         return !is_null($this->failedWith) || $this->isCrashed();
     }
 
-    public function duration()
+    public function duration(): T\Interval
     {
         if ($this->startedAt && $this->endedAt && ($this->startedAt <= $this->endedAt)) {
             return T\seconds(
@@ -63,7 +63,7 @@ class JobExecution
         return T\seconds(0);
     }
 
-    public static function import($document)
+    public static function import(array $document): self
     {
         $lastExecution = new self();
         if (array_key_exists('last_execution', $document)) {
@@ -82,7 +82,7 @@ class JobExecution
         return $lastExecution;
     }
 
-    public function export()
+    public function export(): array
     {
         $exported = [];
         if ($this->scheduledAt) {
@@ -95,7 +95,7 @@ class JobExecution
             $exported['ended_at'] = T\MongoDate::from($this->endedAt);
         }
         if ($this->failedWith) {
-            $exported['class'] = get_class($this->failedWith);
+            $exported['class'] = $this->failedWith::class;
             $exported['message'] = $this->failedWith->getMessage();
             $exported['trace'] = $this->traceOf($this->failedWith);
         }
@@ -109,7 +109,7 @@ class JobExecution
         }
     }
 
-    private function traceOf($result)
+    private function traceOf(mixed $result): string
     {
         $trace = 'ok';
         if ($result instanceof \Throwable) {
@@ -117,11 +117,11 @@ class JobExecution
         } elseif (is_object($result) && method_exists($result, 'trace')) {
             $trace = $result->trace();
         } elseif (is_object($result)) {
-            $trace = get_class($result);
+            $trace = $result::class;
         } elseif (is_string($result) || is_numeric($result)) {
             $trace = $result;
         }
 
-        return substr($trace, 0, 4096);
+        return substr((string) $trace, 0, 4096);
     }
 }

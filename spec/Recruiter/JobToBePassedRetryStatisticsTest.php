@@ -25,7 +25,7 @@ class JobToBePassedRetryStatisticsTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testTakeRetryPolicyFromRetriableInstance()
+    public function testTakeRetryPolicyFromRetriableInstance(): void
     {
         $workable = new WorkableThatUsesRetryStatistics();
 

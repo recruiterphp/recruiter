@@ -4,9 +4,7 @@ namespace Recruiter;
 
 function array_group_by($array, ?callable $f = null): array
 {
-    $f = $f ?: function ($value) {
-        return $value;
-    };
+    $f = $f ?: (fn ($value) => $value);
 
     return array_reduce(
         $array,

@@ -27,11 +27,6 @@ use Timeless\Interval;
 class WorkerCommand implements RobustCommand
 {
     /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
      * @var Worker
      */
     private $worker;
@@ -47,14 +42,10 @@ class WorkerCommand implements RobustCommand
     private $waitStrategy;
 
     /**
-     * @var LoggerInterface
+     * @param Factory $factory
      */
-    private $logger;
-
-    public function __construct($factory, LoggerInterface $logger)
+    public function __construct(private $factory, private readonly LoggerInterface $logger)
     {
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     public static function toRobustCommand(Factory $factory, LoggerInterface $logger): RobustCommandRunner

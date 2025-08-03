@@ -8,6 +8,7 @@ class WorkerRepositoryTest extends BaseAcceptanceTestCase
 {
     private Repository $repository;
 
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -20,7 +21,7 @@ class WorkerRepositoryTest extends BaseAcceptanceTestCase
     /**
      * @group acceptance
      */
-    public function testRetireWorkerWithPid()
+    public function testRetireWorkerWithPid(): void
     {
         $this->givenWorkerWithPid(10);
         $this->assertEquals(1, $this->numberOfWorkers());

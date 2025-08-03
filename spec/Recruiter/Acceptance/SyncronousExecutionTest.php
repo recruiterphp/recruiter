@@ -8,7 +8,7 @@ use Timeless as T;
 
 class SyncronousExecutionTest extends BaseAcceptanceTestCase
 {
-    public function testJobsAreExecutedInOrderOfScheduling()
+    public function testJobsAreExecutedInOrderOfScheduling(): void
     {
         $this->enqueueAnAnswerJob(43, T\now()->after(T\seconds(30)));
 
@@ -22,9 +22,9 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
         $this->assertEquals(43, end($results)->result());
     }
 
-    public function testAReportIsReturnedInOrderToSortOutIfAnErrorOccured()
+    public function testAReportIsReturnedInOrderToSortOutIfAnErrorOccured(): void
     {
-        (new AlwaysFail())
+        new AlwaysFail()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()

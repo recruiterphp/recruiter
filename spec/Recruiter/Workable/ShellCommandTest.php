@@ -6,13 +6,13 @@ use PHPUnit\Framework\TestCase;
 
 class ShellCommandTest extends TestCase
 {
-    public function testExecutesACommandOnTheShell()
+    public function testExecutesACommandOnTheShell(): void
     {
         $workable = ShellCommand::fromCommandLine('echo 42');
         $this->assertEquals('42', $workable->execute());
     }
 
-    public function testCanBeImportedAndExported()
+    public function testCanBeImportedAndExported(): void
     {
         $workable = ShellCommand::fromCommandLine('echo 42');
         $this->assertEquals(

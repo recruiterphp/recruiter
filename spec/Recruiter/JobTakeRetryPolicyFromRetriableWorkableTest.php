@@ -28,7 +28,7 @@ class JobTakeRetryPolicyFromRetriableWorkableTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testTakeRetryPolicyFromRetriableInstance()
+    public function testTakeRetryPolicyFromRetriableInstance(): void
     {
         $retryPolicy = $this->createMock(BaseRetryPolicy::class);
         $retryPolicy->expects($this->once())->method('schedule');
@@ -54,7 +54,7 @@ class WorkableThatIsAlsoRetriable implements Workable, Retriable
         return $this->retryWithPolicy;
     }
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception();
     }

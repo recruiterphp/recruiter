@@ -11,65 +11,64 @@ use Timeless\Moment;
 
 class Recruiter
 {
-    private $db;
-    private $jobs;
-    private $workers;
-    private $scheduler;
-    private $eventDispatcher;
+    private readonly Job\Repository $jobs;
+    private readonly Worker\Repository $workers;
+    private readonly Scheduler\Repository $scheduler;
+    private readonly EventDispatcher $eventDispatcher;
 
-    public function __construct(MongoDB\Database $db)
+    public function __construct(private readonly MongoDB\Database $db)
     {
-        $this->db = $db;
-        $this->jobs = new Job\Repository($db);
-        $this->workers = new Worker\Repository($db, $this);
-        $this->scheduler = new Scheduler\Repository($db);
+        $this->jobs = new Job\Repository($this->db);
+        $this->workers = new Worker\Repository($this->db, $this);
+        $this->scheduler = new Scheduler\Repository($this->db);
         $this->eventDispatcher = new EventDispatcher();
     }
 
-    public function hire(MemoryLimit $memoryLimit)
+    public function hire(MemoryLimit $memoryLimit): Worker
     {
         return Worker::workFor($this, $this->workers, $memoryLimit);
     }
 
-    public function jobOf(Workable $workable)
+    public function jobOf(Workable $workable): JobToSchedule
     {
         return new JobToSchedule(
             Job::around($workable, $this->jobs),
         );
     }
 
-    public function repeatableJobOf(Repeatable $repeatable)
+    public function repeatableJobOf(Repeatable $repeatable): Scheduler
     {
         return Scheduler::around($repeatable, $this->scheduler, $this);
     }
 
-    public function queued()
+    public function queued(): int
     {
         return $this->jobs->queued();
     }
 
-    public function scheduled()
+    public function scheduled(): int
     {
         return $this->jobs->scheduledCount();
     }
 
-    public function queuedGroupedBy($field, array $query = [], $group = null)
+    public function queuedGroupedBy($field, array $query = [], $group = null): array
     {
         return $this->jobs->queuedGroupedBy($field, $query, $group);
     }
 
-    /**
-     * @deprecated use the method `analytics` instead
-     */
-    public function statistics($group = null, ?Moment $at = null, array $query = [])
+    #[\Deprecated(message: 'use the method `analytics` instead')]
+    public function statistics($group = null, ?Moment $at = null, array $query = []): array
     {
         return $this->analytics($group, $at, $query);
     }
 
-    public function analytics($group = null, ?Moment $at = null, array $query = [])
+    /**
+     * @return array<string,mixed>
+     */
+    public function analytics($group = null, ?Moment $at = null, array $query = []): array
     {
         $totalsScheduledJobs = $this->jobs->scheduledCount($group, $query);
-        $queued = $this->jobs->queued($group, $at, $at ? $at->before(T\hour(24)) : null, $query);
+        $queued = $this->jobs->queued($group, $at, $at?->before(T\hour(24)), $query);
         $postponed = $this->jobs->postponed($group, $at, $query);
 
         return array_merge(
@@ -84,7 +83,7 @@ class Recruiter
         );
     }
 
-    public function getEventDispatcher()
+    public function getEventDispatcher(): EventDispatcher
     {
         return $this->eventDispatcher;
     }
@@ -94,7 +93,7 @@ class Recruiter
      *
      * @return int how many
      */
-    public function rollbackLockedJobs()
+    public function rollbackLockedJobs(): int
     {
         $assignedJobs = Worker::assignedJobs($this->db->selectCollection('roster'));
 
@@ -104,16 +103,16 @@ class Recruiter
     /**
      * @step
      */
-    public function bye()
+    public function bye(): void
     {
     }
 
-    public function assignJobsToWorkers()
+    public function assignJobsToWorkers(): array
     {
         return $this->assignLockedJobsToWorkers($this->bookJobsForWorkers());
     }
 
-    public function scheduleRepeatableJobs()
+    public function scheduleRepeatableJobs(): void
     {
         $schedulers = $this->scheduler->all();
         foreach ($schedulers as $scheduler) {
@@ -124,7 +123,7 @@ class Recruiter
     /**
      * @step
      */
-    public function bookJobsForWorkers()
+    public function bookJobsForWorkers(): array
     {
         $roster = $this->db->selectCollection('roster');
         $scheduled = $this->db->selectCollection('scheduled');
@@ -150,7 +149,7 @@ class Recruiter
     /**
      * @step
      */
-    public function assignLockedJobsToWorkers($bookedJobs)
+    public function assignLockedJobsToWorkers(array $bookedJobs): array
     {
         $assignments = [];
         $totalActualAssignments = 0;
@@ -169,9 +168,7 @@ class Recruiter
         }
 
         return [
-            array_map(function ($value) {
-                return (string) $value;
-            }, $assignments),
+            array_map(fn ($value) => (string) $value, $assignments),
             $totalActualAssignments,
         ];
     }
@@ -186,7 +183,7 @@ class Recruiter
      *
      * @return int how many jobs were unlocked as a result
      */
-    public function retireDeadWorkers(\DateTimeImmutable $now, Interval $consideredDeadAfter)
+    public function retireDeadWorkers(\DateTimeImmutable $now, Interval $consideredDeadAfter): int
     {
         return $this->jobs->releaseAll(
             $jobsAssignedToDeadWorkers = Worker::retireDeadWorkers($this->workers, $now, $consideredDeadAfter),
@@ -204,7 +201,7 @@ class Recruiter
         return SynchronousExecutionReport::fromArray($report);
     }
 
-    public function createCollectionsAndIndexes()
+    public function createCollectionsAndIndexes(): void
     {
         $this->db->selectCollection('scheduled')->createIndex(
             [
@@ -268,7 +265,7 @@ class Recruiter
         );
     }
 
-    private function combineJobsWithWorkers($jobs, $workers)
+    private function combineJobsWithWorkers($jobs, $workers): array
     {
         $assignments = min(count($workers), count($jobs));
         $workers = array_slice($workers, 0, $assignments);

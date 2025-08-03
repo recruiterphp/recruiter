@@ -25,7 +25,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->workersPerUnit = 42;
     }
 
-    public function testNoWorkersAreFound()
+    public function testNoWorkersAreFound(): void
     {
         $this->withNoAvailableWorkers();
 
@@ -46,7 +46,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertCount(3, $workers);
     }
 
-    public function testFewWorkersWithSameSkill()
+    public function testFewWorkersWithSameSkill(): void
     {
         $callbackHasBeenCalled = false;
         $this->withAvailableWorkers(['send-emails' => 3]);
@@ -58,7 +58,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals(3, count($workers));
     }
 
-    public function testFewWorkersWithSomeDifferentSkills()
+    public function testFewWorkersWithSomeDifferentSkills(): void
     {
         $this->withAvailableWorkers(['send-emails' => 3, 'count-transactions' => 3]);
         $picked = Worker::pickAvailableWorkers($this->repository, $this->workersPerUnit);
@@ -74,7 +74,7 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals(6, $totalWorkersGiven);
     }
 
-    public function testMoreWorkersThanAllowedPerUnit()
+    public function testMoreWorkersThanAllowedPerUnit(): void
     {
         $this->withAvailableWorkers(['send-emails' => $this->workersPerUnit + 10]);
 

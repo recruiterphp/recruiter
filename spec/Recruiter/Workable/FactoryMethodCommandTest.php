@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class FactoryMethodCommandTest extends TestCase
 {
-    public function testExecutedACommandReachableFromAStaticFactoryMethod()
+    public function testExecutedACommandReachableFromAStaticFactoryMethod(): void
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()
@@ -15,7 +15,7 @@ class FactoryMethodCommandTest extends TestCase
         $this->assertEquals('42', $workable->execute());
     }
 
-    public function testCanBeImportedAndExported()
+    public function testCanBeImportedAndExported(): void
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()
@@ -27,7 +27,7 @@ class FactoryMethodCommandTest extends TestCase
         );
     }
 
-    public function testPassesRetryStatisticsAsAnAdditionalArgumentToTheLastMethodToCall()
+    public function testPassesRetryStatisticsAsAnAdditionalArgumentToTheLastMethodToCall(): void
     {
         $workable = FactoryMethodCommand::from('Recruiter\Workable\DummyFactory::create')
             ->myObject()

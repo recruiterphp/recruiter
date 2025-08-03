@@ -6,26 +6,23 @@ use Sink\BlackHole;
 
 class Process
 {
-    private $pid;
-
-    public static function withPid($pid)
+    public static function withPid(int $pid)
     {
         return new self($pid);
     }
 
-    public function __construct($pid)
+    public function __construct(private readonly int $pid)
     {
-        $this->pid = $pid;
     }
 
-    public function cleanUp(Repository $repository)
+    public function cleanUp(Repository $repository): void
     {
         if (!$this->isAlive()) {
             $repository->retireWorkerWithPid($this->pid);
         }
     }
 
-    public function ifDead()
+    public function ifDead(): BlackHole|static
     {
         if ($this->isAlive()) {
             return new BlackHole();
@@ -34,7 +31,7 @@ class Process
         return $this;
     }
 
-    protected function isAlive()
+    protected function isAlive(): bool
     {
         return posix_kill($this->pid, 0);
     }

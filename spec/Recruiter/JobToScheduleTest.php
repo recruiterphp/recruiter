@@ -4,7 +4,6 @@ namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
 
 class JobToScheduleTest extends TestCase
@@ -27,7 +26,7 @@ class JobToScheduleTest extends TestCase
         $this->clock->start();
     }
 
-    public function testInBackgroundShouldScheduleJobNow()
+    public function testInBackgroundShouldScheduleJobNow(): void
     {
         $this->job
             ->expects($this->once())
@@ -37,13 +36,13 @@ class JobToScheduleTest extends TestCase
             )
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->execute()
         ;
     }
 
-    public function testScheduledInShouldScheduleInCertainAmountOfTime()
+    public function testScheduledInShouldScheduleInCertainAmountOfTime(): void
     {
         $amountOfTime = T\minutes(10);
         $this->job
@@ -54,13 +53,13 @@ class JobToScheduleTest extends TestCase
             )
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->scheduleIn($amountOfTime)
             ->execute()
         ;
     }
 
-    public function testConfigureRetryPolicy()
+    public function testConfigureRetryPolicy(): void
     {
         $doNotDoItAgain = new RetryPolicy\DoNotDoItAgain();
 
@@ -70,29 +69,29 @@ class JobToScheduleTest extends TestCase
             ->with($doNotDoItAgain)
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->retryWithPolicy($doNotDoItAgain)
             ->execute()
         ;
     }
 
-    public function tesShortcutToConfigureJobToNotBeRetried()
+    public function tesShortcutToConfigureJobToNotBeRetried(): void
     {
         $this->job
             ->expects($this->once())
             ->method('retryWithPolicy')
-            ->with($this->isInstanceOf('Recruiter\RetryPolicy\DoNotDoItAgain'))
+            ->with($this->isInstanceOf(RetryPolicy\DoNotDoItAgain::class))
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->doNotRetry()
             ->execute()
         ;
     }
 
-    public function testShouldNotExecuteJobWhenScheduled()
+    public function testShouldNotExecuteJobWhenScheduled(): void
     {
         $this->job
             ->expects($this->once())
@@ -104,13 +103,13 @@ class JobToScheduleTest extends TestCase
             ->method('execute')
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->execute()
         ;
     }
 
-    public function testShouldExecuteJobWhenNotScheduled()
+    public function testShouldExecuteJobWhenNotScheduled(): void
     {
         $this->job
             ->expects($this->never())
@@ -122,14 +121,10 @@ class JobToScheduleTest extends TestCase
             ->method('execute')
         ;
 
-        (new JobToSchedule($this->job))
-            ->execute(
-                $this->createMock(EventDispatcherInterface::class),
-            )
-        ;
+        new JobToSchedule($this->job)->execute();
     }
 
-    public function testConfigureMethodToCallOnWorkableInJob()
+    public function testConfigureMethodToCallOnWorkableInJob(): void
     {
         $this->job
             ->expects($this->once())
@@ -137,12 +132,12 @@ class JobToScheduleTest extends TestCase
             ->with('send')
         ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->send()
         ;
     }
 
-    public function testReturnsJobId()
+    public function testReturnsJobId(): void
     {
         $this->job
             ->expects($this->any())
@@ -152,10 +147,7 @@ class JobToScheduleTest extends TestCase
 
         $this->assertEquals(
             '42',
-            (new JobToSchedule($this->job))
-                ->execute(
-                    $this->createMock(EventDispatcherInterface::class),
-                ),
+            new JobToSchedule($this->job)->execute(),
         );
     }
 }

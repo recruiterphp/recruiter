@@ -23,19 +23,19 @@ class WorkerProcessTest extends TestCase
         ;
     }
 
-    public function testIfNotAliveWhenIsNotAliveReturnsItself()
+    public function testIfNotAliveWhenIsNotAliveReturnsItself(): void
     {
         $process = $this->givenWorkerProcessDead();
         $this->assertInstanceOf(Process::class, $process->ifDead());
     }
 
-    public function testIfNotAliveWhenIsAliveReturnsBlackHole()
+    public function testIfNotAliveWhenIsAliveReturnsBlackHole(): void
     {
         $process = $this->givenWorkerProcessAlive();
         $this->assertInstanceOf(BlackHole::class, $process->ifDead());
     }
 
-    public function testRetireWorkerIfNotAlive()
+    public function testRetireWorkerIfNotAlive(): void
     {
         $this->repository
             ->expects($this->once())
@@ -47,7 +47,7 @@ class WorkerProcessTest extends TestCase
         $process->cleanUp($this->repository);
     }
 
-    public function testDoNotRetireWorkerIfAlive()
+    public function testDoNotRetireWorkerIfAlive(): void
     {
         $this->repository
             ->expects($this->never())

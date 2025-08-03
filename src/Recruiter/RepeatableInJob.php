@@ -56,7 +56,7 @@ class RepeatableInJob
 
     private static function classNameOf($repeatable): string
     {
-        $repeatableClassName = get_class($repeatable);
+        $repeatableClassName = $repeatable::class;
         if (method_exists($repeatable, 'getClass')) {
             $repeatableClassName = $repeatable->getClass();
         }

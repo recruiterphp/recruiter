@@ -10,16 +10,6 @@ class Scheduler
 {
     private $job;
 
-    private $schedulers;
-
-    private $status;
-
-    private $schedulePolicy;
-
-    private $repeatable;
-
-    private $retryPolicy;
-
     public static function around(Repeatable $repeatable, Repository $repository, Recruiter $recruiter)
     {
         $retryPolicy = ($repeatable instanceof Retriable) ?
@@ -46,18 +36,8 @@ class Scheduler
         );
     }
 
-    public function __construct(
-        array $status,
-        Repeatable $repeatable,
-        ?SchedulePolicy $schedulePolicy,
-        ?RetryPolicy $retryPolicy,
-        Repository $schedulers,
-    ) {
-        $this->status = $status;
-        $this->repeatable = $repeatable;
-        $this->schedulePolicy = $schedulePolicy;
-        $this->retryPolicy = $retryPolicy;
-        $this->schedulers = $schedulers;
+    public function __construct(private array $status, private readonly Repeatable $repeatable, private ?SchedulePolicy $schedulePolicy, private ?RetryPolicy $retryPolicy, private readonly Repository $schedulers)
+    {
     }
 
     public function create()
@@ -122,7 +102,7 @@ class Scheduler
             $alreadyScheduledJob = $jobs->scheduled($this->status['last_scheduling']['job_id']);
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
     }
@@ -147,7 +127,7 @@ class Scheduler
         ++$this->status['attempts'];
         $this->schedulers->save($this);
 
-        $jobToSchedule = (new JobToSchedule(Job::around($this->repeatable, $jobs)))
+        $jobToSchedule = new JobToSchedule(Job::around($this->repeatable, $jobs))
             ->scheduleAt($nextScheduling)
             ->retryWithPolicy($this->retryPolicy)
             ->scheduledBy('scheduler', $this->status['urn'], $this->status['attempts'])

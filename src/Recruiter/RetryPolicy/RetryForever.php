@@ -14,7 +14,7 @@ final class RetryForever implements RetryPolicy
     use RetryPolicyBehaviour;
     private $timeToWaitBeforeRetry;
 
-    public function __construct($timeToWaitBeforeRetry)
+    public function __construct(int|Interval $timeToWaitBeforeRetry)
     {
         if (!($timeToWaitBeforeRetry instanceof Interval)) {
             $timeToWaitBeforeRetry = T\seconds($timeToWaitBeforeRetry);
@@ -22,12 +22,12 @@ final class RetryForever implements RetryPolicy
         $this->timeToWaitBeforeRetry = $timeToWaitBeforeRetry;
     }
 
-    public static function afterSeconds($timeToWaitBeforeRetry = 60)
+    public static function afterSeconds(int|Interval $timeToWaitBeforeRetry = 60): self
     {
-        return new static($timeToWaitBeforeRetry);
+        return new self($timeToWaitBeforeRetry);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         $job->scheduleIn($this->timeToWaitBeforeRetry);
     }

@@ -30,20 +30,20 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
         $this->job = Job::around($this->workable, $this->repository);
     }
 
-    public function testConfigureMethodToCallOnWorkable()
+    public function testConfigureMethodToCallOnWorkable(): void
     {
         $this->workable->expects($this->once())->method('send');
         $this->job->methodToCallOnWorkable('send');
         $this->job->execute($this->createMock(EventDispatcherInterface::class));
     }
 
-    public function testRaiseExceptionWhenConfigureMethodToCallOnWorkableThatDoNotExists()
+    public function testRaiseExceptionWhenConfigureMethodToCallOnWorkableThatDoNotExists(): void
     {
         $this->expectException(\Exception::class);
         $this->job->methodToCallOnWorkable('methodThatDoNotExists');
     }
 
-    public function testCustomMethodIsSaved()
+    public function testCustomMethodIsSaved(): void
     {
         $this->job->methodToCallOnWorkable('send');
         $jobExportedToDocument = $this->job->export();
@@ -52,7 +52,7 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
         $this->assertEquals('send', $jobExportedToDocument['workable']['method']);
     }
 
-    public function testCustomMethodIsConservedAfterImport()
+    public function testCustomMethodIsConservedAfterImport(): void
     {
         $workable = new DummyWorkableWithSendCustomMethod();
         $job = Job::around($workable, $this->repository);

@@ -14,7 +14,7 @@ class SampleRepeatableCommand implements Workable, Repeatable
 
     public function execute()
     {
-        var_export((new \DateTime())->format('c'));
+        var_export(new \DateTime()->format('c'));
     }
 
     public function urn(): string

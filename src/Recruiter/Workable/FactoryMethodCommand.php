@@ -12,7 +12,7 @@ class FactoryMethodCommand implements Workable
     {
         $arguments = func_get_args();
         $callable = array_shift($arguments);
-        [$class, $method] = explode('::', $callable);
+        [$class, $method] = explode('::', (string) $callable);
 
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }
@@ -37,11 +37,8 @@ class FactoryMethodCommand implements Workable
         return $step;
     }
 
-    private $steps;
-
-    private function __construct(array $steps = [])
+    private function __construct(private array $steps = [])
     {
-        $this->steps = $steps;
     }
 
     public function asJobOf(Recruiter $recruiter): JobToSchedule
@@ -62,7 +59,7 @@ class FactoryMethodCommand implements Workable
             if (!is_callable($callable)) {
                 $message = 'The following step does not result in a callable: ' . var_export($step, true) . '.';
                 if (is_object($result)) {
-                    $message .= ' Reached object: ' . get_class($result);
+                    $message .= ' Reached object: ' . $result::class;
                 } else {
                     $message .= ' Reached value: ' . var_export($result, true);
                 }
@@ -83,7 +80,7 @@ class FactoryMethodCommand implements Workable
 
     private function arguments($step)
     {
-        $arguments = isset($step['arguments']) ? $step['arguments'] : [];
+        $arguments = $step['arguments'] ?? [];
 
         return $arguments;
     }

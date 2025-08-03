@@ -8,7 +8,7 @@ use Timeless as T;
 
 class ExponentialBackoffTest extends TestCase
 {
-    public function testOnTheFirstFailureUsesTheSpecifiedInterval()
+    public function testOnTheFirstFailureUsesTheSpecifiedInterval(): void
     {
         $job = $this->jobExecutedFor(1);
         $retryPolicy = new ExponentialBackoff(100, T\seconds(5));
@@ -20,7 +20,7 @@ class ExponentialBackoffTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    public function testAfterEachFailureDoublesTheAmountOfTimeToWaitBetweenRetries()
+    public function testAfterEachFailureDoublesTheAmountOfTimeToWaitBetweenRetries(): void
     {
         $job = $this->jobExecutedFor(2);
         $retryPolicy = new ExponentialBackoff(100, T\seconds(5));
@@ -32,7 +32,7 @@ class ExponentialBackoffTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    public function testAfterTooManyFailuresGivesUp()
+    public function testAfterTooManyFailuresGivesUp(): void
     {
         $job = $this->jobExecutedFor(101);
         $retryPolicy = new ExponentialBackoff(100, T\seconds(5));
@@ -44,7 +44,7 @@ class ExponentialBackoffTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    public function testCanBeCreatedByTargetingAMaximumInterval()
+    public function testCanBeCreatedByTargetingAMaximumInterval(): void
     {
         $this->assertEquals(
             ExponentialBackoff::forAnInterval(1025, T\seconds(1)),

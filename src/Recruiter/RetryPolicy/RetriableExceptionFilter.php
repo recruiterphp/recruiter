@@ -8,7 +8,6 @@ use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilter implements RetryPolicy
 {
-    private $filteredRetryPolicy;
     private $retriableExceptions;
 
     /**
@@ -21,13 +20,12 @@ class RetriableExceptionFilter implements RetryPolicy
         return new self($retryPolicy, [$exceptionClass]);
     }
 
-    public function __construct(RetryPolicy $filteredRetryPolicy, array $retriableExceptions = ['Exception'])
+    public function __construct(private readonly RetryPolicy $filteredRetryPolicy, array $retriableExceptions = ['Exception'])
     {
-        $this->filteredRetryPolicy = $filteredRetryPolicy;
         $this->retriableExceptions = $this->ensureAreAllExceptions($retriableExceptions);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         if ($this->isExceptionRetriable($job->causeOfFailure())) {
             $this->filteredRetryPolicy->schedule($job);
@@ -41,7 +39,7 @@ class RetriableExceptionFilter implements RetryPolicy
         return [
             'retriable_exceptions' => $this->retriableExceptions,
             'filtered_retry_policy' => [
-                'class' => get_class($this->filteredRetryPolicy),
+                'class' => $this->filteredRetryPolicy::class,
                 'parameters' => $this->filteredRetryPolicy->export(),
             ],
         ];
@@ -76,12 +74,10 @@ class RetriableExceptionFilter implements RetryPolicy
 
     private function isExceptionRetriable($exception)
     {
-        if (!is_null($exception) && is_object($exception)) {
+        if (is_object($exception)) {
             return array_any(
                 $this->retriableExceptions,
-                function ($retriableExceptionType) use ($exception) {
-                    return $exception instanceof $retriableExceptionType;
-                },
+                fn ($retriableExceptionType) => $exception instanceof $retriableExceptionType,
             );
         }
 

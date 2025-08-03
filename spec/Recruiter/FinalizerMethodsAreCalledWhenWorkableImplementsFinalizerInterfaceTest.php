@@ -52,11 +52,9 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
         $this->assertSame($exception, $calls[2][1]);
     }
 
-    public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone()
+    public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone(): void
     {
-        $workable = new FinalizableWorkable(function () {
-            return true;
-        }, $this->listener);
+        $workable = new FinalizableWorkable(fn () => true, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
@@ -85,38 +83,35 @@ class FinalizableWorkable implements Workable, Finalizable
 
     private $whatToDo;
 
-    private $listener;
-
-    public function __construct(callable $whatToDo, $listener)
+    public function __construct(callable $whatToDo, private $listener)
     {
         $this->parameters = [];
-        $this->listener = $listener;
         $this->whatToDo = $whatToDo;
     }
 
-    public function execute()
+    public function execute(): mixed
     {
         $whatToDo = $this->whatToDo;
 
         return $whatToDo();
     }
 
-    public function afterSuccess()
+    public function afterSuccess(): void
     {
         $this->listener->methodWasCalled(__FUNCTION__);
     }
 
-    public function afterFailure(\Exception $e)
+    public function afterFailure(\Exception $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function afterLastFailure(\Exception $e)
+    public function afterLastFailure(\Exception $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function finalize(?\Exception $e = null)
+    public function finalize(?\Exception $e = null): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }

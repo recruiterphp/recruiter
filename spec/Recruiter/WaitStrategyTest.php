@@ -22,7 +22,7 @@ class WaitStrategyTest extends TestCase
         $this->timeToWaitAtMost = T\seconds(30);
     }
 
-    public function testStartsToWaitTheMinimumAmountOfTime()
+    public function testStartsToWaitTheMinimumAmountOfTime(): void
     {
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
@@ -33,7 +33,7 @@ class WaitStrategyTest extends TestCase
         $this->assertEquals($this->timeToWaitAtLeast, $this->waited);
     }
 
-    public function testBackingOffIncreasesTheIntervalExponentially()
+    public function testBackingOffIncreasesTheIntervalExponentially(): void
     {
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
@@ -48,7 +48,7 @@ class WaitStrategyTest extends TestCase
         $this->assertEquals($this->timeToWaitAtLeast->multiplyBy(4), $this->waited);
     }
 
-    public function testBackingOffCannotIncreaseTheIntervalOverAMaximum()
+    public function testBackingOffCannotIncreaseTheIntervalOverAMaximum(): void
     {
         $ws = new WaitStrategy(T\seconds(1), T\seconds(2), $this->howToWait);
         $ws->backOff();
@@ -59,7 +59,7 @@ class WaitStrategyTest extends TestCase
         $this->assertEquals(T\seconds(2), $this->waited);
     }
 
-    public function testGoingForwardLowersTheSleepingPeriod()
+    public function testGoingForwardLowersTheSleepingPeriod(): void
     {
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
@@ -72,7 +72,7 @@ class WaitStrategyTest extends TestCase
         $this->assertEquals($this->timeToWaitAtLeast, $this->waited);
     }
 
-    public function testTheSleepingPeriodCanBeResetToTheMinimum()
+    public function testTheSleepingPeriodCanBeResetToTheMinimum(): void
     {
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,
@@ -88,7 +88,7 @@ class WaitStrategyTest extends TestCase
         $this->assertEquals($this->timeToWaitAtLeast, $this->waited);
     }
 
-    public function testGoingForwardCannotLowerTheIntervalBelowMinimum()
+    public function testGoingForwardCannotLowerTheIntervalBelowMinimum(): void
     {
         $ws = new WaitStrategy(
             $this->timeToWaitAtLeast,

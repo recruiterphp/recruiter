@@ -10,7 +10,7 @@ class MongoDateTest extends TestCase
 {
     use Eris\TestTrait;
 
-    public function testConvertsBackAndForthMongoDatesWithoutLosingMillisecondPrecision()
+    public function testConvertsBackAndForthMongoDatesWithoutLosingMillisecondPrecision(): void
     {
         $this
             ->forAll(

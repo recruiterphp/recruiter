@@ -22,7 +22,7 @@ class JobTest extends TestCase
         ;
     }
 
-    public function testRetryStatisticsOnFirstExecution()
+    public function testRetryStatisticsOnFirstExecution(): void
     {
         $job = Job::around(new AlwaysFail(), $this->repository);
         $retryStatistics = $job->retryStatistics();
@@ -38,7 +38,7 @@ class JobTest extends TestCase
     /**
      * @depends testRetryStatisticsOnFirstExecution
      */
-    public function testRetryStatisticsOnSubsequentExecutions()
+    public function testRetryStatisticsOnSubsequentExecutions(): void
     {
         $job = Job::around(new AlwaysFail(), $this->repository);
         // maybe make the argument optional
@@ -58,7 +58,7 @@ class JobTest extends TestCase
         $this->assertMatchesRegularExpression('/.*AlwaysFail->execute.*/', $lastExecution['trace']);
     }
 
-    public function testArrayAsGroupIsNotAllowed()
+    public function testArrayAsGroupIsNotAllowed(): void
     {
         $this->expectException(\RuntimeException::class);
         $memoryLimit = new MemoryLimit(1);

@@ -20,7 +20,7 @@ class TimeTableTest extends TestCase
         ]);
     }
 
-    public function testShouldRescheduleInOneMinuteWhenWasCreatedLessThanFiveMinutesAgo()
+    public function testShouldRescheduleInOneMinuteWhenWasCreatedLessThanFiveMinutesAgo(): void
     {
         $expectedToBeScheduledAt = T\minute(1)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\seconds(10)->ago();
@@ -32,7 +32,7 @@ class TimeTableTest extends TestCase
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThanOneHourAgo()
+    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThanOneHourAgo(): void
     {
         $expectedToBeScheduledAt = T\minutes(5)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\minutes(30)->ago();
@@ -44,7 +44,7 @@ class TimeTableTest extends TestCase
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThan24HoursAgo()
+    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThan24HoursAgo(): void
     {
         $expectedToBeScheduledAt = T\hour(1)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\hours(3)->ago();
@@ -56,14 +56,14 @@ class TimeTableTest extends TestCase
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldNotBeRescheduledWhenWasCreatedMoreThan24HoursAgo()
+    public function testShouldNotBeRescheduledWhenWasCreatedMoreThan24HoursAgo(): void
     {
         $job = $this->jobThatWasCreated('2 days ago');
         $job->expects($this->never())->method('scheduleAt');
         $this->scheduler->schedule($job);
     }
 
-    public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen()
+    public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen(): void
     {
         $job = $this->createMock(Job::class);
         $job->expects($this->any())
@@ -78,7 +78,7 @@ class TimeTableTest extends TestCase
         $this->assertTrue($tt->isLastRetry($job));
     }
 
-    public function testIsLastRetryReturnFalseIfJobWasCreatedLessThanLastTimeSpen()
+    public function testIsLastRetryReturnFalseIfJobWasCreatedLessThanLastTimeSpen(): void
     {
         $job = $this->createMock(Job::class);
         $job->expects($this->any())
@@ -93,19 +93,19 @@ class TimeTableTest extends TestCase
         $this->assertFalse($tt->isLastRetry($job));
     }
 
-    public function testInvalidTimeTableBecauseTimeWindow()
+    public function testInvalidTimeTableBecauseTimeWindow(): void
     {
         $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute' => '1 second']);
     }
 
-    public function testInvalidTimeTableBecauseRescheduleTime()
+    public function testInvalidTimeTableBecauseRescheduleTime(): void
     {
         $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '1 second ago']);
     }
 
-    public function testInvalidTimeTableBecauseRescheduleTimeIsGreaterThanTimeWindow()
+    public function testInvalidTimeTableBecauseRescheduleTimeIsGreaterThanTimeWindow(): void
     {
         $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '2 minutes']);
@@ -120,13 +120,13 @@ class TimeTableTest extends TestCase
         ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt))
+            ->willReturn($wasCreatedAt)
         ;
 
         return $job;
     }
 
-    private function jobThatWasCreated($relativeTime)
+    private function jobThatWasCreated(string $relativeTime): JobAfterFailure
     {
         $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
         $job = $this->getMockBuilder(JobAfterFailure::class)
@@ -136,7 +136,7 @@ class TimeTableTest extends TestCase
         ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt))
+            ->willReturn($wasCreatedAt)
         ;
 
         return $job;
