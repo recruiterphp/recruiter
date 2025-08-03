@@ -128,7 +128,7 @@ class RetriableExceptionFilterTest extends TestCase
         new RetriableExceptionFilter($retryPolicy, [$notAnExceptionClass]);
     }
 
-    private function jobFailedWithException($exception)
+    private function jobFailedWithException(\Throwable $exception): MockObject&JobAfterFailure
     {
         $jobAfterFailure = $this
             ->getMockBuilder(JobAfterFailure::class)
@@ -139,7 +139,7 @@ class RetriableExceptionFilterTest extends TestCase
         $jobAfterFailure
             ->expects($this->any())
             ->method('causeOfFailure')
-            ->will($this->returnValue($exception))
+            ->willReturn($exception)
         ;
 
         return $jobAfterFailure;

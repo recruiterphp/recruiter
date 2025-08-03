@@ -12,6 +12,7 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Job;
 use Recruiter\JobExecution;
 use Recruiter\JobToSchedule;
+use Recruiter\RetryPolicy\DoNotDoItAgain;
 use Recruiter\Workable;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Timeless as T;
@@ -439,7 +440,7 @@ class RepositoryTest extends TestCase
         return new JobToSchedule($job);
     }
 
-    private function workableMock()
+    private function workableMock(): MockObject&Workable
     {
         return $this
             ->getMockBuilder(Workable::class)
@@ -459,7 +460,7 @@ class RepositoryTest extends TestCase
         return $workable;
     }
 
-    private function jobExecutionMock($executionParameters)
+    private function jobExecutionMock(array $executionParameters): MockObject&JobExecution
     {
         $jobExecutionMock = $this
             ->getMockBuilder(JobExecution::class)
@@ -490,7 +491,7 @@ class RepositoryTest extends TestCase
                 'ended_at' => T\MongoDate::from($endedAt),
             ],
             'retry_policy' => [
-                'class' => \Recruiter\RetryPolicy\DoNotDoItAgain::class,
+                'class' => DoNotDoItAgain::class,
                 'parameters' => [],
             ],
         ];
