@@ -2,132 +2,149 @@
 
 namespace Recruiter\RetryPolicy;
 
-use Exception;
-use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\JobAfterFailure;
+use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilterTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&RetryPolicy $filteredRetryPolicy;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
     {
-        $this->filteredRetryPolicy = $this->createMock('Recruiter\RetryPolicy');
+        $this->filteredRetryPolicy = $this->createMock(RetryPolicy::class);
     }
 
-    public function testCallScheduleOnRetriableException()
+    /**
+     * @throws Exception
+     */
+    public function testCallScheduleOnRetriableException(): void
     {
-        $exception = $this->createMock('Exception');
-        $classOfException = get_class($exception);
+        $exception = $this->createMock(\Exception::class);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
         $this->filteredRetryPolicy
             ->expects($this->once())
-            ->method('schedule');
+            ->method('schedule')
+        ;
 
         $filter->schedule($this->jobFailedWithException($exception));
     }
 
-    public function testDoNotCallScheduleOnNonRetriableException()
+    public function testDoNotCallScheduleOnNonRetriableException(): void
     {
-        $exception = $this->createMock('Exception');
-        $classOfException = get_class($exception);
+        $exception = $this->createMock(\Exception::class);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
         $this->filteredRetryPolicy
             ->expects($this->never())
-            ->method('schedule');
+            ->method('schedule')
+        ;
 
-        $filter->schedule($this->jobFailedWithException(new Exception('Test')));
+        $filter->schedule($this->jobFailedWithException(new \Exception('Test')));
     }
 
-    public function testWhenExceptionIsNotRetriableThenArchiveTheJob()
+    public function testWhenExceptionIsNotRetriableThenArchiveTheJob(): void
     {
-        $exception = $this->createMock('Exception');
-        $classOfException = get_class($exception);
+        $exception = $this->createMock(\Exception::class);
+        $classOfException = $exception::class;
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy, [$classOfException]);
 
-        $job = $this->jobFailedWithException(new Exception('Test'));
+        $job = $this->jobFailedWithException(new \Exception('Test'));
         $job->expects($this->once())
             ->method('archive')
-            ->with('non-retriable-exception');
+            ->with('non-retriable-exception')
+        ;
 
         $filter->schedule($job);
     }
 
-    public function testAllExceptionsAreRetriableByDefault()
+    public function testAllExceptionsAreRetriableByDefault(): void
     {
         $this->filteredRetryPolicy
             ->expects($this->once())
-            ->method('schedule');
+            ->method('schedule')
+        ;
 
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy);
-        $filter->schedule($this->jobFailedWithException(new Exception('Test')));
+        $filter->schedule($this->jobFailedWithException(new \Exception('Test')));
     }
 
-    public function testJobFailedWithSomethingThatIsNotAnException()
+    public function testJobFailedWithSomethingThatIsNotAnException(): void
     {
         $jobAfterFailure = $this->jobFailedWithException(null);
         $jobAfterFailure
             ->expects($this->once())
-            ->method('archive');
+            ->method('archive')
+        ;
 
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy);
         $filter->schedule($jobAfterFailure);
     }
 
-    public function testExportFilteredRetryPolicy()
+    public function testExportFilteredRetryPolicy(): void
     {
         $this->filteredRetryPolicy
             ->expects($this->once())
             ->method('export')
-            ->will($this->returnValue(['key' => 'value']));
+            ->will($this->returnValue(['key' => 'value']))
+        ;
 
         $filter = new RetriableExceptionFilter($this->filteredRetryPolicy);
 
         $this->assertEquals(
             [
                 'retriable_exceptions' => ['Exception'],
-                'filtered_retry_policy' =>  [
-                    'class' => get_class($this->filteredRetryPolicy),
-                    'parameters' => ['key' => 'value']
-                ]
+                'filtered_retry_policy' => [
+                    'class' => $this->filteredRetryPolicy::class,
+                    'parameters' => ['key' => 'value'],
+                ],
             ],
-            $filter->export()
+            $filter->export(),
         );
     }
 
-    public function testImportRetryPolicy()
+    public function testImportRetryPolicy(): void
     {
         $filteredRetryPolicy = new DoNotDoItAgain();
         $filter = new RetriableExceptionFilter($filteredRetryPolicy);
         $exported = $filter->export();
 
         $filter = RetriableExceptionFilter::import($exported);
-        $filter->schedule($this->jobFailedWithException(new Exception('Test')));
+        $filter->schedule($this->jobFailedWithException(new \Exception('Test')));
 
         $this->assertEquals($exported, $filter->export());
     }
 
-    public function testRetriableExceptionsThatAreNotExceptions()
+    public function testRetriableExceptionsThatAreNotExceptions(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Only subclasses of Exception can be retriable exceptions, 'StdClass' is not");
         $retryPolicy = new DoNotDoItAgain();
         $notAnExceptionClass = 'StdClass';
         new RetriableExceptionFilter($retryPolicy, [$notAnExceptionClass]);
     }
 
-
-    private function jobFailedWithException($exception)
+    private function jobFailedWithException(mixed $exception): MockObject&JobAfterFailure
     {
         $jobAfterFailure = $this
-            ->getMockBuilder('Recruiter\JobAfterFailure')
+            ->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $jobAfterFailure
             ->expects($this->any())
             ->method('causeOfFailure')
-            ->will($this->returnValue($exception));
+            ->willReturn($exception)
+        ;
 
         return $jobAfterFailure;
     }

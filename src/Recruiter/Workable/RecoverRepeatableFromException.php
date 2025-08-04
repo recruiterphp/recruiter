@@ -1,7 +1,7 @@
 <?php
+
 namespace Recruiter\Workable;
 
-use Exception;
 use Recruiter\Repeatable;
 use Recruiter\WorkableBehaviour;
 
@@ -9,24 +9,14 @@ class RecoverRepeatableFromException implements Repeatable
 {
     use WorkableBehaviour;
 
-    protected $recoverForClass;
-    protected $recoverForException;
-
-    public function __construct($parameters, $recoverForClass, $recoverForException)
+    public function __construct($parameters, protected $recoverForClass, protected $recoverForException)
     {
         $this->parameters = $parameters;
-        $this->recoverForClass = $recoverForClass;
-        $this->recoverForException = $recoverForException;
     }
 
-    public function execute()
+    public function execute(): never
     {
-        throw new \Exception(
-            'This job failed while instantiating a workable of class: ' . $this->recoverForClass . PHP_EOL .
-            'Original exception: ' . get_class($this->recoverForException) . PHP_EOL .
-            $this->recoverForException->getMessage() . PHP_EOL .
-            $this->recoverForException->getTraceAsString() . PHP_EOL
-        );
+        throw new \Exception('This job failed while instantiating a workable of class: ' . $this->recoverForClass . PHP_EOL . 'Original exception: ' . $this->recoverForException::class . PHP_EOL . $this->recoverForException->getMessage() . PHP_EOL . $this->recoverForException->getTraceAsString() . PHP_EOL);
     }
 
     public function getClass()
@@ -38,6 +28,7 @@ class RecoverRepeatableFromException implements Repeatable
     {
         $recoverForInstance = new $this->recoverForClass($this->parameters);
         assert($recoverForInstance instanceof Repeatable);
+
         return $recoverForInstance->urn();
     }
 
@@ -45,6 +36,7 @@ class RecoverRepeatableFromException implements Repeatable
     {
         $recoverForInstance = new $this->recoverForClass($this->parameters);
         assert($recoverForInstance instanceof Repeatable);
+
         return $recoverForInstance->unique();
     }
 }

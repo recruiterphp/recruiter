@@ -2,44 +2,26 @@
 
 namespace Recruiter;
 
-use MongoDB\BSON\ObjectId;
-use Recruiter\Scheduler\Repository;
 use Recruiter\Job\Repository as JobsRepository;
-use Recruiter\RetryPolicy;
-use RuntimeException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Throwable;
+use Recruiter\Scheduler\Repository;
 use Timeless as T;
-use Timeless\Interval;
-use Timeless\Moment;
 
 class Scheduler
 {
     private $job;
 
-    private $schedulers;
-
-    private $status;
-
-    private $schedulePolicy;
-
-    private $repeatable;
-
-    private $retryPolicy;
-
     public static function around(Repeatable $repeatable, Repository $repository, Recruiter $recruiter)
     {
         $retryPolicy = ($repeatable instanceof Retriable) ?
             $repeatable->retryWithPolicy() :
-            new RetryPolicy\DoNotDoItAgain()
-        ;
+            new RetryPolicy\DoNotDoItAgain();
 
         return new self(
             self::initialize(),
             $repeatable,
             null,
             $retryPolicy,
-            $repository
+            $repository,
         );
     }
 
@@ -50,22 +32,12 @@ class Scheduler
             RepeatableInJob::import($document['job']),
             SchedulePolicyInJob::import($document),
             RetryPolicyInJob::import($document['job']),
-            $repository
+            $repository,
         );
     }
 
-    public function __construct(
-        array $status,
-        Repeatable $repeatable,
-        ?SchedulePolicy $schedulePolicy,
-        ?RetryPolicy $retryPolicy,
-        Repository $schedulers
-    ) {
-        $this->status = $status;
-        $this->repeatable = $repeatable;
-        $this->schedulePolicy = $schedulePolicy;
-        $this->retryPolicy = $retryPolicy;
-        $this->schedulers = $schedulers;
+    public function __construct(private array $status, private readonly Repeatable $repeatable, private ?SchedulePolicy $schedulePolicy, private ?RetryPolicy $retryPolicy, private readonly Repository $schedulers)
+    {
     }
 
     public function create()
@@ -103,9 +75,9 @@ class Scheduler
             [
                 'job' => array_merge(
                     WorkableInJob::export($this->repeatable, 'execute'),
-                    RetryPolicyInJob::export($this->retryPolicy)
+                    RetryPolicyInJob::export($this->retryPolicy),
                 ),
-            ]
+            ],
         );
     }
 
@@ -128,8 +100,9 @@ class Scheduler
 
         try {
             $alreadyScheduledJob = $jobs->scheduled($this->status['last_scheduling']['job_id']);
+
             return true;
-        } catch (Throwable $e) {
+        } catch (\Throwable) {
             return false;
         }
     }
@@ -137,7 +110,7 @@ class Scheduler
     public function schedule(JobsRepository $jobs)
     {
         if (!$this->schedulePolicy) {
-            throw new RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
+            throw new \RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
         }
 
         $nextScheduling = $this->schedulePolicy->next();
@@ -151,10 +124,10 @@ class Scheduler
 
         $this->status['last_scheduling']['scheduled_at'] = T\MongoDate::from($nextScheduling);
         $this->status['last_scheduling']['job_id'] = null;
-        $this->status['attempts'] = $this->status['attempts'] + 1;
+        ++$this->status['attempts'];
         $this->schedulers->save($this);
 
-        $jobToSchedule = (new JobToSchedule(Job::around($this->repeatable, $jobs)))
+        $jobToSchedule = new JobToSchedule(Job::around($this->repeatable, $jobs))
             ->scheduleAt($nextScheduling)
             ->retryWithPolicy($this->retryPolicy)
             ->scheduledBy('scheduler', $this->status['urn'], $this->status['attempts'])
@@ -169,7 +142,7 @@ class Scheduler
     {
         $this->retryPolicy = $this->filterForRetriableExceptions(
             $retryPolicy,
-            $retriableExceptionTypes
+            $retriableExceptionTypes,
         );
 
         return $this;

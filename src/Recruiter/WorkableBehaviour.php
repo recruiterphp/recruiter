@@ -2,33 +2,28 @@
 
 namespace Recruiter;
 
-use Exception;
-
 trait WorkableBehaviour
 {
-    protected $parameters;
-
-    public function __construct($parameters = [])
+    final public function __construct(protected array $parameters = [])
     {
-        $this->parameters = $parameters;
     }
 
-    public function asJobOf(Recruiter $recruiter)
+    public function asJobOf(Recruiter $recruiter): JobToSchedule
     {
         return $recruiter->jobOf($this);
     }
 
-    public function execute()
+    public function execute(): never
     {
-        throw new Exception('Workable::execute() need to be implemented');
+        throw new \Exception('Workable::execute() need to be implemented');
     }
 
-    public function export()
+    public function export(): array
     {
         return $this->parameters;
     }
 
-    public static function import($parameters)
+    public static function import(array $parameters): static
     {
         return new static($parameters);
     }

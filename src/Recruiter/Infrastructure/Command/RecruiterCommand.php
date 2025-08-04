@@ -1,11 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
-use DateTimeImmutable;
-use Exception;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use Recruiter\Concurrency\MongoLock;
+use Recruiter\Factory;
 use Recruiter\Geezer\Command\LeadershipEventsHandler;
 use Recruiter\Geezer\Command\RobustCommand;
 use Recruiter\Geezer\Command\RobustCommandRunner;
@@ -13,65 +16,25 @@ use Recruiter\Geezer\Leadership\Dictatorship;
 use Recruiter\Geezer\Leadership\LeadershipStrategy;
 use Recruiter\Geezer\Timing\ExponentialBackoffStrategy;
 use Recruiter\Geezer\Timing\WaitStrategy;
-use Recruiter\Concurrency\MongoLock;
-use Psr\Log\LogLevel;
-use Psr\Log\LoggerInterface;
-use Recruiter\Factory;
 use Recruiter\Infrastructure\Filesystem\BootstrapFile;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Throwable;
 use Timeless\Interval;
 
 class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
+    private Recruiter $recruiter;
+    private Interval $consideredDeadAfter;
+    private LeadershipStrategy $leadershipStrategy;
+    private WaitStrategy $waitStrategy;
+    private MemoryLimit $memoryLimit;
 
-    /**
-     * @var Recruiter
-     */
-    private $recruiter;
-
-    /**
-     * @var Interval
-     */
-    private $consideredDeadAfter;
-
-    /**
-     * @var LeadershipStrategy
-     */
-    private $leadershipStrategy;
-
-    /**
-     * @var WaitStrategy
-     */
-    private $waitStrategy;
-
-    /**
-     * @var MemoryLimit
-     */
-    private $memoryLimit;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param mixed $factory
-     */
-    public function __construct($factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     public static function toRobustCommand(Factory $factory, LoggerInterface $logger): RobustCommandRunner
@@ -89,7 +52,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         return count($assignment) > 0;
     }
 
-    private function rollbackLockedJobs()
+    private function rollbackLockedJobs(): void
     {
         $rollbackStartAt = microtime(true);
         $rolledBack = $this->recruiter->rollbackLockedJobs();
@@ -102,7 +65,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
     private function assignJobsToWorkers(): array
     {
         $pickStartAt = microtime(true);
-        list($assignment, $actualNumber) = $this->recruiter->assignJobsToWorkers();
+        [$assignment, $actualNumber] = $this->recruiter->assignJobsToWorkers();
         $pickEndAt = microtime(true);
         foreach ($assignment as $worker => $job) {
             $this->log(sprintf(' tried to assign job `%s` to worker `%s`', $job, $worker), LogLevel::INFO);
@@ -114,7 +77,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
             $memoryUsage->format(),
             count($assignment),
             ($pickEndAt - $pickStartAt) * 1000,
-            $actualNumber
+            $actualNumber,
         ), LogLevel::DEBUG);
 
         $this->memoryLimit->ensure($memoryUsage);
@@ -128,27 +91,27 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         $this->recruiter->scheduleRepeatableJobs();
         $creationEndAt = microtime(true);
 
-        //FIXME:! log every job created?
+        // FIXME:! log every job created?
         /* foreach ($assignment as $worker => $job) { */
         /*     $this->log(sprintf(' tried to assign job `%s` to worker `%s`', $job, $worker)); */
         /* } */
 
         $this->log(sprintf(
             'creation of jobs from crontab in %fms',
-            ($creationEndAt - $creationStartAt) * 1000
+            ($creationEndAt - $creationStartAt) * 1000,
         ));
     }
 
-    private function retireDeadWorkers()
+    private function retireDeadWorkers(): void
     {
         $unlockedJobs = $this->recruiter->retireDeadWorkers(
-            new DateTimeImmutable(),
-            $this->consideredDeadAfter
+            new \DateTimeImmutable(),
+            $this->consideredDeadAfter,
         );
         $this->log(sprintf('unlocked %d jobs due to dead workers', $unlockedJobs), LogLevel::DEBUG);
     }
 
-    public function shutdown(?Throwable $e = null): bool
+    public function shutdown(?\Throwable $e = null): bool
     {
         $this->recruiter->bye();
         $this->log('ok, see you space cowboy...', LogLevel::INFO);
@@ -183,8 +146,10 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 
     public function definition(): InputDefinition
     {
+        $defaultMongoUri = (string) MongoURI::fromEnvironment();
+
         return new InputDefinition([
-            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', 'mongodb://localhost:27017/recruiter'),
+            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', $defaultMongoUri),
             new InputOption('backoff-to', 'b', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling (milliseconds)', '1600ms'),
             new InputOption('backoff-from', 'f', InputOption::VALUE_REQUIRED, 'Time to wait at least before to search for new jobs (milliseconds)', '200ms'),
             new InputOption('lease-time', 'l', InputOption::VALUE_REQUIRED, 'Maximum time to hold a lock before a refresh', '60s'),
@@ -206,7 +171,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
 
         $this->waitStrategy = new ExponentialBackoffStrategy(
             Interval::parse($input->getOption('backoff-from'))->ms(),
-            Interval::parse($input->getOption('backoff-to'))->ms()
+            Interval::parse($input->getOption('backoff-to'))->ms(),
         );
 
         $this->consideredDeadAfter = Interval::parse($input->getOption('considered-dead-after'));
@@ -233,7 +198,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
                 'program' => $this->name(),
                 'datetime' => date('c'),
                 'pid' => posix_getpid(),
-            ]
+            ],
         );
     }
 

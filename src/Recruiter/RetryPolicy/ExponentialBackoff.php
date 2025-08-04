@@ -3,26 +3,24 @@
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
-
 use Timeless as T;
 use Timeless\Interval;
 
 class ExponentialBackoff implements RetryPolicy
 {
-    private $retryHowManyTimes;
-    private $timeToInitiallyWaitBeforeRetry;
-
     use RetryPolicyBehaviour;
 
-    public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60)
+    private Interval $timeToInitiallyWaitBeforeRetry;
+
+    public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function atFirstWaiting($timeToInitiallyWaitBeforeRetry)
+    public function atFirstWaiting($timeToInitiallyWaitBeforeRetry): static
     {
         return new static($this->retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
@@ -31,31 +29,31 @@ class ExponentialBackoff implements RetryPolicy
      * @params integer $interval  in seconds
      * @params integer $timeToWaitBeforeRetry  in seconds
      */
-    public static function forAnInterval($interval, $timeToInitiallyWaitBeforeRetry)
+    public static function forAnInterval($interval, $timeToInitiallyWaitBeforeRetry): static
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);
         }
         $numberOfRetries = round(
             log($interval / $timeToInitiallyWaitBeforeRetry->seconds())
-            / log(2)
+            / log(2),
         );
+
         return new static($numberOfRetries, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function __construct($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry)
+    public function __construct(private $retryHowManyTimes, int|Interval $timeToInitiallyWaitBeforeRetry)
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);
         }
-        $this->retryHowManyTimes = $retryHowManyTimes;
         $this->timeToInitiallyWaitBeforeRetry = $timeToInitiallyWaitBeforeRetry;
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         if ($job->numberOfAttempts() <= $this->retryHowManyTimes) {
-            $retryInterval = T\seconds(pow(2, $job->numberOfAttempts() - 1) * $this->timeToInitiallyWaitBeforeRetry->seconds());
+            $retryInterval = T\seconds(2 ** ($job->numberOfAttempts() - 1) * $this->timeToInitiallyWaitBeforeRetry->seconds());
             $job->scheduleIn($retryInterval);
         } else {
             $job->archive('tried-too-many-times');
@@ -66,7 +64,7 @@ class ExponentialBackoff implements RetryPolicy
     {
         return [
             'retry_how_many_times' => $this->retryHowManyTimes,
-            'seconds_to_initially_wait_before_retry' => $this->timeToInitiallyWaitBeforeRetry->seconds()
+            'seconds_to_initially_wait_before_retry' => $this->timeToInitiallyWaitBeforeRetry->seconds(),
         ];
     }
 
@@ -74,7 +72,7 @@ class ExponentialBackoff implements RetryPolicy
     {
         return new self(
             $parameters['retry_how_many_times'],
-            T\seconds($parameters['seconds_to_initially_wait_before_retry'])
+            T\seconds($parameters['seconds_to_initially_wait_before_retry']),
         );
     }
 

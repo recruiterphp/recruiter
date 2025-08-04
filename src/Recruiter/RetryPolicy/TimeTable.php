@@ -3,23 +3,21 @@
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
-
 use Timeless as T;
-
-use Exception;
 
 class TimeTable implements RetryPolicy
 {
-    /** @var array */
-    private $timeTable;
-
-    private $howManyRetries;
-
     use RetryPolicyBehaviour;
+    private ?array $timeTable;
 
+    private int $howManyRetries;
+
+    /**
+     * @throws \Exception
+     */
     public function __construct(?array $timeTable)
     {
         if (is_null($timeTable)) {
@@ -33,7 +31,7 @@ class TimeTable implements RetryPolicy
         $this->howManyRetries = self::estimateHowManyRetriesIn($timeTable);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         foreach ($this->timeTable as $timeSpent => $rescheduleIn) {
             if ($this->hasBeenCreatedLessThan($job, $timeSpent)) {
@@ -47,6 +45,7 @@ class TimeTable implements RetryPolicy
     {
         $timeSpents = array_keys($this->timeTable);
         $timeSpent = end($timeSpents);
+
         return !$this->hasBeenCreatedLessThan($job, $timeSpent);
     }
 
@@ -63,42 +62,37 @@ class TimeTable implements RetryPolicy
     private function hasBeenCreatedLessThan($job, $relativeTime)
     {
         return $job->createdAt()->isAfter(
-            T\Moment::fromTimestamp(strtotime($relativeTime, T\now()->seconds()))
+            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
         );
     }
 
-    private function rescheduleIn($job, $relativeTime)
+    private function rescheduleIn($job, $relativeTime): void
     {
         $job->scheduleAt(
-            T\Moment::fromTimestamp(strtotime($relativeTime, T\now()->seconds()))
+            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
         );
     }
 
-    private static function estimateHowManyRetriesIn($timeTable)
+    private static function estimateHowManyRetriesIn(array $timeTable): int
     {
         $now = T\now()->seconds();
         $howManyRetries = 0;
         $timeWindowInSeconds = 0;
         foreach ($timeTable as $timeWindow => $rescheduleTime) {
-            $timeWindowInSeconds = ($now - strtotime($timeWindow, $now)) - $timeWindowInSeconds;
+            $timeWindowInSeconds = ($now - strtotime((string) $timeWindow, $now)) - $timeWindowInSeconds;
             if ($timeWindowInSeconds <= 0) {
-                throw new Exception(
-                    "Time window `$timeWindow` is invalid, must be in the past"
-                );
+                throw new \Exception("Time window `$timeWindow` is invalid, must be in the past");
             }
-            $rescheduleTimeInSeconds = (strtotime($rescheduleTime, $now) - $now);
+            $rescheduleTimeInSeconds = (strtotime((string) $rescheduleTime, $now) - $now);
             if ($rescheduleTimeInSeconds <= 0) {
-                throw new Exception(
-                    "Reschedule time `$rescheduleTime` is invalid, must be in the future"
-                );
+                throw new \Exception("Reschedule time `$rescheduleTime` is invalid, must be in the future");
             }
             if ($rescheduleTimeInSeconds > $timeWindowInSeconds) {
-                throw new Exception(
-                    "Reschedule time `$rescheduleTime` is invalid, must be greater than the time window"
-                );
+                throw new \Exception("Reschedule time `$rescheduleTime` is invalid, must be greater than the time window");
             }
             $howManyRetries += floor($timeWindowInSeconds / $rescheduleTimeInSeconds);
         }
+
         return $howManyRetries;
     }
 }

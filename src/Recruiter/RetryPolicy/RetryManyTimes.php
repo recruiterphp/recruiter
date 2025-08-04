@@ -1,36 +1,34 @@
 <?php
+
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
-
 use Timeless as T;
 use Timeless\Interval;
 
 class RetryManyTimes implements RetryPolicy
 {
-    private $retryHowManyTimes;
-    private $timeToWaitBeforeRetry;
-
     use RetryPolicyBehaviour;
 
-    public function __construct($retryHowManyTimes, $timeToWaitBeforeRetry)
+    private Interval $timeToWaitBeforeRetry;
+
+    public function __construct(private readonly int $retryHowManyTimes, int|Interval $timeToWaitBeforeRetry)
     {
         if (!($timeToWaitBeforeRetry instanceof Interval)) {
             $timeToWaitBeforeRetry = T\seconds($timeToWaitBeforeRetry);
         }
-        $this->retryHowManyTimes = $retryHowManyTimes;
         $this->timeToWaitBeforeRetry = $timeToWaitBeforeRetry;
     }
 
-    public static function forTimes($retryHowManyTimes, $timeToWaitBeforeRetry = 60)
+    public static function forTimes($retryHowManyTimes, int|Interval $timeToWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToWaitBeforeRetry);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         if ($job->numberOfAttempts() <= $this->retryHowManyTimes) {
             $job->scheduleIn($this->timeToWaitBeforeRetry);
@@ -43,7 +41,7 @@ class RetryManyTimes implements RetryPolicy
     {
         return [
             'retry_how_many_times' => $this->retryHowManyTimes,
-            'seconds_to_wait_before_retry' => $this->timeToWaitBeforeRetry->seconds()
+            'seconds_to_wait_before_retry' => $this->timeToWaitBeforeRetry->seconds(),
         ];
     }
 
@@ -51,7 +49,7 @@ class RetryManyTimes implements RetryPolicy
     {
         return new self(
             $parameters['retry_how_many_times'],
-            T\seconds($parameters['seconds_to_wait_before_retry'])
+            T\seconds($parameters['seconds_to_wait_before_retry']),
         );
     }
 

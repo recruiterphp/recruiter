@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command\Bko;
@@ -9,9 +10,7 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableStyle;
-use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,33 +18,14 @@ use Symfony\Component\Console\Terminal;
 
 class AnalyticsCommand extends Command
 {
-    /**
-     * @var Recruiter
-     */
-    private $recruiter;
+    private Recruiter $recruiter;
 
-    /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param Factory $factory
-     * @param LoggerInterface $logger
-     */
-    public function __construct(Factory $factory, LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('bko:analytics')
@@ -55,18 +35,18 @@ class AnalyticsCommand extends Command
                 't',
                 InputOption::VALUE_REQUIRED,
                 'HOSTNAME[:PORT][/DB] MongoDB coordinates',
-                'mongodb://localhost:27017/recruiter'
+                (string) MongoURI::fromEnvironment(),
             )
             ->addOption(
                 'group',
                 'g',
                 InputOption::VALUE_REQUIRED,
-                'limit analytics to a specific job group'
+                'limit analytics to a specific job group',
             )
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string */
         $target = $input->getOption('target');
@@ -88,7 +68,7 @@ class AnalyticsCommand extends Command
                 ->setRows([array_values($analytic)])
             ;
 
-            for ($i = 0; $i < count($analytic); $i++) {
+            for ($i = 0; $i < count($analytic); ++$i) {
                 $table->setColumnStyle($i, $rightAligned);
                 $table->setColumnWidth($i, $columnsWidth);
             }
@@ -96,6 +76,8 @@ class AnalyticsCommand extends Command
             $table->render();
             echo PHP_EOL;
         }
+
+        return self::SUCCESS;
     }
 
     private function calculateColumnsWidth(array $analytics): int
@@ -105,8 +87,8 @@ class AnalyticsCommand extends Command
             $maxColumns = max($maxColumns, count($analytic));
         }
 
-        // casual constants, found by try and error
-        $terminalWidth = (new Terminal())->getWidth() - (($maxColumns + 2) * 2);
+        // casual constants, found by trial and error
+        $terminalWidth = new Terminal()->getWidth() - (($maxColumns + 2) * 2);
 
         return intval(floor($terminalWidth / $maxColumns));
     }

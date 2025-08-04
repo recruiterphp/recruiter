@@ -1,24 +1,30 @@
 <?php
+
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Recruiter\Workable\AlwaysFail;
-use RuntimeException;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
+use Recruiter\Job\Repository;
+use Recruiter\Workable\AlwaysFail;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&Repository $repository;
+
+    protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
-    public function testRetryStatisticsOnFirstExecution()
+    public function testRetryStatisticsOnFirstExecution(): void
     {
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         $retryStatistics = $job->retryStatistics();
         $this->assertIsArray($retryStatistics);
         $this->assertArrayHasKey('job_id', $retryStatistics);
@@ -32,11 +38,11 @@ class JobTest extends TestCase
     /**
      * @depends testRetryStatisticsOnFirstExecution
      */
-    public function testRetryStatisticsOnSubsequentExecutions()
+    public function testRetryStatisticsOnSubsequentExecutions(): void
     {
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         // maybe make the argument optional
-        $job->execute($this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface'));
+        $job->execute($this->createMock(EventDispatcherInterface::class));
         $job = Job::import($job->export(), $this->repository);
         $retryStatistics = $job->retryStatistics();
         $this->assertEquals(1, $retryStatistics['retry_number']);
@@ -49,14 +55,14 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('message', $lastExecution);
         $this->assertArrayHasKey('trace', $lastExecution);
         $this->assertEquals("Sorry, I'm good for nothing", $lastExecution['message']);
-        $this->assertRegexp("/.*AlwaysFail->execute.*/", $lastExecution['trace']);
+        $this->assertMatchesRegularExpression('/.*AlwaysFail->execute.*/', $lastExecution['trace']);
     }
 
-    public function testArrayAsGroupIsNotAllowed()
+    public function testArrayAsGroupIsNotAllowed(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
         $memoryLimit = new MemoryLimit(1);
-        $job = Job::around(new AlwaysFail, $this->repository);
+        $job = Job::around(new AlwaysFail(), $this->repository);
         $job->inGroup(['test']);
     }
 }

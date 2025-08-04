@@ -1,13 +1,14 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
 use Recruiter\Workable\AlwaysFail;
 use Recruiter\Workable\FactoryMethodCommand;
 use Timeless as T;
 
-class SyncronousExecutionTest extends BaseAcceptanceTest
+class SyncronousExecutionTest extends BaseAcceptanceTestCase
 {
-    public function testJobsAreExecutedInOrderOfScheduling()
+    public function testJobsAreExecutedInOrderOfScheduling(): void
     {
         $this->enqueueAnAnswerJob(43, T\now()->after(T\seconds(30)));
 
@@ -21,12 +22,13 @@ class SyncronousExecutionTest extends BaseAcceptanceTest
         $this->assertEquals(43, end($results)->result());
     }
 
-    public function testAReportIsReturnedInOrderToSortOutIfAnErrorOccured()
+    public function testAReportIsReturnedInOrderToSortOutIfAnErrorOccured(): void
     {
-        (new AlwaysFail())
+        new AlwaysFail()
             ->asJobOf($this->recruiter)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
 
         $report = $this->recruiter->flushJobsSynchronously();
 
@@ -40,7 +42,8 @@ class SyncronousExecutionTest extends BaseAcceptanceTest
             ->asJobOf($this->recruiter)
             ->scheduleAt($scheduledAt)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 }
 

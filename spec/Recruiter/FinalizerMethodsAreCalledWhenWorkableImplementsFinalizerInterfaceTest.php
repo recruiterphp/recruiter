@@ -2,59 +2,77 @@
 
 namespace Recruiter;
 
-use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Job\Repository;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&Repository $repository;
+    private MockObject&EventDispatcherInterface $dispatcher;
+    private ListenerSpy $listener;
+
+    /**
+     * @throws \PHPUnit\Framework\MockObject\Exception
+     */
+    protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
-        $this->dispatcher = $this->createMock(
-            'Symfony\Component\EventDispatcher\EventDispatcherInterface'
-        );
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->listener = new ListenerSpy();
     }
 
-    public function testFinalizableFailureMethodsAreCalledWhenJobFails()
+    public function testFinalizableFailureMethodsAreCalledWhenJobFails(): void
     {
         $exception = new \Exception('job was failed');
-        $listener = $this->createPartialMock('StdClass', ['methodWasCalled']);
-        $listener
-            ->expects($this->exactly(3))
-            ->method('methodWasCalled')
-            ->withConsecutive(
-                [$this->equalTo('afterFailure'), $exception],
-                [$this->equalTo('afterLastFailure'), $exception],
-                [$this->equalTo('finalize'), $exception]
-            );
-        $workable = new FinalizableWorkable(function () use ($exception) {
+
+        $workable = new FinalizableWorkable(function () use ($exception): void {
             throw $exception;
-        }, $listener);
+        }, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $calls = $this->listener->calls;
+        $this->assertCount(3, $calls);
+
+        $this->assertSame('afterFailure', $calls[0][0]);
+        $this->assertSame($exception, $calls[0][1]);
+
+        $this->assertSame('afterLastFailure', $calls[1][0]);
+        $this->assertSame($exception, $calls[1][1]);
+
+        $this->assertSame('finalize', $calls[2][0]);
+        $this->assertSame($exception, $calls[2][1]);
     }
 
-    public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone()
+    public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone(): void
     {
-        $listener = $this->createPartialMock('StdClass', ['methodWasCalled']);
-        $listener
-            ->expects($this->exactly(2))
-            ->method('methodWasCalled')
-            ->withConsecutive(
-                [$this->equalTo('afterSuccess')],
-                [$this->equalTo('finalize')]
-            );
-        $workable = new FinalizableWorkable(function () {
-            return true;
-        }, $listener);
+        $workable = new FinalizableWorkable(fn () => true, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $calls = $this->listener->calls;
+        $this->assertCount(2, $calls);
+        $this->assertSame('afterSuccess', $calls[0][0]);
+        $this->assertSame('finalize', $calls[1][0]);
+    }
+}
+
+class ListenerSpy
+{
+    public array $calls = [];
+
+    public function methodWasCalled(string $name, ?\Throwable $exception = null): void
+    {
+        $this->calls[] = [$name, $exception];
     }
 }
 
@@ -65,36 +83,35 @@ class FinalizableWorkable implements Workable, Finalizable
 
     private $whatToDo;
 
-    private $listener;
-
-    public function __construct(callable $whatToDo, $listener)
+    public function __construct(callable $whatToDo, private $listener)
     {
-        $this->listener = $listener;
+        $this->parameters = [];
         $this->whatToDo = $whatToDo;
     }
 
-    public function execute()
+    public function execute(): mixed
     {
         $whatToDo = $this->whatToDo;
+
         return $whatToDo();
     }
 
-    public function afterSuccess()
+    public function afterSuccess(): void
     {
         $this->listener->methodWasCalled(__FUNCTION__);
     }
 
-    public function afterFailure(Exception $e)
+    public function afterFailure(\Exception $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function afterLastFailure(Exception $e)
+    public function afterLastFailure(\Exception $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function finalize(?Exception $e = null)
+    public function finalize(?\Exception $e = null): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }

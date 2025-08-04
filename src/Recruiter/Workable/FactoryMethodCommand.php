@@ -1,16 +1,18 @@
 <?php
+
 namespace Recruiter\Workable;
 
-use Recruiter\Workable;
+use Recruiter\JobToSchedule;
 use Recruiter\Recruiter;
+use Recruiter\Workable;
 
 class FactoryMethodCommand implements Workable
 {
-    public static function from(/*$callable[, $argument, $argument...]*/)
+    public static function from(/* $callable[, $argument, $argument...] */)
     {
         $arguments = func_get_args();
         $callable = array_shift($arguments);
-        list ($class, $method) = explode("::", $callable);
+        [$class, $method] = explode('::', (string) $callable);
 
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }
@@ -18,7 +20,7 @@ class FactoryMethodCommand implements Workable
     private static function singleStep($step)
     {
         return new self([
-            $step
+            $step,
         ]);
     }
 
@@ -35,14 +37,11 @@ class FactoryMethodCommand implements Workable
         return $step;
     }
 
-    private $steps;
-
-    private function __construct(array $steps = [])
+    private function __construct(private array $steps = [])
     {
-        $this->steps = $steps;
     }
 
-    public function asJobOf(Recruiter $recruiter)
+    public function asJobOf(Recruiter $recruiter): JobToSchedule
     {
         return $recruiter->jobOf($this);
     }
@@ -58,9 +57,9 @@ class FactoryMethodCommand implements Workable
                 $callable = [$result, $step['method']];
             }
             if (!is_callable($callable)) {
-                $message = "The following step does not result in a callable: " . var_export($step, true) . ".";
+                $message = 'The following step does not result in a callable: ' . var_export($step, true) . '.';
                 if (is_object($result)) {
-                    $message .= ' Reached object: ' . get_class($result);
+                    $message .= ' Reached object: ' . $result::class;
                 } else {
                     $message .= ' Reached value: ' . var_export($result, true);
                 }
@@ -72,15 +71,16 @@ class FactoryMethodCommand implements Workable
             }
             $result = call_user_func_array(
                 $callable,
-                $arguments
+                $arguments,
             );
         }
+
         return $result;
     }
 
     private function arguments($step)
     {
-        $arguments = isset($step['arguments']) ? $step['arguments'] : [];
+        $arguments = $step['arguments'] ?? [];
 
         return $arguments;
     }
@@ -94,18 +94,19 @@ class FactoryMethodCommand implements Workable
             $step['arguments'] = $arguments;
         }
         $this->steps[] = $step;
+
         return $this;
     }
 
-    public function export()
+    public function export(): array
     {
         return [
             'steps' => $this->steps,
         ];
     }
 
-    public static function import($document)
+    public static function import(array $parameters): static
     {
-        return new self($document['steps']);
+        return new self($parameters['steps']);
     }
 }

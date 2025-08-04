@@ -1,6 +1,7 @@
 {
   "name": "recruiterphp/recruiter",
   "description": "Job Queue Manager: high performance, high volume, persistent, fault tolerant. 100% PHP/MongoDB, 100% Awesome",
+  "license": "MIT",
   "type": "project",
   "keywords": [
     "job",
@@ -13,8 +14,6 @@
     "manager",
     "mongodb"
   ],
-  "homepage": "https://github.com/recruiterphp/recruiter",
-  "license": "MIT",
   "authors": [
     {
       "name": "gabriele.lana",
@@ -25,44 +24,57 @@
       "homepage": "https://github.com/recruiterphp/recruiter/graphs/contributors"
     }
   ],
+  "homepage": "https://github.com/recruiterphp/recruiter",
   "require": {
-    "php": "~7.2",
+    "php": "^8.4",
+    "ext-bcmath": "*",
     "ext-mongodb": ">=1.1",
-    "alcaeus/mongo-php-adapter": "^1.1",
-    "recruiterphp/geezer": "^5",
-    "gabrielelana/byte-units": "~0.1",
-    "monolog/monolog": ">=1",
-    "recruiterphp/concurrency": "^3.0",
-    "psr/log": "^1.0",
-    "symfony/console": "^4.2",
-    "symfony/event-dispatcher": "^3.4|^4.0",
-    "ulrichsg/getopt-php": "~2.1",
-    "mongodb/mongodb": "^1.4",
-    "mtdowling/cron-expression": "^1.2"
+    "ext-posix": "*",
+    "dragonmantank/cron-expression": "^3.4",
+    "gabrielelana/byte-units": "^0.5",
+    "mongodb/mongodb": "^2.1",
+    "monolog/monolog": "^3.9",
+    "psr/log": "^3.0",
+    "recruiterphp/concurrency": "^5.0",
+    "recruiterphp/geezer": "^7.0",
+    "symfony/console": "^7.3",
+    "symfony/event-dispatcher": "^7.3",
+    "ulrichsg/getopt-php": "^4.0"
+  },
+  "require-dev": {
+    "ext-pcntl": "*",
+    "dms/phpunit-arraysubset-asserts": "^0.5",
+    "ergebnis/composer-normalize": "^2.47",
+    "friendsofphp/php-cs-fixer": "^3.85",
+    "giorgiosironi/eris": "^1.0",
+    "phpstan/phpstan": "*",
+    "phpunit/phpunit": "^10.0",
+    "rector/rector": "^2.1",
+    "symfony/var-dumper": "^7.3"
   },
   "suggest": {
     "symfony/console": "In order to use Recruiter\\Command\\RecruiterJobCommand."
   },
-  "require-dev": {
-    "phpunit/phpunit": "^8",
-    "phpstan/phpstan": "*",
-    "giorgiosironi/eris": "dev-master",
-    "dms/phpunit-arraysubset-asserts": "^0.1.0"
-  },
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "bin": [
-    "bin/recruiter"
-  ],
   "autoload": {
     "psr-4": {
       "Recruiter\\": "src/Recruiter",
-      "Timeless\\": "src/Timeless",
-      "Sink\\": "src/Sink"
+      "Sink\\": "src/Sink",
+      "Timeless\\": "src/Timeless"
     },
     "files": [
       "src/Timeless/functions.php",
       "src/Recruiter/functions.php"
     ]
+  },
+  "bin": [
+    "bin/recruiter"
+  ],
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true
+    },
+    "sort-packages": true
   }
 }

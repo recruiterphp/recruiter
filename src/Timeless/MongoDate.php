@@ -1,4 +1,5 @@
 <?php
+
 namespace Timeless;
 
 use MongoDB\BSON\UTCDateTime as MongoUTCDateTime;
@@ -12,7 +13,7 @@ class MongoDate
         $microseconds = $milliseconds * 1000;
 
         return new MongoUTCDateTime(
-            intval($seconds * 1000 + $milliseconds)
+            intval($seconds * 1000 + $milliseconds),
         );
     }
 
