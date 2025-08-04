@@ -3,23 +3,25 @@
 namespace Recruiter\Acceptance;
 
 use Recruiter\Worker\Repository;
-use Recruiter\Recruiter;
 
-class WorkerRepositoryTest extends BaseAcceptanceTest
+class WorkerRepositoryTest extends BaseAcceptanceTestCase
 {
-    public function setUp(): void
+    private Repository $repository;
+
+    #[\Override]
+    protected function setUp(): void
     {
         parent::setUp();
         $this->repository = new Repository(
             $this->recruiterDb,
-            $this->recruiter
+            $this->recruiter,
         );
     }
 
     /**
      * @group acceptance
      */
-    public function testRetireWorkerWithPid()
+    public function testRetireWorkerWithPid(): void
     {
         $this->givenWorkerWithPid(10);
         $this->assertEquals(1, $this->numberOfWorkers());

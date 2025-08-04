@@ -2,17 +2,16 @@
 
 namespace Recruiter\Acceptance;
 
-use Recruiter\Workable\FactoryMethodCommand;
-use Recruiter\Workable\ThrowsFatalError;
+use Recruiter\Workable\ExitsAbruptly;
 
-class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcceptanceTest
+class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance
      */
-    public function testInCaseOfExceptionTheExitCodeOfWorkerProcessIsNotZero()
+    public function testInCaseOfExceptionTheExitCodeOfWorkerProcessIsNotZero(): void
     {
-        (new ThrowsFatalError())
+        new ExitsAbruptly()
             ->asJobOf($this->recruiter)
             ->inBackground()
             ->execute()
@@ -21,7 +20,7 @@ class WorkerGuaranteedToExitWithFailureCodeInCaseOfExceptionTest extends BaseAcc
         $worker = $this->startWorker();
         $workerProcess = $worker[0];
         $this->waitForNumberOfWorkersToBe(1);
-        list ($assignments, $_) = $this->recruiter->assignJobsToWorkers();
+        [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertEquals(1, count($assignments));
         $this->waitForNumberOfWorkersToBe(0, $seconds = 10);
 

@@ -2,69 +2,56 @@
 
 namespace Recruiter;
 
-use MongoDB;
+use MongoDB\Database;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 
 class FactoryTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
-
-    /**
-     * @var string
-     */
-    private $dbHost;
-
-    /**
-     * @var string
-     */
-    private $dbName;
+    private Factory $factory;
+    private MongoURI $mongoURI;
 
     protected function setUp(): void
     {
         $this->factory = new Factory();
-        $this->dbHost = 'localhost:27017';
-        $this->dbName = 'recruiter';
+        $this->mongoURI = MongoURI::fromEnvironment();
     }
 
-    public function testShouldCreateAMongoDatabaseConnection()
+    public function testShouldCreateAMongoDatabaseConnection(): void
     {
         $this->assertInstanceOf(
-            'MongoDB\Database',
-            $this->creationOfDefaultMongoDb()
+            Database::class,
+            $this->creationOfDefaultMongoDb(),
         );
     }
 
-    public function testWriteConcernIsMajorityByDefault()
+    public function testWriteConcernIsMajorityByDefault(): void
     {
         $mongoDb = $this->creationOfDefaultMongoDb();
         $this->assertEquals('majority', $mongoDb->getWriteConcern()->getW());
     }
 
-    public function testShouldOverwriteTheWriteConcernPassedInTheOptions()
+    public function testShouldOverwriteTheWriteConcernPassedInTheOptions(): void
     {
         $mongoDb = $this->factory->getMongoDb(
-            MongoURI::from('mongodb://localhost:27017/recruiter'),
+            $this->mongoURI,
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',
-            ]
+            ],
         );
 
         $this->assertEquals('majority', $mongoDb->getWriteConcern()->getW());
     }
 
-    private function creationOfDefaultMongoDb()
+    private function creationOfDefaultMongoDb(): Database
     {
         return $this->factory->getMongoDb(
-            MongoURI::from(sprintf('mongodb://%s/%s', $this->dbHost, $this->dbName)),
+            $this->mongoURI,
             [
                 'connectTimeoutMS' => 1000,
                 'w' => '0',
-            ]
+            ],
         );
     }
 }

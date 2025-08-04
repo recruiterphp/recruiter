@@ -2,39 +2,42 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;
+use Recruiter\Job\Repository;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobSendEventsToWorkableTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&Repository $repository;
+    private MockObject&EventDispatcherInterface $dispatcher;
+
+    protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
-        $this->dispatcher = $this->createMock(
-            'Symfony\Component\EventDispatcher\EventDispatcherInterface'
-        );
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
-    public function testTakeRetryPolicyFromRetriableInstance()
+    public function testTakeRetryPolicyFromRetriableInstance(): void
     {
-        $listener = $this->createPartialMock('StdClass', ['onEvent']);
-        $listener
-            ->expects($this->exactly(3))
-            ->method('onEvent')
-            ->withConsecutive(
-                [$this->equalTo('job.started'), $this->anything()],
-                [$this->equalTo('job.ended'), $this->anything()],
-                [$this->equalTo('job.failure.last'), $this->anything()]
-            );
+        $listener = new EventListenerSpy();
         $workable = new WorkableThatIsAlsoAnEventListener($listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);
+
+        $events = $listener->events;
+        $this->assertCount(3, $events);
+        $this->assertSame('job.started', $events[0][0]);
+        $this->assertSame('job.ended', $events[1][0]);
+        $this->assertSame('job.failure.last', $events[2][0]);
     }
 }
 
@@ -42,18 +45,28 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
 {
     use WorkableBehaviour;
 
-    public function __construct($listener)
+    public function __construct(private readonly EventListener $listener)
     {
-        $this->listener = $listener;
+        $this->parameters = [];
     }
 
-    public function onEvent($channel, Event $e)
+    public function onEvent($channel, Event $ev): void
     {
-        return $this->listener->onEvent($channel, $e);
+        $this->listener->onEvent($channel, $ev);
     }
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception();
+    }
+}
+
+class EventListenerSpy implements EventListener
+{
+    public array $events = [];
+
+    public function onEvent($channel, Event $ev): void
+    {
+        $this->events[] = [$channel, $ev];
     }
 }

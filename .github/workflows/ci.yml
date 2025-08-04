@@ -1,0 +1,90 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      run_long_tests:
+        description: 'Run long tests'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Build with cache
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --cache-from type=gha \
+          --cache-to type=gha,mode=max \
+          --load \
+          --tag recruiter-php \
+          .
+
+  test-fast:
+    needs: setup
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: compose.yaml
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Restore cache and build
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --cache-from type=gha \
+          --load \
+          --tag recruiter-php \
+          .
+    - name: Run fast tests
+      run: make test
+
+  test-long:
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: github.event.inputs.run_long_tests == 'true'
+    env:
+      COMPOSE_FILE: compose.yaml
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Restore cache and build
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --cache-from type=gha \
+          --load \
+          --tag recruiter-php \
+          .
+    - name: Run long tests
+      run: make test-long

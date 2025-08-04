@@ -2,10 +2,10 @@
 
 namespace Sink;
 
-use Iterator;
 use ArrayAccess;
+use Iterator;
 
-class BlackHole implements Iterator, ArrayAccess
+class BlackHole implements \Iterator, \ArrayAccess, \Stringable
 {
     public function __construct()
     {
@@ -15,90 +15,90 @@ class BlackHole implements Iterator, ArrayAccess
     {
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value)
     {
     }
 
-    public function __get($name)
+    public function __get(string $name): self
     {
         return $this;
     }
 
-    public function __isset($name)
+    public function __isset(string $name): bool
     {
         return false;
     }
 
-    public function __unset($name)
+    public function __unset(string $name): void
     {
     }
 
-    public function __call($name, $arguments)
+    public function __call(string $name, array $arguments)
     {
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return '';
     }
 
-    public function __invoke()
+    public function __invoke(): self
     {
         return $this;
     }
 
-    public function __clone()
+    public function __clone(): void
     {
     }
 
-    public static function __callStatic($name, $args)
+    public static function __callStatic(string $name, array $args): self
     {
         return new self();
     }
 
     // Iterator Interface
 
-    public function current()
+    public function current(): self
     {
         return $this;
     }
 
-    public function key()
+    public function key(): self
     {
         return $this;
     }
 
-    public function next()
+    public function next(): void
     {
     }
 
-    public function rewind()
+    public function rewind(): void
     {
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return false;
     }
 
     // ArrayAccess Interface
 
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return false;
     }
 
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): self
     {
         return $this;
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
     }
 }

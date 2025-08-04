@@ -1,22 +1,26 @@
 <?php
+
 namespace Recruiter\Acceptance;
 
-use Recruiter\Job\Repository;
-use Recruiter\Concurrency\Timeout;
 use Eris;
 use Eris\Generator;
-use Eris\Generator\ConstantGenerator;
 use Eris\Listener;
+use Recruiter\Concurrency\Timeout;
+use Recruiter\Job\Repository;
 use Timeless as T;
 
 /**
  * @group long
  */
-class EnduranceTest extends BaseAcceptanceTest
+class EnduranceTest extends BaseAcceptanceTestCase
 {
     use Eris\TestTrait;
 
-    public function setUp(): void
+    private Repository $jobRepository;
+    private string $actionLog;
+
+    #[\Override]
+    protected function setUp(): void
     {
         parent::setUp();
         $this->jobRepository = new Repository($this->recruiterDb);
@@ -24,57 +28,50 @@ class EnduranceTest extends BaseAcceptanceTest
         $this->files[] = $this->actionLog;
     }
 
-    public function testNotWithstandingCrashesJobsAreEventuallyPerformed()
+    public function testNotWithstandingCrashesJobsAreEventuallyPerformed(): void
     {
         $this
             ->limitTo(100)
             ->forAll(
                 Generator\bind(
                     Generator\choose(1, 4),
-                    function ($workers) {
-                        return Generator\tuple(
-                            Generator\constant($workers),
-                            Generator\seq(Generator\oneOf(
-                                Generator\map(
-                                    function ($durationAndTag) {
-                                        list($duration, $tag) = $durationAndTag;
-                                        return ['enqueueJob', $duration, $tag];
-                                    },
-                                    Generator\tuple(
-                                        Generator\nat(),
-                                        Generator\elements(['generic', 'fast-lane'])
-                                    )
+                    fn ($workers) => Generator\tuple(
+                        Generator\constant($workers),
+                        Generator\seq(Generator\oneOf(
+                            Generator\map(
+                                function ($durationAndTag) {
+                                    [$duration, $tag] = $durationAndTag;
+
+                                    return ['enqueueJob', $duration, $tag];
+                                },
+                                Generator\tuple(
+                                    Generator\nat(),
+                                    Generator\elements(['generic', 'fast-lane']),
                                 ),
-                                Generator\map(
-                                    function ($workerIndex) {
-                                        return ['restartWorkerGracefully', $workerIndex];
-                                    },
-                                    Generator\choose(0, $workers - 1)
-                                ),
-                                Generator\map(
-                                    function ($workerIndex) {
-                                        return ['restartWorkerByKilling', $workerIndex];
-                                    },
-                                    Generator\choose(0, $workers - 1)
-                                ),
-                                Generator\constant('restartRecruiterGracefully'),
-                                Generator\constant('restartRecruiterByKilling'),
-                                Generator\map(
-                                    function ($milliseconds) {
-                                        return ['sleep', $milliseconds];
-                                    },
-                                    Generator\choose(1, 1000)
-                                )
-                            ))
-                        );
-                    }
-                )
+                            ),
+                            Generator\map(
+                                fn ($workerIndex) => ['restartWorkerGracefully', $workerIndex],
+                                Generator\choose(0, $workers - 1),
+                            ),
+                            Generator\map(
+                                fn ($workerIndex) => ['restartWorkerByKilling', $workerIndex],
+                                Generator\choose(0, $workers - 1),
+                            ),
+                            Generator\constant('restartRecruiterGracefully'),
+                            Generator\constant('restartRecruiterByKilling'),
+                            Generator\map(
+                                fn ($milliseconds) => ['sleep', $milliseconds],
+                                Generator\choose(1, 1000),
+                            ),
+                        )),
+                    ),
+                ),
             )
             ->hook(Listener\log('/tmp/recruiter-test-iterations.log'))
             ->hook(Listener\collectFrequencies())
             ->disableShrinking()
-            ->then(function ($tuple) {
-                list ($workers, $actions) = $tuple;
+            ->then(function ($tuple): void {
+                [$workers, $actions] = $tuple;
                 $this->clean();
                 $this->start($workers);
                 foreach ($actions as $action) {
@@ -84,7 +81,7 @@ class EnduranceTest extends BaseAcceptanceTest
                         $method = array_shift($arguments);
                         call_user_func_array(
                             [$this, $method],
-                            $arguments
+                            $arguments,
                         );
                     } else {
                         $this->$action();
@@ -94,13 +91,10 @@ class EnduranceTest extends BaseAcceptanceTest
                 $estimatedTime = max(count($actions) * 4, 60);
                 Timeout::inSeconds(
                     $estimatedTime,
-                    function () {
-                        return "all $this->jobs jobs to be performed. Now is " . date('c') . " Logs: " . $this->files();
-                    }
+                    fn () => "all $this->jobs jobs to be performed. Now is " . date('c') . ' Logs: ' . $this->files(),
                 )
-                    ->until(function () {
-                        return $this->jobRepository->countArchived() === $this->jobs;
-                    });
+                    ->until(fn () => $this->jobRepository->countArchived() === $this->jobs)
+                ;
 
                 $at = T\now();
                 $statistics = $this->recruiter->statistics($tag = null, $at);
@@ -115,7 +109,8 @@ class EnduranceTest extends BaseAcceptanceTest
                 }
                 // TODO: add tolerance
                 $this->assertEquals($statistics['throughput']['value'], $cumulativeThroughput);
-            });
+            })
+        ;
     }
 
     private function logAction($action)
@@ -123,11 +118,11 @@ class EnduranceTest extends BaseAcceptanceTest
         file_put_contents(
             $this->actionLog,
             sprintf(
-                "[ACTIONS][PHPUNIT][%s] %s" . PHP_EOL,
+                '[ACTIONS][PHPUNIT][%s] %s' . PHP_EOL,
                 date('c'),
-                json_encode($action)
+                json_encode($action),
             ),
-            FILE_APPEND
+            FILE_APPEND,
         );
     }
 

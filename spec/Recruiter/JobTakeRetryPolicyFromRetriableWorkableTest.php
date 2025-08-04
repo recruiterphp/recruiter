@@ -2,26 +2,35 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Timeless as T;
-use Recruiter\RetryPolicy;
+use Recruiter\Job\Repository;
+use Recruiter\RetryPolicy\BaseRetryPolicy;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class JobTakeRetryPolicyFromRetriableWorkableTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&Repository $repository;
+    private MockObject&EventDispatcherInterface $eventDispatcher;
+
+    protected function setUp(): void
     {
         $this->repository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
-        $this->eventDispatcher = $this
-            ->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
     }
 
-    public function testTakeRetryPolicyFromRetriableInstance()
+    /**
+     * @throws Exception
+     */
+    public function testTakeRetryPolicyFromRetriableInstance(): void
     {
-        $retryPolicy = $this->createMock('Recruiter\RetryPolicy\BaseRetryPolicy');
+        $retryPolicy = $this->createMock(BaseRetryPolicy::class);
         $retryPolicy->expects($this->once())->method('schedule');
 
         $workable = new WorkableThatIsAlsoRetriable($retryPolicy);
@@ -35,9 +44,9 @@ class WorkableThatIsAlsoRetriable implements Workable, Retriable
 {
     use WorkableBehaviour;
 
-    public function __construct(RetryPolicy $retryWithPolicy)
+    public function __construct(private readonly RetryPolicy $retryWithPolicy)
     {
-        $this->retryWithPolicy = $retryWithPolicy;
+        $this->parameters = [];
     }
 
     public function retryWithPolicy(): RetryPolicy
@@ -45,7 +54,7 @@ class WorkableThatIsAlsoRetriable implements Workable, Retriable
         return $this->retryWithPolicy;
     }
 
-    public function execute()
+    public function execute(): never
     {
         throw new \Exception();
     }

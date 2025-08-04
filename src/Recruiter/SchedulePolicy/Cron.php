@@ -3,27 +3,19 @@
 namespace Recruiter\SchedulePolicy;
 
 use Cron\CronExpression;
-use DateInterval;
-use DateTime;
 use Recruiter\SchedulePolicy;
-
 use Timeless\Moment;
 
 class Cron implements SchedulePolicy
 {
-    private $cronExpression;
-    private $now;
-
-    public function __construct(string $cronExpression, ?DateTime $now = null)
+    public function __construct(private readonly string $cronExpression, private readonly ?\DateTime $now = null)
     {
-        $this->cronExpression = $cronExpression;
-        $this->now = $now;
     }
 
     public function next(): Moment
     {
         return Moment::fromDateTime(
-            CronExpression::factory($this->cronExpression)->getNextRunDate($this->now ?? 'now')
+            CronExpression::factory($this->cronExpression)->getNextRunDate($this->now ?? 'now'),
         );
     }
 
@@ -39,8 +31,8 @@ class Cron implements SchedulePolicy
     {
         $now = null;
         if (isset($parameters['now'])) {
-            $now = DateTime::createFromFormat('U', $parameters['now']);
-            $now = $now === false ? null : $now;
+            $now = \DateTime::createFromFormat('U', $parameters['now']);
+            $now = false === $now ? null : $now;
         }
 
         return new self($parameters['cron_expression'], $now);

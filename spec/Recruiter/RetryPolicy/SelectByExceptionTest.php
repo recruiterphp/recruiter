@@ -1,31 +1,32 @@
 <?php
+
 namespace Recruiter\RetryPolicy;
 
-use InvalidArgumentException;
-use LogicException;
-use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Recruiter\RetryPolicy;
+use Recruiter\JobAfterFailure;
 use Timeless as T;
 
 class SelectByExceptionTest extends TestCase
 {
-    public function testCanBeBuilt()
+    public function testCanBeBuilt(): void
     {
-        $retryPolicy = SelectByException::create()
-                     ->when(InvalidArgumentException::class)->then(new DoNotDoItAgain())
-                     ->when(LogicException::class)->then(new DoNotDoItAgain())
-                     ->build();
+        SelectByException::create()
+             ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
+             ->when(\LogicException::class)->then(new DoNotDoItAgain())
+             ->build()
+        ;
 
-        $this->assertInstanceOf(RetryPolicy::class, $retryPolicy);
+        $this->expectNotToPerformAssertions();
     }
 
-    public function testCanBeExportedAndImported()
+    public function testCanBeExportedAndImported(): void
     {
         $retryPolicy = SelectByException::create()
-                     ->when(InvalidArgumentException::class)->then(new DoNotDoItAgain())
-                     ->when(LogicException::class)->then(new DoNotDoItAgain())
-                     ->build();
+             ->when(\InvalidArgumentException::class)->then(new DoNotDoItAgain())
+             ->when(\LogicException::class)->then(new DoNotDoItAgain())
+             ->build()
+        ;
 
         $retryPolicyExported = $retryPolicy->export();
         $retryPolicyImported = SelectByException::import($retryPolicyExported);
@@ -34,26 +35,30 @@ class SelectByExceptionTest extends TestCase
         $this->assertEquals($retryPolicyExported, $retryPolicyImported->export());
     }
 
-    public function testSelectByException()
+    public function testSelectByException(): void
     {
-        $exception = new InvalidArgumentException('something');
+        $exception = new \InvalidArgumentException('something');
         $retryPolicy = new SelectByException([
-            new RetriableException(get_class($exception), RetryForever::afterSeconds(10))
+            new RetriableException($exception::class, RetryForever::afterSeconds(10)),
         ]);
 
         $job = $this->jobFailedWith($exception);
         $job->expects($this->once())
             ->method('scheduleIn')
-            ->with(T\seconds(10));
+            ->with(T\seconds(10))
+        ;
 
         $retryPolicy->schedule($job);
     }
 
-    public function testDefaultDoNotSchedule()
+    /**
+     * @throws \Exception
+     */
+    public function testDefaultDoNotSchedule(): void
     {
-        $exception = new Exception('something');
+        $exception = new \Exception('something');
         $retryPolicy = new SelectByException([
-            new RetriableException(InvalidArgumentException::class, RetryForever::afterSeconds(10))
+            new RetriableException(\InvalidArgumentException::class, RetryForever::afterSeconds(10)),
         ]);
 
         $job = $this->jobFailedWith($exception);
@@ -63,12 +68,14 @@ class SelectByExceptionTest extends TestCase
         $retryPolicy->schedule($job);
     }
 
-    private function jobFailedWith(Exception $exception)
+    private function jobFailedWith(\Throwable $exception): MockObject&JobAfterFailure
     {
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')->disableOriginalConstructor()->getMock();
+        $job = $this->getMockBuilder(JobAfterFailure::class)->disableOriginalConstructor()->getMock();
         $job->expects($this->any())
             ->method('causeOfFailure')
-            ->will($this->returnValue($exception));
+            ->willReturn($exception)
+        ;
+
         return $job;
     }
 }

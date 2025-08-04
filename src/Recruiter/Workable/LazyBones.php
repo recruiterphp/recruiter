@@ -9,31 +9,26 @@ class LazyBones implements Workable
 {
     use WorkableBehaviour;
 
-    private $usToSleep;
-    private $usOfDelta;
-
-    public static function waitFor($timeInSeconds, $deltaInSeconds = 0)
+    public static function waitFor(int $timeInSeconds, int $deltaInSeconds = 0): self
     {
         return new self($timeInSeconds * 1000000, $deltaInSeconds * 1000000);
     }
 
-    public static function waitForMs($timeInMs, $deltaInMs = 0)
+    public static function waitForMs($timeInMs, $deltaInMs = 0): self
     {
         return new self($timeInMs * 1000, $deltaInMs * 1000);
     }
 
-    public function __construct($usToSleep = 1, $usOfDelta = 0)
+    public function __construct(private readonly int $usToSleep = 1, private readonly int $usOfDelta = 0)
     {
-        $this->usToSleep = $usToSleep;
-        $this->usOfDelta = $usOfDelta;
     }
 
-    public function execute()
+    public function execute(): void
     {
-        usleep($this->usToSleep + (rand(intval(-$this->usOfDelta), $this->usOfDelta)));
+        usleep($this->usToSleep + random_int(intval(-$this->usOfDelta), $this->usOfDelta));
     }
 
-    public function export()
+    public function export(): array
     {
         return [
             'us_to_sleep' => $this->usToSleep,
@@ -41,11 +36,11 @@ class LazyBones implements Workable
         ];
     }
 
-    public static function import($parameters)
+    public static function import(array $parameters): static
     {
         return new self(
             $parameters['us_to_sleep'],
-            $parameters['us_of_delta']
+            $parameters['us_of_delta'],
         );
     }
 }

@@ -2,21 +2,24 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Timeless as T;
-use Recruiter\Taggable;
+use Recruiter\Job\Repository;
 
 class TaggableWorkableTest extends TestCase
 {
-    public function setUp(): void
+    private MockObject&Repository $repository;
+
+    protected function setUp(): void
     {
         $this->repository = $this
-                          ->getMockBuilder('Recruiter\Job\Repository')
+                          ->getMockBuilder(Repository::class)
                           ->disableOriginalConstructor()
-                          ->getMock();
+                          ->getMock()
+        ;
     }
 
-    public function testWorkableExportsTags()
+    public function testWorkableExportsTags(): void
     {
         $workable = new WorkableTaggable(['a', 'b']);
         $job = Job::around($workable, $this->repository);
@@ -26,7 +29,7 @@ class TaggableWorkableTest extends TestCase
         $this->assertEquals(['a', 'b'], $exported['tags']);
     }
 
-    public function testCanSetTagsOnJobs()
+    public function testCanSetTagsOnJobs(): void
     {
         $workable = new WorkableTaggable([]);
         $job = Job::around($workable, $this->repository);
@@ -37,7 +40,7 @@ class TaggableWorkableTest extends TestCase
         $this->assertEquals(['c'], $exported['tags']);
     }
 
-    public function testTagsAreMergedTogether()
+    public function testTagsAreMergedTogether(): void
     {
         $workable = new WorkableTaggable(['a', 'b']);
         $job = Job::around($workable, $this->repository);
@@ -48,7 +51,7 @@ class TaggableWorkableTest extends TestCase
         $this->assertEquals(['a', 'b', 'c'], $exported['tags']);
     }
 
-    public function testTagsAreUnique()
+    public function testTagsAreUnique(): void
     {
         $workable = new WorkableTaggable(['c']);
         $job = Job::around($workable, $this->repository);
@@ -59,7 +62,7 @@ class TaggableWorkableTest extends TestCase
         $this->assertEquals(['c'], $exported['tags']);
     }
 
-    public function testEmptyTagsAreNotExported()
+    public function testEmptyTagsAreNotExported(): void
     {
         $workable = new WorkableTaggable([]);
         $job = Job::around($workable, $this->repository);
@@ -68,7 +71,7 @@ class TaggableWorkableTest extends TestCase
         $this->assertArrayNotHasKey('tags', $exported);
     }
 
-    public function testTagsAreImported()
+    public function testTagsAreImported(): void
     {
         $workable = new WorkableTaggable(['a', 'b']);
         $job = Job::around($workable, $this->repository);
@@ -93,24 +96,21 @@ class WorkableTaggable implements Workable, Taggable
 {
     use WorkableBehaviour;
 
-    private $tags;
-
-    public function __construct(array $tags)
+    public function __construct(private array $tags)
     {
-        $this->tags = $tags;
     }
 
-    public function taggedAs()
+    public function taggedAs(): array
     {
         return $this->tags;
     }
 
-    public function export()
+    public function export(): array
     {
         return ['tags' => $this->tags];
     }
 
-    public static function import($parameters)
+    public static function import(array $parameters): static
     {
         return new self($parameters['tags']);
     }

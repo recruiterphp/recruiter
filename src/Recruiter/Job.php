@@ -1,32 +1,20 @@
 <?php
+
 namespace Recruiter;
 
-use Exception;
-use InvalidArgumentException;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use MongoDB\Driver\Exception\BulkWriteException;
-use Recruiter\Finalizable;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;
 use Recruiter\Job\Repository;
-use Recruiter\RetryPolicy;
-use Recruiter\Taggable;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Throwable;
 use Timeless as T;
 use Timeless\Moment;
 
 class Job
 {
-    private $status;
-    private $workable;
-    private $retryPolicy;
-    private $repository;
-    private $lastJobExecution;
-
-    public static function around(Workable $workable, Repository $repository)
+    public static function around(Workable $workable, Repository $repository): self
     {
         return new self(
             self::initialize(),
@@ -34,28 +22,28 @@ class Job
             ($workable instanceof Retriable) ?
                 $workable->retryWithPolicy() : new RetryPolicy\DoNotDoItAgain(),
             new JobExecution(),
-            $repository
+            $repository,
         );
     }
 
-    public static function import($document, Repository $repository)
+    public static function import($document, Repository $repository): self
     {
         return new self(
             $document,
             WorkableInJob::import($document),
             RetryPolicyInJob::import($document),
             JobExecution::import($document),
-            $repository
+            $repository,
         );
     }
 
-    public function __construct($status, Workable $workable, RetryPolicy $retryPolicy, JobExecution $lastJobExecution, Repository $repository)
-    {
-        $this->status = $status;
-        $this->workable = $workable;
-        $this->retryPolicy = $retryPolicy;
-        $this->lastJobExecution = $lastJobExecution;
-        $this->repository = $repository;
+    public function __construct(
+        private array $status,
+        private readonly Workable $workable,
+        private RetryPolicy $retryPolicy,
+        private JobExecution $lastJobExecution,
+        private readonly Repository $repository,
+    ) {
     }
 
     public function id()
@@ -63,7 +51,7 @@ class Job
         return $this->status['_id'];
     }
 
-    public function createdAt()
+    public function createdAt(): Moment
     {
         return T\MongoDate::toMoment($this->status['created_at']);
     }
@@ -76,10 +64,14 @@ class Job
     public function retryWithPolicy(RetryPolicy $retryPolicy)
     {
         $this->retryPolicy = $retryPolicy;
+
         return $this;
     }
 
-    public function taggedAs(array $tags)
+    /**
+     * @return $this
+     */
+    public function taggedAs(array $tags): static
     {
         if (!empty($tags)) {
             $this->status['tags'] = $tags;
@@ -88,34 +80,47 @@ class Job
         return $this;
     }
 
-    public function inGroup($group)
+    public function inGroup(array|string $group): static
     {
         if (is_array($group)) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 "Group can be only single string, for other uses use `taggedAs` method.
                 Received group: `" . var_export($group, true) . "`"
             );
         }
+
         if (!empty($group)) {
             $this->status['group'] = $group;
         }
+
         return $this;
     }
 
-    public function scheduleAt(Moment $at)
+    /**
+     * @return $this
+     */
+    public function scheduleAt(Moment $at): static
     {
         $this->status['locked'] = false;
         $this->status['scheduled_at'] = T\MongoDate::from($at);
+
         return $this;
     }
 
-    public function withUrn(string $urn)
+    /**
+     * @return $this
+     */
+    public function withUrn(string $urn): static
     {
         $this->status['urn'] = $urn;
+
         return $this;
     }
 
-    public function scheduledBy(string $namespace, string $id, int $executions)
+    /**
+     * @return $this
+     */
+    public function scheduledBy(string $namespace, string $id, int $executions): static
     {
         $this->status['scheduled'] = [
             'by' => [
@@ -128,15 +133,15 @@ class Job
         return $this;
     }
 
-    public function methodToCallOnWorkable($method)
+    public function methodToCallOnWorkable($method): void
     {
         if (!method_exists($this->workable, $method)) {
-            throw new Exception("Unknown method '$method' on workable instance");
+            throw new \Exception("Unknown method '$method' on workable instance");
         }
         $this->status['workable']['method'] = $method;
     }
 
-    public function execute(EventDispatcherInterface $eventDispatcher)
+    public function execute(EventDispatcherInterface $eventDispatcher): JobExecution
     {
         $methodToCall = $this->status['workable']['method'];
         try {
@@ -145,14 +150,14 @@ class Job
                 $result = $this->workable->$methodToCall($this->retryStatistics());
                 $this->afterExecution($result, $eventDispatcher);
             }
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->afterFailure($exception, $eventDispatcher);
         }
 
         return $this->lastJobExecution;
     }
 
-    public function retryStatistics()
+    public function retryStatistics(): array
     {
         return [
             'job_id' => (string) $this->id(),
@@ -184,19 +189,20 @@ class Job
             $this->lastJobExecution->export(),
             $this->tagsToUseFor($this->workable),
             WorkableInJob::export($this->workable, $this->status['workable']['method']),
-            RetryPolicyInJob::export($this->retryPolicy)
+            RetryPolicyInJob::export($this->retryPolicy),
         );
     }
 
     public function beforeExecution(EventDispatcherInterface $eventDispatcher)
     {
-        $this->status['attempts'] += 1;
+        ++$this->status['attempts'];
         $this->lastJobExecution = new JobExecution();
         $this->lastJobExecution->started($this->scheduledAt());
         $this->emit('job.started', $eventDispatcher);
         if ($this->hasBeenScheduled()) {
             $this->save();
         }
+
         return $this;
     }
 
@@ -209,6 +215,7 @@ class Job
         if ($this->hasBeenScheduled()) {
             $this->archive('done');
         }
+
         return $this;
     }
 
@@ -222,6 +229,7 @@ class Job
         if ($this->lastJobExecution->isCrashed()) {
             return !$archived = $this->afterFailure(new WorkerDiedInTheLineOfDutyException(), $eventDispatcher);
         }
+
         return true;
     }
 
@@ -238,19 +246,20 @@ class Job
             $this->emit('job.failure.last', $eventDispatcher);
             $this->triggerOnWorkable('afterLastFailure', $exception);
         }
+
         return $archived;
     }
 
-    private function emit($eventType, $eventDispatcher)
+    private function emit($eventType, EventDispatcherInterface $eventDispatcher): void
     {
         $event = new Event($this->export());
-        $eventDispatcher->dispatch($eventType, $event);
+        $eventDispatcher->dispatch($event, $eventType);
         if ($this->workable instanceof EventListener) {
             $this->workable->onEvent($eventType, $event);
         }
     }
 
-    private function triggerOnWorkable($method, ?Throwable $e = null)
+    private function triggerOnWorkable($method, ?\Throwable $e = null)
     {
         if ($this->workable instanceof Finalizable) {
             $this->workable->$method($e);
@@ -285,6 +294,7 @@ class Job
         if (!empty($tagsToUse)) {
             return ['tags' => array_values(array_unique($tagsToUse))];
         }
+
         return [];
     }
 
@@ -300,7 +310,7 @@ class Job
                 'group' => 'generic',
             ],
             WorkableInJob::initialize(),
-            RetryPolicyInJob::initialize()
+            RetryPolicyInJob::initialize(),
         );
     }
 
@@ -310,24 +320,22 @@ class Job
             iterator_to_array(
                 $collection
                     ->find(
-                        (
-                            Worker::canWorkOnAnyJobs($worksOn) ?
-                            [   'scheduled_at' => ['$lt' => T\MongoDate::now()],
-                                'locked' => false,
-                            ] :
-                            [   'scheduled_at' => ['$lt' => T\MongoDate::now()],
-                                'locked' => false,
-                                'group' => $worksOn,
-                            ]
-                        ),
+                        Worker::canWorkOnAnyJobs($worksOn) ?
+                        ['scheduled_at' => ['$lt' => T\MongoDate::now()],
+                            'locked' => false,
+                        ] :
+                        ['scheduled_at' => ['$lt' => T\MongoDate::now()],
+                            'locked' => false,
+                            'group' => $worksOn,
+                        ],
                         [
                             'projection' => ['_id' => 1],
                             'sort' => ['scheduled_at' => 1],
                             'limit' => count($workers),
-                        ]
-                    )
+                        ],
+                    ),
             ),
-            '_id'
+            '_id',
         );
 
         if (count($jobs) > 0) {
@@ -347,13 +355,13 @@ class Job
                     '$set' => [
                         'locked' => false,
                         'last_execution.crashed' => true,
-                    ]
-                ]
+                    ],
+                ],
             );
 
             return $result->getModifiedCount();
         } catch (BulkWriteException $e) {
-            throw new InvalidArgumentException("Not valid excluded jobs filter: " . var_export($excluded, true), -1, $e);
+            throw new \InvalidArgumentException('Not valid excluded jobs filter: ' . var_export($excluded, true), -1, $e);
         }
     }
 
@@ -361,7 +369,7 @@ class Job
     {
         $collection->updateMany(
             ['_id' => ['$in' => array_values($jobs)]],
-            ['$set' => ['locked' => true]]
+            ['$set' => ['locked' => true]],
         );
     }
 }
