@@ -50,6 +50,8 @@ jobs:
   test-fast:
     needs: setup
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: compose.yaml
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
@@ -70,6 +72,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     if: github.event.inputs.run_long_tests == 'true'
+    env:
+      COMPOSE_FILE: compose.yaml
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
