@@ -40,7 +40,12 @@ jobs:
     - name: Build with cache
       run: |
         docker buildx create --use
-        DOCKER_BUILDKIT=1 docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
+        docker buildx build \
+          --cache-from type=gha \
+          --cache-to type=gha,mode=max \
+          --load \
+          --tag recruiter-php \
+          .
 
     - name: Install dependencies
       run: make install
@@ -55,7 +60,11 @@ jobs:
     - name: Restore cache and build
       run: |
         docker buildx create --use
-        DOCKER_BUILDKIT=1 docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
+        docker buildx build \
+          --cache-from type=gha \
+          --load \
+          --tag recruiter-php \
+          .
         make install
     - name: Run fast tests
       run: make test
@@ -72,7 +81,11 @@ jobs:
     - name: Restore cache and build
       run: |
         docker buildx create --use
-        DOCKER_BUILDKIT=1 docker compose build --build-arg BUILDKIT_INLINE_CACHE=1
+        docker buildx build \
+          --cache-from type=gha \
+          --load \
+          --tag recruiter-php \
+          .
         make install
     - name: Run long tests
       run: make test-long
