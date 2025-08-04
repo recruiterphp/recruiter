@@ -47,9 +47,6 @@ jobs:
           --tag recruiter-php \
           .
 
-    - name: Install dependencies
-      run: make install
-
   test-fast:
     needs: setup
     runs-on: ubuntu-latest
@@ -65,7 +62,6 @@ jobs:
           --load \
           --tag recruiter-php \
           .
-        make install
     - name: Run fast tests
       run: make test
 
@@ -86,6 +82,5 @@ jobs:
           --load \
           --tag recruiter-php \
           .
-        make install
     - name: Run long tests
       run: make test-long
