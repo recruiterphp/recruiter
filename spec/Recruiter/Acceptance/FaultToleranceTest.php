@@ -32,7 +32,7 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         ;
 
         $worker = $this->startWorker();
-        $this->waitForNumberOfWorkersToBe(1, 2);
+        $this->waitForNumberOfWorkersToBe(1, 5);
 
         [$assignments, $_] = $this->recruiter->assignJobsToWorkers();
         $this->assertCount(1, $assignments);
