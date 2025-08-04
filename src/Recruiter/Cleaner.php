@@ -3,19 +3,13 @@
 namespace Recruiter;
 
 use Recruiter\Job\Repository;
-use Timeless\Interval;
 use Timeless as T;
+use Timeless\Interval;
 
 class Cleaner
 {
-    /**
-     * @var Repository
-     */
-    private $repository;
-
-    public function __construct(Repository $repository)
+    public function __construct(private readonly Repository $repository)
     {
-        $this->repository = $repository;
     }
 
     public function cleanArchived(Interval $gracePeriod)
@@ -25,7 +19,7 @@ class Cleaner
         return $this->repository->cleanArchived($upperLimit);
     }
 
-    public function cleanScheduled(Interval $gracePeriod = null)
+    public function cleanScheduled(?Interval $gracePeriod = null)
     {
         $upperLimit = T\now();
         if (!is_null($gracePeriod)) {

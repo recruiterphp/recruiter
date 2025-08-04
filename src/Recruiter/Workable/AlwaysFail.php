@@ -1,7 +1,7 @@
 <?php
+
 namespace Recruiter\Workable;
 
-use Exception;
 use Recruiter\Workable;
 use Recruiter\WorkableBehaviour;
 
@@ -9,8 +9,8 @@ class AlwaysFail implements Workable
 {
     use WorkableBehaviour;
 
-    public function execute()
+    public function execute(): never
     {
-        throw new Exception('Sorry, I\'m good for nothing');
+        throw new \Exception('Sorry, I\'m good for nothing');
     }
 }

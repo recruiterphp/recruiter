@@ -1,40 +1,32 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter;
 
 /**
- * Class SynchronousExecutionReport
+ * Class SynchronousExecutionReport.
  */
 class SynchronousExecutionReport
 {
     /**
-     * @var array
-     */
-    private $data;
-
-    /**
      * @param array $data = []
      */
-    public function __construct(array $data = [])
+    public function __construct(private readonly array $data = [])
     {
-        $this->data = $data;
     }
 
-
     /**
-     *. @params array $data : key value array where key are the id of the job and value is the JobExecution
+     *. @params array $data : key value array where key are the id of the job and value is the JobExecution.
      */
     public static function fromArray(array $data): SynchronousExecutionReport
     {
         return new self($data);
     }
 
-    public function isThereAFailure()
+    public function isThereAFailure(): bool
     {
-        return array_some($this->data, function ($jobExecution, $jobId) {
-            return $jobExecution->isFailed();
-        });
+        return array_any($this->data, fn ($jobExecution, $jobId) => $jobExecution->isFailed());
     }
 
     public function toArray()

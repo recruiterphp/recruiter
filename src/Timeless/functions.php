@@ -2,102 +2,104 @@
 
 namespace Timeless;
 
-function clock($clock = null)
+function clock(?ClockInterface $clock = null): ClockInterface
 {
     global $__2852bec4cda046fca0e5e21dc007935c;
+    /** @var ClockInterface $__2852bec4cda046fca0e5e21dc007935c */
     $__2852bec4cda046fca0e5e21dc007935c =
         $clock ?: (
             $__2852bec4cda046fca0e5e21dc007935c ?: new Clock()
         );
+
     return $__2852bec4cda046fca0e5e21dc007935c;
 }
 
-function now()
+function now(): Moment
 {
     return clock()->now();
 }
 
-function millisecond($numberOf)
+function millisecond(int $numberOf): Interval
 {
     return milliseconds($numberOf);
 }
 
-function milliseconds($numberOf)
+function milliseconds(int $numberOf): Interval
 {
     return new Interval($numberOf);
 }
 
-function second($numberOf)
+function second(int $numberOf): Interval
 {
     return seconds($numberOf);
 }
 
-function seconds($numberOf)
+function seconds(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_SECONDS);
 }
 
-function minute($numberOf)
+function minute(int $numberOf): Interval
 {
     return minutes($numberOf);
 }
 
-function minutes($numberOf)
+function minutes(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_MINUTES);
 }
 
-function hour($numberOf)
+function hour(int $numberOf): Interval
 {
     return hours($numberOf);
 }
 
-function hours($numberOf)
+function hours(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_HOURS);
 }
 
-function day($numberOf)
+function day(int $numberOf): Interval
 {
     return days($numberOf);
 }
 
-function days($numberOf)
+function days(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_DAYS);
 }
 
-function week($numberOf)
+function week(int $numberOf): Interval
 {
     return weeks($numberOf);
 }
 
-function weeks($numberOf)
+function weeks(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_WEEKS);
 }
 
-function month($numberOf)
+function month(int $numberOf): Interval
 {
     return months($numberOf);
 }
 
-function months($numberOf)
+function months(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_MONTHS);
 }
 
-function year($numberOf)
+function year(int $numberOf): Interval
 {
     return years($numberOf);
 }
 
-function years($numberOf)
+function years(int $numberOf): Interval
 {
     return new Interval($numberOf * Interval::MILLISECONDS_IN_YEARS);
 }
 
-function fromDateInterval(\DateInterval $interval)
+function fromDateInterval(\DateInterval $interval): Interval
 {
     $seconds = (string) $interval->s;
     if ($interval->i) {

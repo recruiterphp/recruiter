@@ -4,5 +4,5 @@ namespace Recruiter\Job;
 
 interface EventListener
 {
-    public function onEvent($channel, Event $ev);
+    public function onEvent($channel, Event $ev): void;
 }

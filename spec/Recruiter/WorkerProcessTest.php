@@ -2,74 +2,85 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Worker\Process;
+use Recruiter\Worker\Repository;
+use Sink\BlackHole;
 
 class WorkerProcessTest extends TestCase
 {
-    public function setUp(): void
+    private int $pid;
+    private MockObject&Repository $repository;
+
+    protected function setUp(): void
     {
         $this->pid = 4242;
 
-        $this->repository = $this->getMockBuilder('Recruiter\Worker\Repository')
+        $this->repository = $this->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
     }
 
-    public function testIfNotAliveWhenIsNotAliveReturnsItself()
+    public function testIfNotAliveWhenIsNotAliveReturnsItself(): void
     {
         $process = $this->givenWorkerProcessDead();
-        $this->assertInstanceOf('Recruiter\Worker\Process', $process->ifDead());
+        $this->assertInstanceOf(Process::class, $process->ifDead());
     }
 
-    public function testIfNotAliveWhenIsAliveReturnsBlackHole()
+    public function testIfNotAliveWhenIsAliveReturnsBlackHole(): void
     {
         $process = $this->givenWorkerProcessAlive();
-        $this->assertInstanceOf('Sink\BlackHole', $process->ifDead());
+        $this->assertInstanceOf(BlackHole::class, $process->ifDead());
     }
 
-    public function testRetireWorkerIfNotAlive()
+    public function testRetireWorkerIfNotAlive(): void
     {
         $this->repository
             ->expects($this->once())
             ->method('retireWorkerWithPid')
-            ->with($this->pid);
+            ->with($this->pid)
+        ;
 
         $process = $this->givenWorkerProcessDead();
         $process->cleanUp($this->repository);
     }
 
-    public function testDoNotRetireWorkerIfAlive()
+    public function testDoNotRetireWorkerIfAlive(): void
     {
         $this->repository
             ->expects($this->never())
             ->method('retireWorkerWithPid')
-            ->with($this->pid);
+            ->with($this->pid)
+        ;
 
         $process = $this->givenWorkerProcessAlive();
         $process->cleanUp($this->repository);
     }
 
-
-    private function givenWorkerProcessAlive()
+    private function givenWorkerProcessAlive(): MockObject&Process
     {
         return $this->givenWorkerProcess(true);
     }
 
-    private function givenWorkerProcessDead()
+    private function givenWorkerProcessDead(): MockObject&Process
     {
         return $this->givenWorkerProcess(false);
     }
 
-    private function givenWorkerProcess($alive)
+    private function givenWorkerProcess(bool $alive): MockObject&Process
     {
-        $process = $this->getMockBuilder('Recruiter\Worker\Process')
-            ->setMethods(['isAlive'])
+        $process = $this->getMockBuilder(Process::class)
+            ->onlyMethods(['isAlive'])
             ->setConstructorArgs([$this->pid])
-            ->getMock();
+            ->getMock()
+        ;
 
         $process->expects($this->any())
             ->method('isAlive')
-            ->will($this->returnValue($alive));
+            ->willReturn($alive)
+        ;
 
         return $process;
     }

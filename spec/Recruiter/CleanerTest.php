@@ -2,38 +2,48 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Timeless\Interval;
+use Recruiter\Job\Repository;
 use Timeless as T;
+use Timeless\Interval;
+use Timeless\Moment;
 
 class CleanerTest extends TestCase
 {
-    public function setUp(): void
+    private T\ClockInterface $clock;
+    private Moment $now;
+    private MockObject $jobRepository;
+    private Cleaner $cleaner;
+    private Interval $interval;
+
+    protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
         $this->now = $this->clock->now();
 
         $this->jobRepository = $this
-            ->getMockBuilder('Recruiter\Job\Repository')
+            ->getMockBuilder(Repository::class)
             ->disableOriginalConstructor()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->cleaner = new Cleaner($this->jobRepository);
 
         $this->interval = Interval::parse('10s');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         T\clock()->start();
     }
 
-    public function testShouldCreateCleaner()
+    public function testShouldCreateCleaner(): void
     {
-        $this->assertInstanceOf('Recruiter\Cleaner', $this->cleaner);
+        $this->assertInstanceOf(Cleaner::class, $this->cleaner);
     }
 
-    public function testDelegatesTheCleanupOfArchivedJobsToTheJobsRepository()
+    public function testDelegatesTheCleanupOfArchivedJobsToTheJobsRepository(): void
     {
         $expectedUpperLimit = $this->now->before($this->interval);
 
@@ -41,11 +51,12 @@ class CleanerTest extends TestCase
             ->expects($this->once())
             ->method('cleanArchived')
             ->with($expectedUpperLimit)
-            ->will($this->returnValue($jobsCleaned = 10));
+            ->will($this->returnValue($jobsCleaned = 10))
+        ;
 
         $this->assertEquals(
             $jobsCleaned,
-            $this->cleaner->cleanArchived($this->interval)
+            $this->cleaner->cleanArchived($this->interval),
         );
     }
 }

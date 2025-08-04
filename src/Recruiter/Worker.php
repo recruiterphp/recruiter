@@ -2,8 +2,6 @@
 
 namespace Recruiter;
 
-use DateInterval;
-use DateTimeInterface;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
@@ -11,35 +9,22 @@ use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
 use Recruiter\Worker\Repository;
 use Timeless as T;
 use Timeless\Interval;
-use Timeless\Moment;
 
 class Worker
 {
-    private $status;
-    private $recruiter;
-    private $repository;
-    private $memoryLimit;
-
     public static function workFor(
         Recruiter $recruiter,
         Repository $repository,
-        MemoryLimit $memoryLimit
+        MemoryLimit $memoryLimit,
     ) {
         $worker = new self(self::initialize(), $recruiter, $repository, $memoryLimit);
         $worker->save();
+
         return $worker;
     }
 
-    public function __construct(
-        $status,
-        Recruiter $recruiter,
-        Repository $repository,
-        MemoryLimit $memoryLimit
-    ) {
-        $this->status = $status;
-        $this->recruiter = $recruiter;
-        $this->repository = $repository;
-        $this->memoryLimit = $memoryLimit;
+    public function __construct(private $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
+    {
     }
 
     public function id()
@@ -58,12 +43,14 @@ class Worker
         if ($this->hasBeenAssignedToDoSomething()) {
             $this->workOn(
                 $job = $this->recruiter->scheduledJob(
-                    $this->status['assigned_to'][(string)$this->status['_id']]
-                )
+                    $this->status['assigned_to'][(string) $this->status['_id']],
+                ),
             );
+
             return (string) $job->id();
         } else {
             $this->stillHere();
+
             return false;
         }
     }
@@ -131,8 +118,8 @@ class Worker
                 date('c'),
                 $this->id(),
                 $job->id(),
-                get_class($e),
-                $e->getMessage()
+                $e::class,
+                $e->getMessage(),
             );
 
             $this->retireAfterMemoryLimitIsExceeded();
@@ -154,7 +141,6 @@ class Worker
         $this->repository->retireWorkerWithId($this->id());
     }
 
-
     private function hasBeenAssignedToDoSomething()
     {
         if (is_null($this->status)) {
@@ -164,6 +150,7 @@ class Worker
             // thing to do seems like terminate the process
             exit(1);
         }
+
         return array_key_exists('assigned_to', $this->status);
     }
 
@@ -192,13 +179,13 @@ class Worker
             'last_seen_at' => T\MongoDate::now(),
             'created_at' => T\MongoDate::now(),
             'working' => false,
-            'pid' => getmypid()
+            'pid' => getmypid(),
         ];
     }
 
     public static function canWorkOnAnyJobs($worksOn)
     {
-        return $worksOn === '*';
+        return '*' === $worksOn;
     }
 
     public static function pickAvailableWorkers(MongoCollection $collection, $workersPerUnit)
@@ -208,9 +195,7 @@ class Worker
         if (count($workers) > 0) {
             $unitsOfWorkers = array_group_by(
                 $workers,
-                function ($worker) {
-                    return $worker['work_on'];
-                }
+                fn ($worker) => $worker['work_on'],
             );
             foreach ($unitsOfWorkers as $workOn => $workersInUnit) {
                 $workersInUnit = array_column($workersInUnit, '_id');
@@ -218,16 +203,15 @@ class Worker
                 $result[] = [$workOn, $workersInUnit];
             }
         }
+
         return $result;
     }
 
     public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers)
     {
         $assignment = array_combine(
-            array_map(function ($id) {
-                return (string)$id;
-            }, $workers),
-            $jobs
+            array_map(fn ($id) => (string) $id, $workers),
+            $jobs,
         );
 
         $result = $collection->updateMany(
@@ -235,8 +219,8 @@ class Worker
             $update = ['$set' => [
                 'available' => false,
                 'assigned_to' => $assignment,
-                'assigned_since' => T\MongoDate::now()
-            ]]
+                'assigned_since' => T\MongoDate::now(),
+            ]],
         );
 
         return [$assignment, $result->getModifiedCount()];
@@ -258,17 +242,16 @@ class Worker
         return array_values(array_unique($jobs));
     }
 
-    public static function retireDeadWorkers(Repository $roster, DateTimeInterface $now, Interval $consideredDeadAfter)
+    public static function retireDeadWorkers(Repository $roster, \DateTimeImmutable $now, Interval $consideredDeadAfter)
     {
-        $consideredDeadAt = clone $now;
-        $consideredDeadAt->sub($consideredDeadAfter->toDateInterval());
+        $consideredDeadAt = $now->sub($consideredDeadAfter->toDateInterval());
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {
             $roster->retireWorkerWithId($deadWorker['_id']);
             if (array_key_exists('assigned_to', $deadWorker)) {
-                if (array_key_exists((string)$deadWorker['_id'], $deadWorker['assigned_to'])) {
-                    $jobsToReassign[] = $deadWorker['assigned_to'][(string)$deadWorker['_id']];
+                if (array_key_exists((string) $deadWorker['_id'], $deadWorker['assigned_to'])) {
+                    $jobsToReassign[] = $deadWorker['assigned_to'][(string) $deadWorker['_id']];
                 }
             }
         }

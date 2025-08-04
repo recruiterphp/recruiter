@@ -2,7 +2,6 @@
 
 namespace Recruiter\SchedulePolicy;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Timeless\Moment;
 
@@ -11,15 +10,15 @@ class CronTest extends TestCase
     /**
      * @dataProvider cronExpressions
      */
-    public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate)
+    public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate): void
     {
-        $cron = new Cron($cronExpression, DateTime::createFromFormat('Y-m-d H:i:s', '2019-01-15 15:00:00'));
+        $cron = new Cron($cronExpression, \DateTime::createFromFormat('Y-m-d H:i:s', '2019-01-15 15:00:00'));
         $cron = Cron::import($cron->export());
 
         $this->assertEquals(
-            Moment::fromDateTime(new DateTime($expectedDate)),
+            Moment::fromDateTime(new \DateTime($expectedDate)),
             $cron->next(),
-            'calculated schedule time is: ' . $cron->next()->format()
+            'calculated schedule time is: ' . $cron->next()->format(),
         );
     }
 

@@ -2,13 +2,11 @@
 
 namespace Recruiter;
 
-interface Repeatable
+interface Repeatable extends Workable
 {
     /**
      * Assign an unique name to the scheduler in order to handle idempotency,
-     * only one scheduler with the same urn can be exists
-     *
-     * @return string
+     * only one scheduler with the same urn can exists.
      */
     public function urn(): string;
 
@@ -19,8 +17,6 @@ interface Repeatable
      *
      * true: only one job at a time can be queued
      * false: there may be more concurrent jobs at a time
-     *
-     * @return boolean
      */
     public function unique(): bool;
 }

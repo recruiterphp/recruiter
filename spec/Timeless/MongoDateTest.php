@@ -1,4 +1,5 @@
 <?php
+
 namespace Timeless;
 
 use Eris;
@@ -9,18 +10,19 @@ class MongoDateTest extends TestCase
 {
     use Eris\TestTrait;
 
-    public function testConvertsBackAndForthMongoDatesWithoutLosingMillisecondPrecision()
+    public function testConvertsBackAndForthMongoDatesWithoutLosingMillisecondPrecision(): void
     {
         $this
             ->forAll(
-                Generator\choose(0, 1500 * 1000 * 1000)
+                Generator\choose(0, 1500 * 1000 * 1000),
             )
-            ->then(function ($milliseconds) {
+            ->then(function ($milliseconds): void {
                 $moment = new Moment($milliseconds);
                 $this->assertEquals(
                     $moment,
-                    MongoDate::toMoment(MongoDate::from($moment))
+                    MongoDate::toMoment(MongoDate::from($moment)),
                 );
-            });
+            })
+        ;
     }
 }

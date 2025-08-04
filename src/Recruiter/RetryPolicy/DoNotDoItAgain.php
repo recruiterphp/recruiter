@@ -3,15 +3,15 @@
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
 
 class DoNotDoItAgain implements RetryPolicy
 {
     use RetryPolicyBehaviour;
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         // doing nothing means to avoid to reschedule the job
     }

@@ -2,12 +2,12 @@
 
 namespace Recruiter\Acceptance;
 
-class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTest
+class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTestCase
 {
     /**
      * @group acceptance
      */
-    public function testRetireAfterAskedToStop()
+    public function testRetireAfterAskedToStop(): void
     {
         $numberOfWorkersBefore = $this->numberOfWorkers();
         $processAndPipes = $this->startWorker();
@@ -17,7 +17,7 @@ class WorkerGuaranteedToRetireAfterDeathTest extends BaseAcceptanceTest
         $this->assertEquals(
             $numberOfWorkersBefore,
             $numberOfWorkersCurrently,
-            "The number of workers before was $numberOfWorkersBefore and now after starting and stopping 1 we have $numberOfWorkersCurrently"
+            "The number of workers before was $numberOfWorkersBefore and now after starting and stopping 1 we have $numberOfWorkersCurrently",
         );
     }
 }

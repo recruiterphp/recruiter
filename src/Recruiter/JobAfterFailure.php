@@ -2,49 +2,45 @@
 
 namespace Recruiter;
 
-use Timeless\Moment;
 use Timeless\Interval;
-use Timeless\MongoDate;
+use Timeless\Moment;
 
 class JobAfterFailure
 {
-    private $job;
-    private $lastJobExecution;
-    private $hasBeenScheduled;
-    private $hasBeenArchived;
+    private bool $hasBeenScheduled;
 
-    public function __construct(Job $job, JobExecution $lastJobExecution)
+    private bool $hasBeenArchived;
+
+    public function __construct(private readonly Job $job, private readonly JobExecution $lastJobExecution)
     {
-        $this->job = $job;
-        $this->lastJobExecution = $lastJobExecution;
         $this->hasBeenScheduled = false;
         $this->hasBeenArchived = false;
     }
 
-    public function createdAt()
+    public function createdAt(): Moment
     {
         return $this->job->createdAt();
     }
 
-    public function inGroup($group)
+    public function inGroup($group): void
     {
         $this->job->inGroup($group);
         $this->job->save();
     }
 
-    public function scheduleIn(Interval $in)
+    public function scheduleIn(Interval $in): void
     {
         $this->scheduleAt($in->fromNow());
     }
 
-    public function scheduleAt(Moment $at)
+    public function scheduleAt(Moment $at): void
     {
         $this->hasBeenScheduled = true;
         $this->job->scheduleAt($at);
         $this->job->save();
     }
 
-    public function archive($why)
+    public function archive($why): void
     {
         $this->hasBeenArchived = true;
         $this->job->archive($why);
@@ -55,7 +51,7 @@ class JobAfterFailure
         return $this->lastJobExecution->causeOfFailure();
     }
 
-    public function lastExecutionDuration()
+    public function lastExecutionDuration(): Interval
     {
         return $this->lastJobExecution->duration();
     }
@@ -65,16 +61,18 @@ class JobAfterFailure
         return $this->job->numberOfAttempts();
     }
 
-    public function archiveIfNotScheduled()
+    public function archiveIfNotScheduled(): bool
     {
         if (!$this->hasBeenScheduled && !$this->hasBeenArchived) {
             $this->archive('not-scheduled-by-retry-policy');
+
             return true;
         }
+
         return false;
     }
 
-    public function hasBeenArchived()
+    public function hasBeenArchived(): bool
     {
         return $this->hasBeenArchived;
     }

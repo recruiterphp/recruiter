@@ -2,9 +2,7 @@
 
 namespace Recruiter;
 
-use Exception;
 use Recruiter\RetryPolicy\RetriableExceptionFilter;
-use Recruiter\JobAfterFailure;
 
 trait RetryPolicyBehaviour
 {
@@ -25,9 +23,9 @@ trait RetryPolicyBehaviour
         return new RetriableExceptionFilter($this, $retriableExceptionTypes);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
-        throw new Exception('RetryPolicy::schedule(JobAfterFailure) need to be implemented');
+        throw new \Exception('RetryPolicy::schedule(JobAfterFailure) need to be implemented');
     }
 
     public function export(): array

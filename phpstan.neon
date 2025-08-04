@@ -1,12 +1,13 @@
 parameters:
-  level: max
+  level: 2
   paths:
     - src
-  excludes_analyse:
-    - %currentWorkingDirectory%/vendor/
-  autoload_directories:
-    - %currentWorkingDirectory%/spec
+    - spec
+  scanDirectories:
+    - %currentWorkingDirectory%/vendor/giorgiosironi/eris/src/
   ignoreErrors:
-    - '#Instantiated class Recruiter\\Workable\\ThisClassDoesnNotExists not found.#'
-    - '#Constructor of class Recruiter\\Workable\\FailsInConstructor has an unused parameter \$parameters.#'
-    - '#Static call to instance method stdClass::import()#'
+    - '#Function recruiter_became_master not found.#'
+    - '#Function recruiter_stept_back not found.#'
+    - '#Unsafe usage of new static\(\).#'
+    - '#to an undefined .* Sink\\BlackHole#'
+  inferPrivatePropertyTypeFromConstructor: true

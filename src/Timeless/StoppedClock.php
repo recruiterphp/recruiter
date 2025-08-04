@@ -2,27 +2,33 @@
 
 namespace Timeless;
 
-class StoppedClock
+class StoppedClock implements ClockInterface
 {
-    private $now;
-
-    public function __construct(Moment $now)
+    public function __construct(private Moment $now)
     {
-        $this->now = $now;
     }
 
-    public function now()
+    public function now(): Moment
     {
         return $this->now;
     }
 
-    public function driftForwardBySeconds($seconds)
+    public function driftForwardBySeconds(int $seconds): void
     {
         $this->now = $this->now->after(seconds($seconds));
     }
 
-    public function start()
+    public function start(): Clock
     {
-        return clock(new Clock());
+        clock($clock = new Clock());
+
+        return $clock;
+    }
+
+    public function stop(): self
+    {
+        clock($this);
+
+        return $this;
     }
 }

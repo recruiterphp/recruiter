@@ -2,138 +2,152 @@
 
 namespace Recruiter;
 
+use PHPUnit\Framework\MockObject\Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Timeless as T;
-use Recruiter\RetryPolicy;
 
 class JobToScheduleTest extends TestCase
 {
-    public function setUp(): void
+    private T\ClockInterface $clock;
+    private MockObject&Job $job;
+
+    /**
+     * @throws Exception
+     */
+    protected function setUp(): void
     {
         $this->clock = T\clock()->stop();
-        $this->job = $this
-            ->getMockBuilder('Recruiter\Job')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->job = $this->createMock(Job::class);
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         $this->clock->start();
     }
 
-    public function testInBackgroundShouldScheduleJobNow()
+    public function testInBackgroundShouldScheduleJobNow(): void
     {
         $this->job
             ->expects($this->once())
             ->method('scheduleAt')
             ->with(
-                $this->equalTo($this->clock->now())
-            );
+                $this->equalTo($this->clock->now()),
+            )
+        ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 
-    public function testScheduledInShouldScheduleInCertainAmountOfTime()
+    public function testScheduledInShouldScheduleInCertainAmountOfTime(): void
     {
         $amountOfTime = T\minutes(10);
         $this->job
             ->expects($this->once())
             ->method('scheduleAt')
             ->with(
-                $this->equalTo($amountOfTime->fromNow())
-            );
+                $this->equalTo($amountOfTime->fromNow()),
+            )
+        ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->scheduleIn($amountOfTime)
-            ->execute();
+            ->execute()
+        ;
     }
 
-    public function testConfigureRetryPolicy()
+    public function testConfigureRetryPolicy(): void
     {
         $doNotDoItAgain = new RetryPolicy\DoNotDoItAgain();
 
         $this->job
             ->expects($this->once())
             ->method('retryWithPolicy')
-            ->with($doNotDoItAgain);
+            ->with($doNotDoItAgain)
+        ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->retryWithPolicy($doNotDoItAgain)
-            ->execute();
+            ->execute()
+        ;
     }
 
-    public function tesShortcutToConfigureJobToNotBeRetried()
+    public function tesShortcutToConfigureJobToNotBeRetried(): void
     {
         $this->job
             ->expects($this->once())
             ->method('retryWithPolicy')
-            ->with($this->isInstanceOf('Recruiter\RetryPolicy\DoNotDoItAgain'));
+            ->with($this->isInstanceOf(RetryPolicy\DoNotDoItAgain::class))
+        ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
             ->doNotRetry()
-            ->execute();
+            ->execute()
+        ;
     }
 
-    public function testShouldNotExecuteJobWhenScheduled()
+    public function testShouldNotExecuteJobWhenScheduled(): void
     {
         $this->job
             ->expects($this->once())
-            ->method('save');
+            ->method('save')
+        ;
 
         $this->job
             ->expects($this->never())
-            ->method('execute');
+            ->method('execute')
+        ;
 
-        (new JobToSchedule($this->job))
+        new JobToSchedule($this->job)
             ->inBackground()
-            ->execute();
+            ->execute()
+        ;
     }
 
-    public function testShouldExecuteJobWhenNotScheduled()
+    public function testShouldExecuteJobWhenNotScheduled(): void
     {
         $this->job
             ->expects($this->never())
-            ->method('scheduleAt');
+            ->method('scheduleAt')
+        ;
 
         $this->job
             ->expects($this->once())
-            ->method('execute');
+            ->method('execute')
+        ;
 
-        (new JobToSchedule($this->job))
-            ->execute(
-                $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-            );
+        new JobToSchedule($this->job)->execute();
     }
 
-    public function testConfigureMethodToCallOnWorkableInJob()
+    public function testConfigureMethodToCallOnWorkableInJob(): void
     {
         $this->job
             ->expects($this->once())
             ->method('methodToCallOnWorkable')
-            ->with('send');
+            ->with('send')
+        ;
 
-        (new JobToSchedule($this->job))
-            ->send();
+        new JobToSchedule($this->job)
+            ->send()
+        ;
     }
 
-    public function testReturnsJobId()
+    public function testReturnsJobId(): void
     {
         $this->job
             ->expects($this->any())
             ->method('id')
-            ->will($this->returnValue('42'));
+            ->will($this->returnValue('42'))
+        ;
 
         $this->assertEquals(
             '42',
-            (new JobToSchedule($this->job))
-                ->execute(
-                    $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-                )
+            new JobToSchedule($this->job)->execute(),
         );
     }
 }

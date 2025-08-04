@@ -1,21 +1,20 @@
 <?php
+
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 use Recruiter\RetryPolicyBehaviour;
-use Recruiter\JobAfterFailure;
-
 use Timeless as T;
 use Timeless\Interval;
 
 final class RetryForever implements RetryPolicy
 {
+    use RetryPolicyBehaviour;
     private $timeToWaitBeforeRetry;
 
-    use RetryPolicyBehaviour;
-
-    public function __construct($timeToWaitBeforeRetry)
+    public function __construct(int|Interval $timeToWaitBeforeRetry)
     {
         if (!($timeToWaitBeforeRetry instanceof Interval)) {
             $timeToWaitBeforeRetry = T\seconds($timeToWaitBeforeRetry);
@@ -23,12 +22,12 @@ final class RetryForever implements RetryPolicy
         $this->timeToWaitBeforeRetry = $timeToWaitBeforeRetry;
     }
 
-    public static function afterSeconds($timeToWaitBeforeRetry = 60)
+    public static function afterSeconds(int|Interval $timeToWaitBeforeRetry = 60): self
     {
-        return new static($timeToWaitBeforeRetry);
+        return new self($timeToWaitBeforeRetry);
     }
 
-    public function schedule(JobAfterFailure $job)
+    public function schedule(JobAfterFailure $job): void
     {
         $job->scheduleIn($this->timeToWaitBeforeRetry);
     }
@@ -36,14 +35,14 @@ final class RetryForever implements RetryPolicy
     public function export(): array
     {
         return [
-            'seconds_to_wait_before_retry' => $this->timeToWaitBeforeRetry->seconds()
+            'seconds_to_wait_before_retry' => $this->timeToWaitBeforeRetry->seconds(),
         ];
     }
 
     public static function import(array $parameters): RetryPolicy
     {
         return new self(
-            T\seconds($parameters['seconds_to_wait_before_retry'])
+            T\seconds($parameters['seconds_to_wait_before_retry']),
         );
     }
 

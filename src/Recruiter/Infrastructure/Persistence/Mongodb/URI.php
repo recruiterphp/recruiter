@@ -1,29 +1,28 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Persistence\Mongodb;
 
-use UnexpectedValueException;
-
-/**
- * Class URI
- */
-class URI
+final readonly class URI implements \Stringable
 {
-    const DEFAULT_URI = 'mongodb://127.0.0.1:27017/recruiter';
+    public const string DEFAULT_URI = 'mongodb://127.0.0.1:27017/recruiter';
 
-    /**
-     * @var string
-     */
-    private $uri;
-
-    public function __construct(string $uri)
+    public function __construct(private string $uri)
     {
-        $this->uri = $uri;
     }
 
-    public static function from(?string $uri): self
+    public static function fromEnvironment(): self
     {
+        return self::from(getenv('MONGODB_URI'));
+    }
+
+    public static function from(string|self|null $uri): self
+    {
+        if ($uri instanceof self) {
+            return $uri;
+        }
+
         if (!$uri) {
             $uri = self::DEFAULT_URI;
         }
@@ -41,7 +40,7 @@ class URI
         return substr($parsed['path'], 1);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->uri;
     }

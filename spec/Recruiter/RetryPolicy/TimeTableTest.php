@@ -2,15 +2,17 @@
 
 namespace Recruiter\RetryPolicy;
 
-use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Job;
+use Recruiter\JobAfterFailure;
 use Timeless as T;
 
 class TimeTableTest extends TestCase
 {
     private $scheduler;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->scheduler = new TimeTable([
             '5 minutes ago' => '1 minute',
@@ -19,52 +21,56 @@ class TimeTableTest extends TestCase
         ]);
     }
 
-    public function testShouldRescheduleInOneMinuteWhenWasCreatedLessThanFiveMinutesAgo()
+    public function testShouldRescheduleInOneMinuteWhenWasCreatedLessThanFiveMinutesAgo(): void
     {
         $expectedToBeScheduledAt = T\minute(1)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\seconds(10)->ago();
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThanOneHourAgo()
+    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThanOneHourAgo(): void
     {
         $expectedToBeScheduledAt = T\minutes(5)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\minutes(30)->ago();
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThan24HoursAgo()
+    public function testShouldRescheduleInFiveMinutesWhenWasCreatedLessThan24HoursAgo(): void
     {
         $expectedToBeScheduledAt = T\hour(1)->fromNow()->toSecondPrecision();
         $wasCreatedAt = T\hours(3)->ago();
         $job = $this->givenJobThat($wasCreatedAt);
         $job->expects($this->once())
             ->method('scheduleAt')
-            ->with($this->equalTo($expectedToBeScheduledAt));
+            ->with($this->equalTo($expectedToBeScheduledAt))
+        ;
         $this->scheduler->schedule($job);
     }
 
-    public function testShouldNotBeRescheduledWhenWasCreatedMoreThan24HoursAgo()
+    public function testShouldNotBeRescheduledWhenWasCreatedMoreThan24HoursAgo(): void
     {
         $job = $this->jobThatWasCreated('2 days ago');
         $job->expects($this->never())->method('scheduleAt');
         $this->scheduler->schedule($job);
     }
 
-    public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen()
+    public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen(): void
     {
-        $job = $this->createMock('Recruiter\Job');
+        $job = $this->createMock(Job::class);
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue(T\hours(3)->ago()));
+            ->will($this->returnValue(T\hours(3)->ago()))
+        ;
 
         $tt = new TimeTable([
             '1 minute ago' => '1 minute',
@@ -73,60 +79,67 @@ class TimeTableTest extends TestCase
         $this->assertTrue($tt->isLastRetry($job));
     }
 
-    public function testIsLastRetryReturnFalseIfJobWasCreatedLessThanLastTimeSpen()
+    public function testIsLastRetryReturnFalseIfJobWasCreatedLessThanLastTimeSpen(): void
     {
-        $job = $this->createMock('Recruiter\Job');
+        $job = $this->createMock(Job::class);
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue(T\hours(3)->ago()));
+            ->will($this->returnValue(T\hours(3)->ago()))
+        ;
 
         $tt = new TimeTable([
             '1 hour ago' => '1 minute',
-            '24 hours ago' => '1 minute'
+            '24 hours ago' => '1 minute',
         ]);
         $this->assertFalse($tt->isLastRetry($job));
     }
 
-    public function testInvalidTimeTableBecauseTimeWindow()
+    public function testInvalidTimeTableBecauseTimeWindow(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute' => '1 second']);
     }
 
-    public function testInvalidTimeTableBecauseRescheduleTime()
+    public function testInvalidTimeTableBecauseRescheduleTime(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '1 second ago']);
     }
 
-    public function testInvalidTimeTableBecauseRescheduleTimeIsGreaterThanTimeWindow()
+    public function testInvalidTimeTableBecauseRescheduleTimeIsGreaterThanTimeWindow(): void
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $tt = new TimeTable(['1 minute ago' => '2 minutes']);
     }
 
-    private function givenJobThat(T\Moment $wasCreatedAt)
+    private function givenJobThat(T\Moment $wasCreatedAt): MockObject&JobAfterFailure
     {
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
+        $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
-            ->setMethods(['createdAt', 'scheduleAt'])
-            ->getMock();
+            ->onlyMethods(['createdAt', 'scheduleAt'])
+            ->getMock()
+        ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt));
+            ->willReturn($wasCreatedAt)
+        ;
+
         return $job;
     }
 
-    private function jobThatWasCreated($relativeTime)
+    private function jobThatWasCreated(string $relativeTime): MockObject&JobAfterFailure
     {
-        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime), T\now()->seconds());
-        $job = $this->getMockBuilder('Recruiter\JobAfterFailure')
+        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
+        $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
-            ->setMethods(['createdAt', 'scheduleAt'])
-            ->getMock();
+            ->onlyMethods(['createdAt', 'scheduleAt'])
+            ->getMock()
+        ;
         $job->expects($this->any())
             ->method('createdAt')
-            ->will($this->returnValue($wasCreatedAt));
+            ->willReturn($wasCreatedAt)
+        ;
+
         return $job;
     }
 }

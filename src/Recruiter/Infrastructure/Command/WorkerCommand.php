@@ -1,21 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
-use Exception;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use Recruiter\Factory;
 use Recruiter\Geezer\Command\RobustCommand;
 use Recruiter\Geezer\Command\RobustCommandRunner;
 use Recruiter\Geezer\Leadership\Anarchy;
 use Recruiter\Geezer\Leadership\LeadershipStrategy;
 use Recruiter\Geezer\Timing\ExponentialBackoffStrategy;
 use Recruiter\Geezer\Timing\WaitStrategy;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use Recruiter\Factory;
 use Recruiter\Infrastructure\Filesystem\BootstrapFile;
-use Recruiter\Infrastructure\Logger\FilterLogger;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
@@ -27,11 +26,6 @@ use Timeless\Interval;
 
 class WorkerCommand implements RobustCommand
 {
-    /**
-     * @var Factory
-     */
-    private $factory;
-
     /**
      * @var Worker
      */
@@ -48,17 +42,10 @@ class WorkerCommand implements RobustCommand
     private $waitStrategy;
 
     /**
-     * @var LoggerInterface
+     * @param Factory $factory
      */
-    private $logger;
-
-    /**
-     * @param mixed $factory
-     */
-    public function __construct($factory, LoggerInterface $logger)
+    public function __construct(private $factory, private readonly LoggerInterface $logger)
     {
-        $this->factory = $factory;
-        $this->logger = $logger;
     }
 
     public static function toRobustCommand(Factory $factory, LoggerInterface $logger): RobustCommandRunner
@@ -80,7 +67,7 @@ class WorkerCommand implements RobustCommand
         return (bool) $doneSomeWork;
     }
 
-    public function shutdown(?Exception $e = null): bool
+    public function shutdown(?\Throwable $e = null): bool
     {
         if ($this->worker->retireIfNotAssigned()) {
             $this->log(sprintf('worker `%s` retired', $this->worker->id()), LogLevel::INFO);
@@ -88,6 +75,11 @@ class WorkerCommand implements RobustCommand
             return true;
         }
 
+        return false;
+    }
+
+    public function hasTerminated(): bool
+    {
         return false;
     }
 
@@ -113,8 +105,10 @@ class WorkerCommand implements RobustCommand
 
     public function definition(): InputDefinition
     {
+        $defaultMongoUri = (string) MongoURI::fromEnvironment();
+
         return new InputDefinition([
-            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', 'mongodb://localhost:27017/recruiter'),
+            new InputOption('target', 't', InputOption::VALUE_REQUIRED, 'HOSTNAME[:PORT][/DB] MongoDB coordinates', $defaultMongoUri),
             new InputOption('backoff-to', 'b', InputOption::VALUE_REQUIRED, 'Upper limit of time to wait before next polling', '6400ms'),
             new InputOption('backoff-from', null, InputOption::VALUE_REQUIRED, 'Time to wait at least before to search for new jobs', '200ms'),
             new InputOption('memory-limit', 'm', InputOption::VALUE_REQUIRED, 'Maximum amount of memory allocable', '64MB'),
@@ -132,7 +126,7 @@ class WorkerCommand implements RobustCommand
 
         $this->waitStrategy = new ExponentialBackoffStrategy(
             Interval::parse($input->getOption('backoff-from'))->ms(),
-            Interval::parse($input->getOption('backoff-to'))->ms()
+            Interval::parse($input->getOption('backoff-to'))->ms(),
         );
 
         $memoryLimit = new MemoryLimit($input->getOption('memory-limit'));
@@ -164,7 +158,7 @@ class WorkerCommand implements RobustCommand
                 'datetime' => date('c'),
                 'pid' => posix_getpid(),
                 'workerId' => (string) $this->worker->id(),
-            ]
+            ],
         );
     }
 
