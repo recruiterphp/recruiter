@@ -1,4 +1,4 @@
-.PHONY: build up down test test-long phpstan rector fix-cs install update shell logs clean
+.PHONY: build up down install update composer-validate test test-long phpstan rector fix-cs shell logs clean
 
 # Build the Docker image
 build:
@@ -19,6 +19,9 @@ install:
 # Update dependencies
 update:
 	docker compose run --rm php composer update
+
+composer-validate:
+	docker compose run --rm php composer validate --strict
 
 # Run all tests except the long ones
 test: up

@@ -1,6 +1,10 @@
 services:
   php:
-    build: .
+    image: recruiterphp/recruiter-php
+    build:
+      context: .
+      tags:
+        - latest
     working_dir: /app
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
