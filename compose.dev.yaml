@@ -3,3 +3,5 @@ services:
     build:
       context: .
       target: dev
+    volumes:
+      - .:/app

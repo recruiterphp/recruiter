@@ -28,4 +28,8 @@ FROM base AS dev
 
 FROM base AS ci
 
+COPY composer.json composer.lock* ./
+
+RUN composer install --optimize-autoloader
+
 COPY . .

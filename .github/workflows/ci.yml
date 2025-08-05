@@ -26,6 +26,7 @@ jobs:
       run: composer validate --strict
 
   build-image:
+    needs: validate-composer
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -33,31 +34,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
     - name: Build base image with cache
       run: |
         docker buildx create --use
-        docker buildx build \
-          --cache-from type=gha \
-          --cache-to type=gha,mode=max \
-          --load \
-          --target base \
-          --tag recruiter-php \
-          .
-
-    - name: Install Composer packages
-      run: make install
-
-    - name: Build ci image with cache
-      run: |
         docker buildx build \
           --cache-from type=gha \
           --cache-to type=gha,mode=max \
