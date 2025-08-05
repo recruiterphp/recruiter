@@ -42,12 +42,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
-    - name: Install Composer packages
-      run: composer install --optimize-autoloader
-
-    - name: Build with cache
+    - name: Build base image with cache
       run: |
         docker buildx create --use
+        docker buildx build \
+          --cache-from type=gha \
+          --cache-to type=gha,mode=max \
+          --load \
+          --target base \
+          --tag recruiter-php \
+          .
+
+    - name: Install Composer packages
+      run: make install
+
+    - name: Build ci image with cache
+      run: |
         docker buildx build \
           --cache-from type=gha \
           --cache-to type=gha,mode=max \

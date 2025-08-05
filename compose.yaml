@@ -2,6 +2,8 @@ services:
   php:
     build: .
     working_dir: /app
+    volumes:
+      - .:/app
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
       - MONGODB_URI=mongodb://mongodb:27017/recruiter

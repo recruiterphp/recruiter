@@ -16,14 +16,15 @@ RUN pecl install mongodb \
         opcache \
         pcntl
 
-CMD ["tail", "-f", "/dev/null"]
-WORKDIR /app
-
-FROM base AS dev
-
 # Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
+
+WORKDIR /app
+
+CMD ["tail", "-f", "/dev/null"]
+
+FROM base AS dev
 
 FROM base AS ci
 
