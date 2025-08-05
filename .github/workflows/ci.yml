@@ -42,10 +42,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
-    - name: Define image name
-      id: meta
-      run: echo "image-name=recruiter:latest" >> $GITHUB_OUTPUT
-
     - name: Build with cache
       run: |
         docker buildx create --use
@@ -57,7 +53,7 @@ jobs:
           .
 
     - name: Save Docker image to tar
-      run: docker save recruiter-php:latest -o recruiter.tar
+      run: docker save recruiter-php:latest -o recruiter-php.tar
 
     - name: Upload image as artifact
       uses: actions/upload-artifact@v4
