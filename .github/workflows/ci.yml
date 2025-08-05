@@ -39,7 +39,7 @@ jobs:
       with:
         context: .
         target: ci
-        push: true
+        push: false
         tags: recruiterphp/recruiter-php:latest
         cache-from: type=gha,ref=recruiterphp/recruiter-php:latest
         cache-to: type=gha,mode=max
