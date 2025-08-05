@@ -23,12 +23,15 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
 
-FROM base AS code
+CMD ["tail", "-f", "/dev/null"]
+
+FROM base AS dev
+
+FROM base AS ci
 
 COPY composer.json composer.lock* ./
+COPY vendor ./
 
 RUN composer install --optimize-autoloader
 
 COPY . .
-
-CMD ["tail", "-f", "/dev/null"]
