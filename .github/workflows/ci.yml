@@ -17,16 +17,20 @@ permissions:
   contents: read
 
 jobs:
-  setup:
+  validate-composer:
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+  build-image:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
 
     - name: Cache Composer packages
       id: composer-cache
@@ -36,6 +40,10 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+
+    - name: Define image name
+        id: meta
+        run: echo "image-name=recruiter:latest" >> $GITHUB_OUTPUT
 
     - name: Build with cache
       run: |
@@ -47,28 +55,36 @@ jobs:
           --tag recruiter-php \
           .
 
+    - name: Save Docker image to tar
+      run: docker save recruiter-php:latest -o recruiter.tar
+
+    - name: Upload image as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-image
+        path: recruiter-php.tar
+
   test-fast:
-    needs: setup
+    needs: build-image
     runs-on: ubuntu-latest
     env:
       COMPOSE_FILE: compose.yaml
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Restore cache and build
-      run: |
-        docker buildx create --use
-        docker buildx build \
-          --cache-from type=gha \
-          --load \
-          --tag recruiter-php \
-          .
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: docker-image
+        path: .
+
+    - name: Load Docker image
+      run: docker load -i recruiter-php.tar
+
     - name: Run fast tests
       run: make test
 
   test-long:
-    needs: setup
+    needs: build-image
     runs-on: ubuntu-latest
     timeout-minutes: 90
     if: github.event.inputs.run_long_tests == 'true'
@@ -76,15 +92,14 @@ jobs:
       COMPOSE_FILE: compose.yaml
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Restore cache and build
-      run: |
-        docker buildx create --use
-        docker buildx build \
-          --cache-from type=gha \
-          --load \
-          --tag recruiter-php \
-          .
-    - name: Run long tests
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: docker-image
+        path: .
+
+    - name: Load Docker image
+      run: docker load -i recruiter-php.tar
+
+    - name: Run fast tests
       run: make test-long
