@@ -34,19 +34,18 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build base image with cache
-      run: |
-        docker buildx create --use
-        docker buildx build \
-          --cache-from type=gha \
-          --cache-to type=gha,mode=max \
-          --load \
-          --target ci \
-          --tag recruiter-php \
-          .
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        target: ci
+        push: true
+        tags: recruiterphp/recruiter-php:latest
+        cache-from: type=gha,ref=recruiterphp/recruiter-php:latest
+        cache-to: type=gha,mode=max
 
     - name: Save Docker image to tar
-      run: docker save recruiter-php:latest -o recruiter-php.tar
+      run: docker save recruiterphp/recruiter-php:latest -o recruiter-php.tar
 
     - name: Upload image as artifact
       uses: actions/upload-artifact@v4
