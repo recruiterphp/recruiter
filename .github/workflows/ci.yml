@@ -99,5 +99,5 @@ jobs:
     - name: Load Docker image
       run: docker load -i recruiter-php.tar
 
-    - name: Run fast tests
+    - name: Run long tests
       run: make test-long
