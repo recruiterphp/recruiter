@@ -24,8 +24,6 @@ WORKDIR /app
 
 CMD ["tail", "-f", "/dev/null"]
 
-FROM base AS dev
-
 FROM base AS ci
 
 COPY composer.json composer.lock* ./

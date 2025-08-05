@@ -2,6 +2,6 @@ services:
   php:
     build:
       context: .
-      target: dev
+      target: base
     volumes:
       - .:/app
