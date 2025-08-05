@@ -1,8 +1,8 @@
 services:
   php:
+    image: recruiterphp/recruiter-php
     build:
       context: .
-      image: recruiterphp/recruiter-php
       tags:
         - latest
     working_dir: /app
