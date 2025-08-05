@@ -16,22 +16,15 @@ RUN pecl install mongodb \
         opcache \
         pcntl
 
-# Copy Composer from official image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-ENV COMPOSER_ALLOW_SUPERUSER=1
-
-WORKDIR /app
-
 CMD ["tail", "-f", "/dev/null"]
+WORKDIR /app
 
 FROM base AS dev
 
+# Copy Composer from official image
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 FROM base AS ci
-
-COPY composer.json composer.lock* ./
-COPY vendor ./
-
-RUN composer install --optimize-autoloader
 
 COPY . .

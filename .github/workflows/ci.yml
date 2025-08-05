@@ -42,6 +42,9 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
+    - name: Install Composer packages
+    - run: composer install --optimize-autoload
+
     - name: Build with cache
       run: |
         docker buildx create --use
