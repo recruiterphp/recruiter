@@ -26,8 +26,19 @@ jobs:
       run: composer validate --strict
 
   build-image:
+    name: ${{ matrix.label }}
     needs: validate-composer
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: 'Build PHP 8.4 Image'
+            php_version: '8.4'
+          - label: 'Build PHP 8.5alpha2 Image'
+            php_version: '8.5alpha2'
+    env:
+      PHP_VERSION: ${{ matrix.php_version }}
     steps:
     - uses: actions/checkout@v4
 
