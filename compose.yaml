@@ -3,6 +3,8 @@ services:
     image: recruiterphp/recruiter-php
     build:
       context: .
+      args:
+        - PHP_VERSION=${PHP_VERSION}
       tags:
         - latest
     working_dir: /app
