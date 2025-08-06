@@ -59,6 +59,7 @@ jobs:
         path: recruiter-php.tar
 
   test-fast:
+    name: 'Run fast tests'
     needs: build-image
     runs-on: ubuntu-latest
     env:
@@ -78,6 +79,7 @@ jobs:
       run: make test
 
   test-long:
+    name: 'Run long tests'
     needs: build-image
     runs-on: ubuntu-latest
     timeout-minutes: 90
