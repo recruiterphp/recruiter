@@ -37,7 +37,7 @@ jobs:
           - label: 'Build PHP 8.4 Image'
             php_version: '8.4'
           - label: 'Build PHP 8.5alpha2 Image'
-            php_version: '8.5alpha2'
+            php_version: '8.5.0alpha2'
     steps:
     - uses: actions/checkout@v4
 
