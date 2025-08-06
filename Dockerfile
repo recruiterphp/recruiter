@@ -1,4 +1,6 @@
-FROM php:8.4-cli AS base
+ARG PHP_VERSION
+
+FROM php:$PHP_VERSION-cli AS base
 
 RUN apt-get update && apt-get install -y \
     git \
