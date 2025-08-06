@@ -38,8 +38,6 @@ jobs:
             php_version: '8.4'
           - label: 'Build PHP 8.5alpha2 Image'
             php_version: '8.5alpha2'
-    env:
-      PHP_VERSION: ${{ matrix.php_version }}
     steps:
     - uses: actions/checkout@v4
 
@@ -54,6 +52,8 @@ jobs:
         push: false
         load: true
         tags: recruiterphp/recruiter-php:latest
+        build-args: |
+          PHP_VERSION=${{ matrix.php_version }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
