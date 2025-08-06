@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   validate-composer:
-    name: 'Validate composer.* syntax (strict)'
+    name: 'Composer Validate'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -27,17 +27,9 @@ jobs:
       run: composer validate --strict
 
   build-image:
-    name: ${{ matrix.label }}
+    name: 'Build Docker Image'
     needs: validate-composer
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: 'Build PHP 8.4 Image'
-            php_version: '8.4'
-          - label: 'Build PHP 8.5alpha2 Image'
-            php_version: '8.5.0alpha2'
     steps:
     - uses: actions/checkout@v4
 
@@ -53,7 +45,7 @@ jobs:
         load: true
         tags: recruiterphp/recruiter-php:latest
         build-args: |
-          PHP_VERSION=${{ matrix.php_version }}
+          PHP_VERSION=8.4
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
