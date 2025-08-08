@@ -16,4 +16,4 @@ Onebip is a payment system (think PayPal with mobile devices in place of credit 
 On ReadTheDocs you can find the reference [documentation for the Recruiter project](https://recruiter.readthedocs.io/en/latest/).
 
 # Continuous Integration
-[![Build Status](https://travis-ci.com/recruiterphp/recruiter.svg?branch=master)](https://travis-ci.com/recruiterphp/recruiter)
+[![CI Pipeline](https://github.com/recruiterphp/recruiter/actions/workflows/ci.yml/badge.svg)](https://github.com/recruiterphp/recruiter/actions/workflows/ci.yml)
