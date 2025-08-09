@@ -10,7 +10,7 @@ class JobExecution
     private ?T\Moment $scheduledAt = null;
     private ?T\Moment $startedAt = null;
     private ?T\Moment $endedAt = null;
-    private $completedWith;
+    private mixed $completedWith = null;
     private ?\Throwable $failedWith = null;
 
     public function isCrashed(): bool
