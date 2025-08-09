@@ -3,9 +3,9 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
+use Recruiter\Factory;
 use Recruiter\Recruiter;
 use Recruiter\Workable\LazyBones;
-use Recruiter\Factory;
 
 $howManyJobsInBatch = 100;
 $howManyJobsToKeepAsScheduled = 2000;
@@ -17,11 +17,11 @@ $factory = new Factory();
 $db = $factory->getMongoDb(
     $options['host'],
     $mongoDbOptions = [],
-    $dbName = 'recruiter'
+    $dbName = 'recruiter',
 );
 $recruiter = new Recruiter($db);
 
-while(true) {
+while (true) {
     $howManyJobAreScheduled = $db->selectCollection('scheduled')->count();
     $howManyJobsToCreate = $howManyJobsInBatch;
     if ($howManyJobAreScheduled + $howManyJobsInBatch > $howManyJobsToKeepAsScheduled) {
@@ -32,18 +32,19 @@ while(true) {
     if ($howManyJobsToCreate > 0) {
         printf(
             '[LOADER][%d][%s] going to add %d jobs with %d already scheduled' . PHP_EOL,
-            $pid, date('c'), $howManyJobsToCreate, $howManyJobAreScheduled
+            $pid, date('c'), $howManyJobsToCreate, $howManyJobAreScheduled,
         );
-        for ($counter=0; $counter<$howManyJobsToCreate; $counter++) {
+        for ($counter = 0; $counter < $howManyJobsToCreate; ++$counter) {
             LazyBones::waitForMs(200, 100)
                 ->asJobOf($recruiter)
                 ->inBackground()
-                ->execute();
+                ->execute()
+            ;
         }
     } else {
         printf(
             '[LOADER][%d][%s] I\'m good with %d already scheduled' . PHP_EOL,
-            $pid, date('c'), $howManyJobAreScheduled
+            $pid, date('c'), $howManyJobAreScheduled,
         );
         sleep(1);
     }
