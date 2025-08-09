@@ -75,13 +75,13 @@ new EmailJob([
 
 ## 🏢 Production Heritage
 
-Recruiter was born at Onebip in **2014**, a major mobile payment platform processing millions of transactions daily. Later adopted by EasyWelfare in **2018**, it has handled critical operations across both platforms for years:
+Recruiter was born at Onebip in **2012**, a major mobile payment platform processing millions of jobs daily. After being reengineered and **open sourced in 2014**, it was later adopted by EasyWelfare in **2018**, with billions of jobs processed across both platforms:
 
 - ✅ Jobs cannot be lost (payments aren't idempotent)
 - 📋 Jobs must be traceable (for customer support)
 - ⏰ Failed jobs need smart retry logic (respecting rate limits)
 
-After **billions of jobs processed** over the years in production (2014-2024), we open-sourced this battle-tested solution. Both original platforms have since been replaced due to corporate acquisitions, but Recruiter lives on as a proven, independent solution.
+After **billions of jobs processed** in production (2012-2024) and active development until 2020, Recruiter has proven its reliability across diverse production environments. Both original platforms have since been phased out due to corporate acquisitions, but in **July 2025** Recruiter received a major modernization, ensuring it continues as a proven, independent solution with over a decade of battle-tested experience.
 
 ## 🚀 Development
 
