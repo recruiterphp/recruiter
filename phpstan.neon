@@ -1,5 +1,5 @@
 parameters:
-  level: 4
+  level: 5
   paths:
     - src
     - spec
@@ -9,6 +9,7 @@ parameters:
     - '#is_callable.*recruiter_#'
     - '#recruiter_became_master#'
     - '#recruiter_stept_back#'
+    - '#afterSuccess.*0 required#'
     - '#Unsafe usage of new static\(\).#'
     - '#to an undefined .* Sink\\BlackHole#'
   inferPrivatePropertyTypeFromConstructor: true

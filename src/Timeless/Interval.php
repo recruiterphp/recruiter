@@ -162,7 +162,7 @@ class Interval
             if (preg_match("/^[^\\d]*(?P<quantity>\\d+)\\s*(?P<unit>{$units})(?:\\W.*|$)/", $string, $matches)) {
                 $callable = 'Timeless\\' . $tokenToFunction[$matches['unit']];
 
-                return call_user_func($callable, $matches['quantity']);
+                return call_user_func($callable, (int) $matches['quantity']);
             }
             if (!preg_match('/^\d+$/', $string)) {
                 throw new InvalidIntervalFormat("'{$string}' is not a valid Interval format");
