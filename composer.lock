@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a948538624523ff6ccee8f49b89482a",
+    "content-hash": "3d27935a00476f3773f9707a22896445",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -5797,10 +5797,9 @@
         "php": "^8.4",
         "ext-bcmath": "*",
         "ext-mongodb": ">=1.1",
+        "ext-pcntl": "*",
         "ext-posix": "*"
     },
-    "platform-dev": {
-        "ext-pcntl": "*"
-    },
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
