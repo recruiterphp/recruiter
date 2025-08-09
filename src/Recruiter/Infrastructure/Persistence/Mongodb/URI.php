@@ -14,7 +14,7 @@ final readonly class URI implements \Stringable
 
     public static function fromEnvironment(): self
     {
-        return self::from(getenv('MONGODB_URI'));
+        return self::from(getenv('MONGODB_URI') ?: null);
     }
 
     public static function from(string|self|null $uri): self
