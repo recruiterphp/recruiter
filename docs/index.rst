@@ -7,7 +7,7 @@ Welcome to Recruiter's documentation!
 =====================================
 
 | *Recruiter* is a Job Queue Manager built with PHP meant to be used in PHP projects.
-| It allow php developers to perform some operations in background.
+| It allows PHP developers to perform operations in the background.
 
 Features and characteristics:
 
@@ -19,9 +19,9 @@ Features and characteristics:
 
 At high level, it provides a few major components:
 
-* A :ref:`recruiter<recruiter>`: a single instance long-running process who assign enqueued jobs to a worker
-* A :ref:`worker<worker>`: a multiple instace long-running processes that each execute a single job at a time
-* A :ref:`cleaner<cleaner>`: a single instance long-running process who takes care of cleaning up the dirty conditions that can happen (i.e. worker dead for a fatal error)
+* A :ref:`recruiter<recruiter>`: a single instance long-running process that assigns enqueued jobs to workers
+* A :ref:`worker<worker>`: multiple instance long-running processes that each execute a single job at a time
+* A :ref:`cleaner<cleaner>`: a single instance long-running process that takes care of cleaning up dirty conditions that can happen (i.e. worker dead from a fatal error)
 
 |
 |

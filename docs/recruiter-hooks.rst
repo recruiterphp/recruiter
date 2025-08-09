@@ -3,9 +3,9 @@
 Recruiter Hooks
 =============================
 
-| E' possibile definire, nel proprio progetto, delle ``hook functions`` che verranno richiamate dal `Recruiter` in determinati momenti/stati.
+| It is possible to define, in your own project, ``hook functions`` that will be called by the `Recruiter` at specific moments/states.
 
-| Queste funzioni riceveranno come argomento un instanza del `Recruiter` e sono:
+| These functions will receive as argument an instance of the `Recruiter` and are:
 
 * recruiter_became_master
 * recruiter_stept_back
@@ -13,9 +13,9 @@ Recruiter Hooks
 =============================
 recruiter_became_master
 =============================
-| Questa funzione verrà invocata dal processo recruiter nel momento in cui ottiene la leadership.
+| This function will be invoked by the recruiter process when it obtains leadership.
 
-| Per maggiori informazioni su cosa significhi ottenere la leadership vedere il capitolo relativo a :ref:`Geezer<geezer>`
+| For more information on what obtaining leadership means see the chapter on :ref:`Geezer<geezer>`
 
 
 .. code-block:: php
@@ -32,9 +32,9 @@ recruiter_became_master
 =============================
 recruiter_stept_back
 =============================
-| Questa funzione verrà invocata dal processo recruiter che perde la leadership.
+| This function will be invoked by the recruiter process that loses leadership.
 
-| Per maggiori informazioni su cosa significhi perdere la leadership vedere il capitolo relativo a :ref:`Geezer<geezer>`
+| For more information on what losing leadership means see the chapter on :ref:`Geezer<geezer>`
 
 .. code-block:: php
 

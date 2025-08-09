@@ -1,34 +1,34 @@
 Mongo Collections
 ===============================
 
-| Come abbiamo già visto, la libreria `recruiter` si appoggia a `Mongodb` per la storicizzazione dei dati.
-| Vediamo a grandi linee la struttura utilizzata in modo da possedere una conoscenza di massima che vi renderà più facile le indagini in caso di comportamenti anomali.
+| As we have already seen, the `recruiter` library relies on `MongoDB` for data persistence.
+| Let's look at the structure used at a high level so that we have a general understanding that will make investigations easier in case of anomalous behavior.
 
 .. _roster-collection:
 
 ============================
 "roster" collection
 ============================
-| La collezione **roster** contiene i dati relativi ai vari `worker` in esecuzione.
+| The **roster** collection contains data related to various running `workers`.
 
-| É grazie a questa collezione che il processo `recruiter` conosce quali worker sono presenti e quali di questi sono disponibili a prendere in carico un nuovo `job`, ed é sempre in questa collezione che il processo `recruiter` utilizza per memorizzare quale `job` é stato assegnato a quale `worker`. In questo modo ogni processo `worker` legge ripetutamente (polling) il proprio documento così da individuare quale sarà il prossimo `job` da eseguire.
+| Thanks to this collection, the `recruiter` process knows which workers are present and which of them are available to take on a new `job`. It is also in this collection that the `recruiter` process stores which `job` has been assigned to which `worker`. In this way, each `worker` process repeatedly reads (polling) its own document to identify which will be the next `job` to execute.
 
-| Ogni processo `worker` registra all'avvio i propri dati in un documento di questa collezione, questo documento viene rimosso durante la fase di shutdown del worker.
+| Each `worker` process registers its data in a document of this collection at startup. This document is removed during the worker's shutdown phase.
 
-| Ogni processo `worker` aggiorna questo documento periodicamente con la data corrente, in maniera tale da rendere esplicito il fatto di essere ancora "vivo".
+| Each `worker` process periodically updates this document with the current date, making it explicit that it is still "alive".
 
-| Grazie a questa data, il recruiter può capire che il `worker` non é più online, potendo rimuovere il documento relativo al `worker` morto ed evitando cosi di assegnargli dei lavori da eseguire.
+| Thanks to this date, the recruiter can understand that the `worker` is no longer online, being able to remove the document related to the dead `worker` and thus avoiding assigning jobs to it.
 
 .. _scheduled-collection:
 
 ============================
 "scheduled" collection
 ============================
-| La collezione **scheduled** contiene i vari `jobs` da eseguire.
+| The **scheduled** collection contains the various `jobs` to be executed.
 
-| Il processo recruiter legge periodicamente (polling) questa collezione in modo da individuare quali `jobs` vanno eseguiti, in base alla loro data di schedulazione.
+| The recruiter process periodically reads (polling) this collection to identify which `jobs` should be executed, based on their scheduling date.
 
-| Nel caso in cui un `job` venga eseguito senza successo, la data di schedulazione verrà aggiornata in relazione alla proprio politica di retry, in caso del raggiungimento del numero massimo di retry il documento verrà spostato nella collezione **archived**
+| In case a `job` is executed unsuccessfully, the scheduling date will be updated according to its retry policy. If the maximum number of retries is reached, the document will be moved to the **archived** collection.
 
 
 .. _archived-collection:
@@ -36,22 +36,22 @@ Mongo Collections
 ============================
 "archived" collection
 ============================
-| La collezione **archived** contiene lo storico dei vari `jobs` eseguiti.
+| The **archived** collection contains the history of various executed `jobs`.
 
-| Un `job` viene spostato dalla collezione **scheduled** alla collezione **archived** nel caso in cui venga eseguito e completato con successo, oppure nel caso in cui l'esecuzione fallisca ed é stato raggiunto il massimo numero di tentativi di esecuzione.
-| Il processo `cleaner` si occupa di mantenere ridotte le dimensioni di questa collezione, cancellando i `jobs` più vecchi di 5 giorni (default).
-| É possibile modificare questa finestra temporale tramite l'opzione **clean-after** del processo `cleaner`.
+| A `job` is moved from the **scheduled** collection to the **archived** collection when it is executed and completed successfully, or when execution fails and the maximum number of execution attempts has been reached.
+| The `cleaner` process is responsible for keeping the size of this collection small by deleting `jobs` older than 5 days (default).
+| It is possible to modify this time window through the **clean-after** option of the `cleaner` process.
 
-| Questa collezione risulta molto utile per 2 motivi:
+| This collection is very useful for 2 reasons:
 
-   * indagare i motivi del fallimento di un job (nel documento viene incluso lo stato del job (completato o meno) e il motivo dell'ultimo fallimento, più altri dati utili)
-   * :ref:`rischedulare un job<recovering>`
+   * investigating the reasons for job failure (the document includes the job status (completed or not) and the reason for the last failure, plus other useful data)
+   * :ref:`rescheduling a job<recovering>`
 
 .. _schedulers-collection:
 
 ============================
 "schedulers" collection
 ============================
-| La collezione **schedulers** contiente un template dei `job` che devono essere eseguiti periodicamente.
+| The **schedulers** collection contains templates of `jobs` that must be executed periodically.
 
-| Il processo `recruiter` legge periodicamente (polling) questa collezione in modo da creare e schedulare dei nuovi `job` da aggiungere alla collezione `scheduled`.
+| The `recruiter` process periodically reads (polling) this collection to create and schedule new `jobs` to add to the `scheduled` collection.

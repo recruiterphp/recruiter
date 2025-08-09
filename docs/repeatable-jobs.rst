@@ -1,11 +1,11 @@
 Repeatable Jobs
 ========================
-| Ci sono dei casi in cui la procedura da eseguire deve essere ripetuta nel tempo, indipendentemente dal fatto che venga completata con sucesso o meno.
-| Questo può essere svolto grazie a dei particolari job che prendono il nome di `RepeatableJob`.
-| Vediamo come utilizzarli tramite un esempio.
+| There are cases where a procedure needs to be repeated over time, regardless of whether it is completed successfully or not.
+| This can be accomplished through special jobs called `RepeatableJob`.
+| Let's see how to use them through an example.
 |
-| Supponiamo di voler inviare, ogni giorno alle 06:00 UTC, un report ad un determinato indirizzo email.
-| Avremo bisogno quindi di :ref:`creare il nostro Workable<workable>` che contenga la procedura per generare/inviare il report, procediamo, come visto in precedenza, ad implementare la classe |recruiter.workable.class|_ utilizzando il trait |recruiter.workable-behaviour.class|_ per evitare di scrivere codice ridondante.
+| Suppose we want to send a report to a specific email address every day at 06:00 UTC.
+| We will need to :ref:`create our Workable<workable>` that contains the procedure to generate/send the report. We proceed, as seen before, to implement the |recruiter.workable.class|_ class using the |recruiter.workable-behaviour.class|_ trait to avoid writing redundant code.
 
 .. code-block:: php
 
@@ -27,7 +27,7 @@ Repeatable Jobs
       }
    }
 
-| Ora dobbiamo far si che la nostra classe implementi anche l'interfaccia |recruiter.repeatableJob.class|_ in modo che possa essere schedulato automaticamente secondo un determinato schema.
+| Now we need to make our class also implement the |recruiter.repeatableJob.class|_ interface so that it can be automatically scheduled according to a specific pattern.
 
 .. code-block:: php
 
@@ -61,12 +61,12 @@ Repeatable Jobs
       }
    }
 
-| Abbiamo quindi assegnato un nome univoco al nostro `Repeatable` (tramite il metodo ``urn()``), ed indicato al `Recruiter` se é possibile o meno che 2 o più istanze di questo `job` si sovrappongano (tramite il metodo ``unique()``)
+| We have therefore assigned a unique name to our `Repeatable` (through the ``urn()`` method), and indicated to the `Recruiter` whether or not it is possible for 2 or more instances of this `job` to overlap (through the ``unique()`` method)
 
-| Ora che abbiamo un `Repeatable` vediamo come poterlo schedulare ad intervalli regolari.
-| Per indicare la politica di esecuzione del job dovremo utilizzare una |recruiter.schedule-policy.class|_
-| All'interno della libreria recruiter troviamo una `SchedulePolicy` già esistente che prende il nome di |recruiter.cron.class|_ e permette di specificare gli intervalli di esecuzione con la stessa sintassi utilizzata dal demone unix `cron <https://en.wikipedia.org/wiki/Cron>`_.
-| Quindi, per inviare il nostro report ogni giorno alle `06:00 UTC` dovremo fare in questo modo:
+| Now that we have a `Repeatable`, let's see how to schedule it at regular intervals.
+| To specify the job execution policy, we need to use a |recruiter.schedule-policy.class|_
+| Within the recruiter library, we find an existing `SchedulePolicy` called |recruiter.cron.class|_ that allows you to specify execution intervals with the same syntax used by the unix `cron <https://en.wikipedia.org/wiki/Cron>`_ daemon.
+| Therefore, to send our report every day at `06:00 UTC`, we need to do this:
 
 .. code-block:: php
 
@@ -88,7 +88,7 @@ Repeatable Jobs
    ;
 
 
-| Per eliminare uno scheduler attivo é possibile utilizzare il comando console `scheduler:remove` e seguirne le istruzioni.
+| To remove an active scheduler, you can use the console command `scheduler:remove` and follow its instructions.
 
 .. code-block:: bash
 

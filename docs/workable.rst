@@ -1,22 +1,22 @@
 .. _workable:
 
-Cos'é un oggetto Workable?
+What is a Workable object?
 ===================================
 
-| Il workable é la classe che contiene la procedura che dovrà essere svolta in maniera asincrona.
-| Questa verrà poi encapsulata in un `Job` del recruiter per poter essere messo in una coda ed essere successivamente eseguito da un :ref:`Worker<worker>`.
+| A workable is the class that contains the procedure that must be executed asynchronously.
+| This will then be encapsulated in a recruiter `Job` to be placed in a queue and subsequently executed by a :ref:`Worker<worker>`.
 
 ===================================
-Implementare un proprio `Workable`
+Implementing your own `Workable`
 ===================================
 
-| Vediamo con un esempio come poter implementare un proprio `Workable`.
-| Supponiamo di avere una procedura dove ad un certo punto avremo bisogno di inviare una richiesta http.
-| Vogliamo che questa richiesta venga effettuata in maniera asincrona tramite `Recruiter`.
+| Let's see with an example how to implement your own `Workable`.
+| Suppose we have a procedure where at some point we will need to send an HTTP request.
+| We want this request to be executed asynchronously via `Recruiter`.
 
-| Avremo quindi bisogno di creare una classe che si occupi dell'invio della richiesta http e che possa poi essere encapsulata in un `Job` del recruiter.
-| Supponiamo di avere già nel nostro dominio una classe `Request` che si occupa di rappresentare la request da inviare, ed una classe `HttpClient` che si occupa dell'effetivo invio delle richieste.
-| Iniziamo:
+| We will therefore need to create a class that handles sending the HTTP request and can then be encapsulated in a recruiter `Job`.
+| Suppose we already have in our domain a `Request` class that represents the request to be sent, and an `HttpClient` class that handles the actual sending of requests.
+| Let's start:
 
 .. code-block:: php
 
@@ -49,13 +49,13 @@ Implementare un proprio `Workable`
    }
 
 .. note::
-   | Possiamo nominare a nostro piacimento il metodo che verrà poi richiamato dai `Worker`, in questo caso é stato scelto `execute()` ma nulla vieta di utilizzare un nome diverso.
-   | Vedremo più avanti come istruire i `Worker` a richiamare il metodo che vogliamo.
+   | We can name the method that will be called by the `Worker` as we like, in this case `execute()` was chosen but nothing prevents us from using a different name.
+   | We will see later how to instruct the `Worker` to call the method we want.
 
 
-| Bene, ora che abbiamo la nostra classe che é in grado di inviare una `Request` vediamo come fare per poterla utilizzare tramite `Recruiter` e poter quindi eseguirla in maniera `asincrona`.
-| Per prima cosa dovremo fra si che la nostra `HttpRequestCommand` implementi l'interfaccia |recruiter.workable.class|_.
-| Questa interfaccia si compone di 3 metodi, utili a trasformare il nostro `Workable` in un `Job` del recruiter e a poterlo importare ed esportare per il salvataggio a database e successivo ripristino.
+| Good, now that we have our class that is able to send a `Request` let's see how to use it via `Recruiter` and be able to execute it `asynchronously`.
+| First we need to make our `HttpRequestCommand` implement the |recruiter.workable.class|_ interface.
+| This interface consists of 3 methods, useful for transforming our `Workable` into a recruiter `Job` and being able to import and export it for database storage and subsequent restoration.
 
 .. code-block:: php
 
@@ -105,13 +105,13 @@ Implementare un proprio `Workable`
    }
 
 
-| Ora il recruiter potrà creare un `Job` dedicato all'esecuzione di questa procedura, esportare i dati necessari all'esecuzione della procedura per poterli salvare su database e successivamente ricreare l'istanza del nostro `Workable` quando dovrà essere eseguito.
+| Now the recruiter will be able to create a `Job` dedicated to executing this procedure, export the data necessary for executing the procedure to save them to the database and subsequently recreate the instance of our `Workable` when it needs to be executed.
 
 .. warning::
-   | Ricorda che l'istanza della tua classe `Workable` verrà storicizzata su Mongo, assicurati quindi che il metodo **export()** della tua classe ritorni un contenuto serializzabile.
-   | In questo esempio diamo per scontato che la classe ``Http\Client`` non sia serializzabile, per questo motivo non é inclusa nell'export e viene ricavata tramite l'utilizzo di un "ServiceLocator".
+   | Remember that the instance of your `Workable` class will be stored in Mongo, so make sure that the **export()** method of your class returns serializable content.
+   | In this example we assume that the ``Http\Client`` class is not serializable, which is why it is not included in the export and is obtained through the use of a "ServiceLocator".
 
-| Vediamo ora come utilizzarlo.
+| Let's now see how to use it.
 
 .. code-block:: php
 
@@ -129,14 +129,14 @@ Implementare un proprio `Workable`
       ->execute() // this is the method defined in the Workable class
    ;
 
-| Ora la nostra `Request` é in coda, pronta per essere inviata non appena un `Worker` sarà disponibile.
-| Analizzando il codice possiamo notare che:
-| - abbiamo instanziato il nostro `Workable` **HttpRequestCommand** passandoglia una `Request`.
-| - abbiamo incapsulato il nostro `Workable` in un `Job`.
-| - abbiamo settato il `Job` per l'esecuzione in background.
-| - abbiamo istruito il `Worker` a chiamare il metodo **`execute()`** sull'istanza `Workable` contenuta nel `Job`.
+| Now our `Request` is in queue, ready to be sent as soon as a `Worker` is available.
+| Analyzing the code we can notice that:
+| - we have instantiated our `Workable` **HttpRequestCommand** passing it a `Request`.
+| - we have encapsulated our `Workable` in a `Job`.
+| - we have set the `Job` for background execution.
+| - we have instructed the `Worker` to call the **`execute()`** method on the `Workable` instance contained in the `Job`.
 
-| Nel :ref:`prossimo capitolo<jobs>` scopriremo tutte le opzioni disponibili per i vari `Job`.
+| In the :ref:`next chapter<jobs>` we will discover all the options available for the various `Job`.
 
 
 .. |recruiter.workable.class| replace:: ``Recruiter\Workable``
