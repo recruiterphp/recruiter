@@ -22,6 +22,9 @@ RUN pecl install mongodb \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# Copy PHP configuration
+COPY docker/php.ini /usr/local/etc/php/conf.d/99-custom.ini
+
 WORKDIR /app
 
 CMD ["tail", "-f", "/dev/null"]
