@@ -255,6 +255,7 @@ class Worker
         $cursor = $collection->find([], ['projection' => ['assigned_to' => 1]]);
         $jobs = [];
         foreach ($cursor as $document) {
+            assert(is_array($document));
             if (array_key_exists('assigned_to', $document)) {
                 $jobs = array_merge($jobs, array_values($document['assigned_to']));
             }
@@ -274,6 +275,7 @@ class Worker
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {
+            assert(is_array($deadWorker));
             $roster->retireWorkerWithId($deadWorker['_id']);
             if (array_key_exists('assigned_to', $deadWorker)) {
                 if (array_key_exists((string) $deadWorker['_id'], $deadWorker['assigned_to'])) {

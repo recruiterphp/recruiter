@@ -20,6 +20,7 @@ class FactoryMethodCommand implements Workable
     public static function from(string $callable, mixed ...$arguments): self
     {
         [$class, $method] = explode('::', $callable);
+        assert(class_exists($class));
 
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }

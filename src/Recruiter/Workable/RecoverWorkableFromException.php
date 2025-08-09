@@ -11,6 +11,7 @@ class RecoverWorkableFromException implements Workable
 
     /**
      * @param array<string, mixed> $parameters
+     * @param class-string         $recoverForClass
      */
     public function __construct(array $parameters, protected string $recoverForClass, protected \Throwable $recoverForException)
     {
