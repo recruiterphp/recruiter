@@ -22,6 +22,10 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $this->assertEquals(1, $totalNumber);
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     * @throws \DateInvalidOperationException
+     */
     public function testRetryPolicyMustBeAppliedEvenWhenWorkerDiesInConstructor(): void
     {
         new FailsInConstructor([], false)
