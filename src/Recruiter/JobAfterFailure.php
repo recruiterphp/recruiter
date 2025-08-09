@@ -46,7 +46,7 @@ class JobAfterFailure
         $this->job->archive($why);
     }
 
-    public function causeOfFailure()
+    public function causeOfFailure(): ?\Throwable
     {
         return $this->lastJobExecution->causeOfFailure();
     }

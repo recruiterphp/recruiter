@@ -56,7 +56,7 @@ class Job
         return T\MongoDate::toMoment($this->status['created_at']);
     }
 
-    public function numberOfAttempts()
+    public function numberOfAttempts(): int
     {
         return $this->status['attempts'];
     }
@@ -180,7 +180,7 @@ class Job
         $this->repository->archive($this);
     }
 
-    public function export()
+    public function export(): array
     {
         return array_merge(
             $this->status,
@@ -191,7 +191,10 @@ class Job
         );
     }
 
-    public function beforeExecution(EventDispatcherInterface $eventDispatcher)
+    /**
+     * @return $this
+     */
+    public function beforeExecution(EventDispatcherInterface $eventDispatcher): static
     {
         ++$this->status['attempts'];
         $this->lastJobExecution = new JobExecution();
@@ -204,7 +207,10 @@ class Job
         return $this;
     }
 
-    public function afterExecution($result, EventDispatcherInterface $eventDispatcher)
+    /**
+     * @return $this
+     */
+    public function afterExecution($result, EventDispatcherInterface $eventDispatcher): static
     {
         $this->status['done'] = true;
         $this->lastJobExecution->completedWith($result);
@@ -231,7 +237,7 @@ class Job
         return true;
     }
 
-    private function afterFailure($exception, $eventDispatcher)
+    private function afterFailure(\Throwable $exception, EventDispatcherInterface $eventDispatcher): bool
     {
         $this->lastJobExecution->failedWith($exception);
         $jobAfterFailure = new JobAfterFailure($this, $this->lastJobExecution);

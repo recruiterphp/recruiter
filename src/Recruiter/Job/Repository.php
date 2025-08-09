@@ -45,7 +45,7 @@ class Repository
         $found = $this->map($this->scheduled->find(['_id' => $id]));
 
         if (0 === count($found)) {
-            throw new \Exception("Unable to find scheduled job with ObjectId('{$id}')");
+            throw new \InvalidArgumentException("Unable to find scheduled job with ObjectId('{$id}')");
         }
 
         return $found[0];
@@ -60,7 +60,7 @@ class Repository
         $found = $this->map($this->archived->find(['_id' => $id]));
 
         if (0 === count($found)) {
-            throw new \Exception("Unable to find archived job with ObjectId('{$id}')");
+            throw new \InvalidArgumentException("Unable to find archived job with ObjectId('{$id}')");
         }
 
         return $found[0];

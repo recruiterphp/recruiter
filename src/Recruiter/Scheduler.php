@@ -8,9 +8,7 @@ use Timeless as T;
 
 class Scheduler
 {
-    private $job;
-
-    public static function around(Repeatable $repeatable, Repository $repository, Recruiter $recruiter)
+    public static function around(Repeatable $repeatable, Repository $repository): self
     {
         $retryPolicy = ($repeatable instanceof Retriable) ?
             $repeatable->retryWithPolicy() :
@@ -25,7 +23,7 @@ class Scheduler
         );
     }
 
-    public static function import($document, Repository $repository)
+    public static function import(array $document, Repository $repository): self
     {
         return new self(
             $document,

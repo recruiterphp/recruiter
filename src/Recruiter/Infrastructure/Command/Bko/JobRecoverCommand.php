@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Recruiter\Infrastructure\Command\Bko;
 
 use MongoDB\BSON\ObjectId;
-use Psr\Log\LoggerInterface;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Job;
@@ -21,10 +20,9 @@ use Timeless\Moment;
 
 class JobRecoverCommand extends Command
 {
-    private Recruiter $recruiter;
     private JobRepository $jobRepository;
 
-    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory)
     {
         parent::__construct();
     }
@@ -60,7 +58,7 @@ class JobRecoverCommand extends Command
         /** @var string */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
-        $this->recruiter = new Recruiter($db);
+        new Recruiter($db); // TODO: not used but not sure about the side effects of this call, so keeping it for now
         /** @var string */
         $archivedJobId = $input->getArgument('jobId');
 

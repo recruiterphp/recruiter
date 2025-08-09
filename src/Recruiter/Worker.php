@@ -16,28 +16,28 @@ class Worker
         Recruiter $recruiter,
         Repository $repository,
         MemoryLimit $memoryLimit,
-    ) {
+    ): self {
         $worker = new self(self::initialize(), $recruiter, $repository, $memoryLimit);
         $worker->save();
 
         return $worker;
     }
 
-    public function __construct(private $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
+    public function __construct(private array $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
     {
     }
 
-    public function id()
+    public function id(): ObjectId
     {
         return $this->status['_id'];
     }
 
-    public function pid()
+    public function pid(): int
     {
         return $this->status['pid'];
     }
 
-    public function work()
+    public function work(): string|false
     {
         $this->refresh();
         if ($this->hasBeenAssignedToDoSomething()) {
@@ -55,28 +55,28 @@ class Worker
         }
     }
 
-    public function export()
+    public function export(): array
     {
         return $this->status;
     }
 
-    public function updateWith($document)
+    public function updateWith(array $document): void
     {
         $this->status = self::fromMongoDocumentToInternalStatus($document);
     }
 
-    public function workOnJobsGroupedAs($group)
+    public function workOnJobsGroupedAs(string $group): void
     {
         $this->status['work_on'] = $group;
         $this->save();
     }
 
-    public function retireIfNotAssigned()
+    public function retireIfNotAssigned(): bool
     {
         return $this->repository->retireWorkerWithIdIfNotAssigned($this->status['_id']);
     }
 
-    public function retire()
+    public function retire(): void
     {
         if ($this->hasBeenAssignedToDoSomething()) {
             throw new CannotRetireWorkerAtWorkException();
@@ -84,21 +84,21 @@ class Worker
         $this->repository->retireWorkerWithId($this->status['_id']);
     }
 
-    private function stillHere()
+    private function stillHere(): void
     {
         $lastSeenAt = T\MongoDate::now();
         $this->status['last_seen_at'] = $lastSeenAt;
         $this->repository->atomicUpdate($this, ['last_seen_at' => $lastSeenAt]);
     }
 
-    private function workOn($job)
+    private function workOn($job): void
     {
         $this->beforeExecutionOf($job);
         $job->execute($this->recruiter->getEventDispatcher());
         $this->afterExecutionOf($job);
     }
 
-    private function beforeExecutionOf($job)
+    private function beforeExecutionOf($job): void
     {
         $this->status['working'] = true;
         $this->status['working_on'] = $job->id();
@@ -107,7 +107,7 @@ class Worker
         $this->save();
     }
 
-    private function afterExecutionOf($job)
+    private function afterExecutionOf($job): void
     {
         try {
             $this->memoryLimit->ensure(memory_get_usage());
@@ -141,25 +141,17 @@ class Worker
         $this->repository->retireWorkerWithId($this->id());
     }
 
-    private function hasBeenAssignedToDoSomething()
+    private function hasBeenAssignedToDoSomething(): bool
     {
-        if (is_null($this->status)) {
-            // I don't know yet why this happens, but seems like that sometimes
-            // some workers remains zombies and they have $this->status === null
-            // this is very strange, I need to dig deeper but for now the only
-            // thing to do seems like terminate the process
-            exit(1);
-        }
-
         return array_key_exists('assigned_to', $this->status);
     }
 
-    private function refresh()
+    private function refresh(): void
     {
         $this->repository->refresh($this);
     }
 
-    private function save()
+    private function save(): void
     {
         $this->repository->save($this);
     }
@@ -169,7 +161,7 @@ class Worker
         return $document;
     }
 
-    private static function initialize()
+    private static function initialize(): array
     {
         return [
             '_id' => new ObjectId(),
@@ -183,12 +175,12 @@ class Worker
         ];
     }
 
-    public static function canWorkOnAnyJobs($worksOn)
+    public static function canWorkOnAnyJobs(string $worksOn): bool
     {
         return '*' === $worksOn;
     }
 
-    public static function pickAvailableWorkers(MongoCollection $collection, $workersPerUnit)
+    public static function pickAvailableWorkers(MongoCollection $collection, $workersPerUnit): array
     {
         $result = [];
         $workers = iterator_to_array($collection->find(['available' => true], ['projection' => ['_id' => 1, 'work_on' => 1]]));
@@ -207,7 +199,7 @@ class Worker
         return $result;
     }
 
-    public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers)
+    public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers): array
     {
         $assignment = array_combine(
             array_map(fn ($id) => (string) $id, $workers),
@@ -229,7 +221,7 @@ class Worker
     /**
      * @return ObjectId[]
      */
-    public static function assignedJobs(MongoCollection $collection)
+    public static function assignedJobs(MongoCollection $collection): array
     {
         $cursor = $collection->find([], ['projection' => ['assigned_to' => 1]]);
         $jobs = [];

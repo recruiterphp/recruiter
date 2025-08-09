@@ -26,7 +26,6 @@ class JobTest extends TestCase
     {
         $job = Job::around(new AlwaysFail(), $this->repository);
         $retryStatistics = $job->retryStatistics();
-        $this->assertIsArray($retryStatistics);
         $this->assertArrayHasKey('job_id', $retryStatistics);
         $this->assertIsString($retryStatistics['job_id']);
         $this->assertArrayHasKey('retry_number', $retryStatistics);

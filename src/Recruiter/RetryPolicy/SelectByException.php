@@ -94,7 +94,7 @@ class SelectByException implements RetryPolicy
         );
     }
 
-    private function isRetriable($exception): bool
+    private function isRetriable(?\Throwable $exception): bool
     {
         try {
             $this->retryPolicyFor($exception);
@@ -108,9 +108,9 @@ class SelectByException implements RetryPolicy
     /**
      * @throws \Exception
      */
-    private function retryPolicyFor(?object $exception): RetryPolicy
+    private function retryPolicyFor(?\Throwable $exception): RetryPolicy
     {
-        if (!is_null($exception) && is_object($exception)) {
+        if ($exception instanceof \Throwable) {
             /** @var RetriableException $retriableException */
             foreach ($this->exceptions as $retriableException) {
                 $exceptionClass = $retriableException->exceptionClass();
@@ -118,9 +118,7 @@ class SelectByException implements RetryPolicy
                     return $retriableException->retryPolicy();
                 }
             }
-            if ($exception instanceof \Throwable) {
-                throw new \Exception('Unable to find a RetryPolicy associated to exception: ' . $exception::class, 0, $exception);
-            }
+            throw new \Exception('Unable to find a RetryPolicy associated to exception: ' . $exception::class, 0, $exception);
         }
         throw new \Exception('Unable to find a RetryPolicy associated to: ' . var_export($exception, true));
     }

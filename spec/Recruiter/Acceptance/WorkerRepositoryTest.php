@@ -12,10 +12,7 @@ class WorkerRepositoryTest extends BaseAcceptanceTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repository = new Repository(
-            $this->recruiterDb,
-            $this->recruiter,
-        );
+        $this->repository = new Repository($this->recruiterDb);
     }
 
     /**
@@ -29,7 +26,7 @@ class WorkerRepositoryTest extends BaseAcceptanceTestCase
         $this->assertEquals(0, $this->numberOfWorkers());
     }
 
-    protected function givenWorkerWithPid($pid)
+    protected function givenWorkerWithPid(int $pid): void
     {
         $document = ['pid' => $pid];
         $this->roster->insertOne($document);

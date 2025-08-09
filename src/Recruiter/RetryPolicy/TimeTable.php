@@ -11,14 +11,13 @@ use Timeless as T;
 class TimeTable implements RetryPolicy
 {
     use RetryPolicyBehaviour;
-    private ?array $timeTable;
 
-    private int $howManyRetries;
+    public readonly int $howManyRetries;
 
     /**
      * @throws \Exception
      */
-    public function __construct(?array $timeTable)
+    public function __construct(private ?array $timeTable)
     {
         if (is_null($timeTable)) {
             $timeTable = [

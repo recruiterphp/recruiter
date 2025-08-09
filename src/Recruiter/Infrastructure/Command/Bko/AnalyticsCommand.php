@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Command\Bko;
 
-use Psr\Log\LoggerInterface;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
@@ -18,9 +17,7 @@ use Symfony\Component\Console\Terminal;
 
 class AnalyticsCommand extends Command
 {
-    private Recruiter $recruiter;
-
-    public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
+    public function __construct(private readonly Factory $factory)
     {
         parent::__construct();
     }
@@ -51,10 +48,10 @@ class AnalyticsCommand extends Command
         /** @var string */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
-        $this->recruiter = new Recruiter($db);
+        $recruiter = new Recruiter($db);
 
         $group = $input->getOption('group');
-        $analytics = $this->recruiter->analytics($group);
+        $analytics = $recruiter->analytics($group);
 
         $rightAligned = new TableStyle();
         $rightAligned->setPadType(STR_PAD_LEFT);
