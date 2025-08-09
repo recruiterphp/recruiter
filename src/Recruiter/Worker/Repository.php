@@ -3,22 +3,23 @@
 namespace Recruiter\Worker;
 
 use MongoDB;
+use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime as MongoUTCDateTime;
-use Recruiter\Recruiter;
+use Recruiter\Worker;
 
 class Repository
 {
-    private $roster;
+    private MongoDB\Collection $roster;
 
-    public function __construct(MongoDB\Database $db, private readonly Recruiter $recruiter)
+    public function __construct(MongoDB\Database $db)
     {
         $this->roster = $db->selectCollection('roster');
     }
 
-    public function save($worker)
+    public function save(Worker $worker): void
     {
         $document = $worker->export();
-        $result = $this->roster->replaceOne(
+        $this->roster->replaceOne(
             ['_id' => $document['_id']],
             $document,
             ['upsert' => true],
@@ -50,20 +51,20 @@ class Repository
         );
     }
 
-    public function retireWorkerWithIdIfNotAssigned($id)
+    public function retireWorkerWithIdIfNotAssigned(ObjectId $id): bool
     {
         $result = $this->roster->deleteOne(['_id' => $id, 'available' => true]);
 
         return $result->getDeletedCount() > 0;
     }
 
-    public function retireWorkerWithId($id)
+    public function retireWorkerWithId(ObjectId $id): void
     {
         $this->roster->deleteOne(['_id' => $id]);
     }
 
-    public function retireWorkerWithPid($pid)
+    public function retireWorkerWithPid(int $pid): void
     {
-        $this->roster->deleteOne(['pid' => intval($pid)]);
+        $this->roster->deleteOne(['pid' => $pid]);
     }
 }

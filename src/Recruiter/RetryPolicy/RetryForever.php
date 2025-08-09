@@ -12,7 +12,7 @@ use Timeless\Interval;
 final class RetryForever implements RetryPolicy
 {
     use RetryPolicyBehaviour;
-    private $timeToWaitBeforeRetry;
+    private readonly Interval $timeToWaitBeforeRetry;
 
     public function __construct(int|Interval $timeToWaitBeforeRetry)
     {

@@ -1,13 +1,14 @@
 parameters:
-  level: 3
+  level: 4
   paths:
     - src
     - spec
   scanDirectories:
     - %currentWorkingDirectory%/vendor/giorgiosironi/eris/src/
   ignoreErrors:
-    - '#Function recruiter_became_master not found.#'
-    - '#Function recruiter_stept_back not found.#'
+    - '#is_callable.*recruiter_#'
+    - '#recruiter_became_master#'
+    - '#recruiter_stept_back#'
     - '#Unsafe usage of new static\(\).#'
     - '#to an undefined .* Sink\\BlackHole#'
   inferPrivatePropertyTypeFromConstructor: true

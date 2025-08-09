@@ -19,7 +19,7 @@ class Recruiter
     public function __construct(private readonly MongoDB\Database $db)
     {
         $this->jobs = new Job\Repository($this->db);
-        $this->workers = new Worker\Repository($this->db, $this);
+        $this->workers = new Worker\Repository($this->db);
         $this->scheduler = new Scheduler\Repository($this->db);
         $this->eventDispatcher = new EventDispatcher();
     }
@@ -38,7 +38,7 @@ class Recruiter
 
     public function repeatableJobOf(Repeatable $repeatable): Scheduler
     {
-        return Scheduler::around($repeatable, $this->scheduler, $this);
+        return Scheduler::around($repeatable, $this->scheduler);
     }
 
     public function queued(): int

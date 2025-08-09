@@ -129,9 +129,6 @@ class Interval
         $format = trim($format);
         if (array_key_exists($format, $availableFormatsTable)) {
             $callable = [$this, $availableFormatsTable[$format][0]];
-            if (!is_callable($callable)) {
-                throw new \RuntimeException("function `{$availableFormatsTable[$format][0]}` does not exists");
-            }
 
             $amountOfTime = call_user_func($callable);
             $unitOfTime = 1 === $amountOfTime ?
@@ -143,7 +140,7 @@ class Interval
         throw new InvalidIntervalFormat("'{$format}' is not a valid Interval format");
     }
 
-    public function toDateInterval()
+    public function toDateInterval(): \DateInterval
     {
         return new \DateInterval("PT{$this->seconds()}S");
     }
@@ -164,11 +161,8 @@ class Interval
             $units = implode('|', array_keys($tokenToFunction));
             if (preg_match("/^[^\\d]*(?P<quantity>\\d+)\\s*(?P<unit>{$units})(?:\\W.*|$)/", $string, $matches)) {
                 $callable = 'Timeless\\' . $tokenToFunction[$matches['unit']];
-                if (is_callable($callable)) {
-                    return call_user_func($callable, $matches['quantity']);
-                }
 
-                throw new \RuntimeException("function `$callable` does not exists");
+                return call_user_func($callable, $matches['quantity']);
             }
             if (!preg_match('/^\d+$/', $string)) {
                 throw new InvalidIntervalFormat("'{$string}' is not a valid Interval format");

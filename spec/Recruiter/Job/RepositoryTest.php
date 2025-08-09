@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Recruiter\Factory;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Job;
-use Recruiter\JobExecution;
 use Recruiter\JobToSchedule;
 use Recruiter\RetryPolicy\DoNotDoItAgain;
 use Recruiter\Workable;
@@ -458,20 +457,6 @@ class RepositoryTest extends TestCase
         ;
 
         return $workable;
-    }
-
-    private function jobExecutionMock(array $executionParameters): MockObject&JobExecution
-    {
-        $jobExecutionMock = $this
-            ->getMockBuilder(JobExecution::class)
-            ->getMock()
-        ;
-        $jobExecutionMock->expects($this->once())
-            ->method('export')
-            ->will($this->returnValue($executionParameters))
-        ;
-
-        return $jobExecutionMock;
     }
 
     private function jobMockWithAttemptsAndCustomParameters(
