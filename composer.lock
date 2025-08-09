@@ -510,16 +510,16 @@
         },
         {
             "name": "recruiterphp/clock",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/recruiterphp/clock.git",
-                "reference": "0066c4e91cda958d7af3d3b869ecbd6e23ebe562"
+                "reference": "c1346d1a5151bdc903dc38880a5c1450af791542"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/recruiterphp/clock/zipball/0066c4e91cda958d7af3d3b869ecbd6e23ebe562",
-                "reference": "0066c4e91cda958d7af3d3b869ecbd6e23ebe562",
+                "url": "https://api.github.com/repos/recruiterphp/clock/zipball/c1346d1a5151bdc903dc38880a5c1450af791542",
+                "reference": "c1346d1a5151bdc903dc38880a5c1450af791542",
                 "shasum": ""
             },
             "require": {
@@ -544,12 +544,18 @@
             "license": [
                 "MIT"
             ],
+            "authors": [
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/recruiterphp/clock/graphs/contributors"
+                }
+            ],
             "description": "Clock and Date library created before PSR alternative existed",
             "support": {
                 "issues": "https://github.com/recruiterphp/clock/issues",
-                "source": "https://github.com/recruiterphp/clock/tree/v4.1.0"
+                "source": "https://github.com/recruiterphp/clock/tree/v4.2.0"
             },
-            "time": "2025-08-02T13:21:21+00:00"
+            "time": "2025-08-06T23:14:18+00:00"
         },
         {
             "name": "recruiterphp/concurrency",
@@ -3168,16 +3174,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.21",
+            "version": "2.1.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "1ccf445757458c06a04eb3f803603cb118fe5fa6"
+                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1ccf445757458c06a04eb3f803603cb118fe5fa6",
-                "reference": "1ccf445757458c06a04eb3f803603cb118fe5fa6",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/41600c8379eb5aee63e9413fe9e97273e25d57e4",
+                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4",
                 "shasum": ""
             },
             "require": {
@@ -3222,7 +3228,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-28T19:35:08+00:00"
+            "time": "2025-08-04T19:17:37+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -3547,16 +3553,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.48",
+            "version": "10.5.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "6e0a2bc39f6fae7617989d690d76c48e6d2eb541"
+                "reference": "e2571b0e6e372de90f0b147b0cb9379bb105c124"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6e0a2bc39f6fae7617989d690d76c48e6d2eb541",
-                "reference": "6e0a2bc39f6fae7617989d690d76c48e6d2eb541",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e2571b0e6e372de90f0b147b0cb9379bb105c124",
+                "reference": "e2571b0e6e372de90f0b147b0cb9379bb105c124",
                 "shasum": ""
             },
             "require": {
@@ -3566,7 +3572,7 @@
                 "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
-                "myclabs/deep-copy": "^1.13.3",
+                "myclabs/deep-copy": "^1.13.4",
                 "phar-io/manifest": "^2.0.4",
                 "phar-io/version": "^3.2.1",
                 "php": ">=8.1",
@@ -3628,7 +3634,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.48"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.49"
             },
             "funding": [
                 {
@@ -3652,7 +3658,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-11T04:07:17+00:00"
+            "time": "2025-08-09T07:08:00+00:00"
         },
         {
             "name": "react/cache",
