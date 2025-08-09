@@ -11,8 +11,8 @@ use Timeless as T;
 
 class Repository
 {
-    private Collection $scheduled;
-    private Collection $archived;
+    private readonly Collection $scheduled;
+    private readonly Collection $archived;
 
     public function __construct(MongoDB\Database $db)
     {
