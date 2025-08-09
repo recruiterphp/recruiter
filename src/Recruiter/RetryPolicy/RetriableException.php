@@ -4,12 +4,12 @@ namespace Recruiter\RetryPolicy;
 
 use Recruiter\RetryPolicy;
 
-class RetriableException
+readonly class RetriableException
 {
-    /** @var string */
-    private $exceptionClass;
-
-    public function __construct(string $exceptionClass, private readonly RetryPolicy $retryPolicy)
+    /**
+     * @param class-string $exceptionClass
+     */
+    public function __construct(private string $exceptionClass, private RetryPolicy $retryPolicy)
     {
         if (!class_exists($exceptionClass)) {
             throw new \InvalidArgumentException("Class $exceptionClass doesn't exists");
@@ -17,7 +17,6 @@ class RetriableException
         if (!is_a($exceptionClass, \Throwable::class, $allowString = true)) {
             throw new \InvalidArgumentException("Class $exceptionClass is not Throwable");
         }
-        $this->exceptionClass = $exceptionClass;
     }
 
     public function exceptionClass(): string

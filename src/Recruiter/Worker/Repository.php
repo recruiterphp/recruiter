@@ -10,7 +10,7 @@ use Recruiter\Worker;
 
 class Repository
 {
-    private MongoDB\Collection $roster;
+    private readonly MongoDB\Collection $roster;
 
     public function __construct(MongoDB\Database $db)
     {

@@ -39,7 +39,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
                         Generator\constant($workers),
                         Generator\seq(Generator\oneOf(
                             Generator\map(
-                                function ($durationAndTag) {
+                                function ($durationAndTag): array {
                                     [$duration, $tag] = $durationAndTag;
 
                                     return ['enqueueJob', $duration, $tag];
@@ -50,17 +50,17 @@ class EnduranceTest extends BaseAcceptanceTestCase
                                 ),
                             ),
                             Generator\map(
-                                fn ($workerIndex) => ['restartWorkerGracefully', $workerIndex],
+                                fn ($workerIndex): array => ['restartWorkerGracefully', $workerIndex],
                                 Generator\choose(0, $workers - 1),
                             ),
                             Generator\map(
-                                fn ($workerIndex) => ['restartWorkerByKilling', $workerIndex],
+                                fn ($workerIndex): array => ['restartWorkerByKilling', $workerIndex],
                                 Generator\choose(0, $workers - 1),
                             ),
                             Generator\constant('restartRecruiterGracefully'),
                             Generator\constant('restartRecruiterByKilling'),
                             Generator\map(
-                                fn ($milliseconds) => ['sleep', $milliseconds],
+                                fn ($milliseconds): array => ['sleep', $milliseconds],
                                 Generator\choose(1, 1000),
                             ),
                         )),
@@ -91,9 +91,9 @@ class EnduranceTest extends BaseAcceptanceTestCase
                 $estimatedTime = max(count($actions) * 4, 60);
                 Timeout::inSeconds(
                     $estimatedTime,
-                    fn () => "all $this->jobs jobs to be performed. Now is " . date('c') . ' Logs: ' . $this->files(),
+                    fn (): string => "all $this->jobs jobs to be performed. Now is " . date('c') . ' Logs: ' . $this->files(),
                 )
-                    ->until(fn () => $this->jobRepository->countArchived() === $this->jobs)
+                    ->until(fn (): bool => $this->jobRepository->countArchived() === $this->jobs)
                 ;
 
                 $at = T\now();
@@ -113,7 +113,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
         ;
     }
 
-    private function logAction($action)
+    private function logAction(mixed $action): void
     {
         file_put_contents(
             $this->actionLog,
@@ -126,12 +126,12 @@ class EnduranceTest extends BaseAcceptanceTestCase
         );
     }
 
-    protected function sleep($milliseconds)
+    protected function sleep(int|float $milliseconds): void
     {
         usleep($milliseconds * 1000);
     }
 
-    protected function assertInvariantsOnStatistics($statistics)
+    protected function assertInvariantsOnStatistics(array $statistics): void
     {
         $this->assertEquals(0, $statistics['jobs']['queued']);
         $this->assertEquals(0, $statistics['jobs']['zombies']);

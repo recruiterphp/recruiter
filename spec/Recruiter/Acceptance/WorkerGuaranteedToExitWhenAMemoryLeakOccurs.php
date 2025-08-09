@@ -13,7 +13,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
      *
      * @dataProvider provideMemoryConsumptions
      */
-    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak($withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive): void
+    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak(bool $withMemoryLeak, int $howManyItems, string $memoryLimit, bool $expectedWorkerAlive): void
     {
         new ConsumingMemoryCommand([
             'withMemoryLeak' => $withMemoryLeak,
@@ -34,7 +34,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
 
         Timeout::inSeconds(5, function (): void {
         })
-            ->until(function () {
+            ->until(function (): bool {
                 $at = T\now();
                 $statistics = $this->recruiter->statistics($tag = null, $at);
 
@@ -57,7 +57,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         );
     }
 
-    public static function provideMemoryConsumptions()
+    public static function provideMemoryConsumptions(): array
     {
         return [
             // legend: [$withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive],

@@ -26,7 +26,7 @@ final readonly class SynchronousExecutionReport
 
     public function isThereAFailure(): bool
     {
-        return array_any($this->data, fn ($jobExecution, $jobId) => $jobExecution->isFailed());
+        return array_any($this->data, fn ($jobExecution, $jobId): bool => $jobExecution->isFailed());
     }
 
     /**

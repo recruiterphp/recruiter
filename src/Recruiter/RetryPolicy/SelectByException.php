@@ -53,7 +53,7 @@ class SelectByException implements RetryPolicy
     public function export(): array
     {
         return array_map(
-            function (RetriableException $retriableException) {
+            function (RetriableException $retriableException): array {
                 $retryPolicy = $retriableException->retryPolicy();
 
                 return [
@@ -73,7 +73,7 @@ class SelectByException implements RetryPolicy
         return new self(
             array_reduce(
                 $parameters,
-                function ($exceptions, $parameters) {
+                function (array $exceptions, array $parameters) {
                     $exceptionClass = $parameters['when'];
                     $retryPolicyClass = $parameters['then']['class'];
                     $retryPolicyParameters = $parameters['then']['parameters'];
@@ -90,7 +90,7 @@ class SelectByException implements RetryPolicy
         // I cannot answer to that so... true only if everybody says true
         return array_all(
             $this->exceptions,
-            fn (RetriableException $retriableException) => $retriableException->retryPolicy()->isLastRetry($job),
+            fn (RetriableException $retriableException): bool => $retriableException->retryPolicy()->isLastRetry($job),
         );
     }
 
@@ -111,7 +111,6 @@ class SelectByException implements RetryPolicy
     private function retryPolicyFor(?\Throwable $exception): RetryPolicy
     {
         if ($exception instanceof \Throwable) {
-            /** @var RetriableException $retriableException */
             foreach ($this->exceptions as $retriableException) {
                 $exceptionClass = $retriableException->exceptionClass();
                 if ($exception instanceof $exceptionClass) {

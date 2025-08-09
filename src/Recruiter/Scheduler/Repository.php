@@ -43,7 +43,7 @@ readonly class Repository
         if (0 === $this->schedulers->count(['urn' => $document['urn']])) {
             $this->schedulers->insertOne($document);
         } else {
-            $document = array_filter($document, fn ($key) => in_array($key, [
+            $document = array_filter($document, fn ($key): bool => in_array($key, [
                 'job',
                 'schedule_policy',
                 'unique',

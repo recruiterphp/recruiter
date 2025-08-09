@@ -10,8 +10,11 @@ use Timeless as T;
 
 class TimeTableTest extends TestCase
 {
-    private $scheduler;
+    private TimeTable $scheduler;
 
+    /**
+     * @throws \Exception
+     */
     protected function setUp(): void
     {
         $this->scheduler = new TimeTable([

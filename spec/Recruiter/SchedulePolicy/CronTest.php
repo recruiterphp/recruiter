@@ -22,7 +22,7 @@ class CronTest extends TestCase
         );
     }
 
-    public static function cronExpressions()
+    public static function cronExpressions(): array
     {
         return [
             ['10 * * * *', '2019-01-15 15:10:00'],

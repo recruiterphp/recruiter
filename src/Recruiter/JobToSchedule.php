@@ -147,12 +147,15 @@ class JobToSchedule
         return $this->job->export();
     }
 
-    public static function import($document, $repository): self
+    public static function import($document, Job\Repository $repository): self
     {
         return new self(Job::import($document, $repository));
     }
 
-    private function filterForRetriableExceptions($retryPolicy, $retriableExceptionTypes)
+    /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     */
+    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, string|array $retriableExceptionTypes): RetryPolicy
     {
         if (!is_array($retriableExceptionTypes)) {
             $retriableExceptionTypes = [$retriableExceptionTypes];

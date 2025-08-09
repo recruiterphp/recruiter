@@ -39,12 +39,12 @@ class FactoryMethodCommandTest extends TestCase
 
 class DummyFactory
 {
-    public static function create()
+    public static function create(): self
     {
         return new self();
     }
 
-    public function myObject()
+    public function myObject(): DummyObject
     {
         return new DummyObject();
     }

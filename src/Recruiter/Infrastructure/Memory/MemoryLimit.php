@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Recruiter\Infrastructure\Memory;
 
 use ByteUnits;
+use ByteUnits\ConversionException;
+use ByteUnits\System;
 
 /**
  * Class MemoryLimit.
  */
 class MemoryLimit
 {
-    private $limit;
+    private System $limit;
 
-    public function __construct($limit)
+    /**
+     * @throws \Exception
+     */
+    public function __construct(string $limit)
     {
         try {
             $this->limit = ByteUnits\parse($limit);
@@ -22,7 +27,11 @@ class MemoryLimit
         }
     }
 
-    public function ensure($used)
+    /**
+     * @throws MemoryLimitExceededException
+     * @throws ConversionException
+     */
+    public function ensure(string|int|System $used): void
     {
         $used = ByteUnits\box($used);
         if ($used->isGreaterThan($this->limit)) {

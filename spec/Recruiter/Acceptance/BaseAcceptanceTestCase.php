@@ -78,10 +78,10 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->roster->countDocuments();
     }
 
-    protected function waitForNumberOfWorkersToBe($expectedNumber, $howManySeconds = 1): void
+    protected function waitForNumberOfWorkersToBe(int $expectedNumber, int $howManySeconds = 1): void
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
-            ->until(function () use ($expectedNumber) {
+            ->until(function () use ($expectedNumber): bool {
                 $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
 
                 return $this->numberOfWorkers() == $expectedNumber;
@@ -102,7 +102,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $process = proc_open('exec php bin/recruiter start:recruiter --backoff-to 5000ms --lease-time 10s --considered-dead-after 20s >> /tmp/recruiter.log 2>&1', $descriptors, $pipes, $cwd);
 
         Timeout::inSeconds(1, 'recruiter to be up')
-            ->until(function () use ($process) {
+            ->until(function () use ($process): bool {
                 $status = proc_get_status($process);
 
                 return $status['running'];
@@ -124,7 +124,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $cwd = __DIR__ . '/../../../';
         $process = proc_open('exec php bin/recruiter start:cleaner --wait-at-least=5s --wait-at-most=1m --lease-time 20s >> /tmp/cleaner.log 2>&1', $descriptors, $pipes, $cwd);
         Timeout::inSeconds(1, 'cleaner to be up')
-            ->until(function () use ($process) {
+            ->until(function () use ($process): bool {
                 $status = proc_get_status($process);
 
                 return $status['running'];
@@ -153,7 +153,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $process = proc_open("exec php bin/recruiter start:worker $options >> /tmp/worker.log 2>&1", $descriptors, $pipes, $cwd);
 
         Timeout::inSeconds(1, 'worker to be up')
-            ->until(function () use ($process) {
+            ->until(function () use ($process): bool {
                 $status = proc_get_status($process);
 
                 return $status['running'];
@@ -171,8 +171,8 @@ abstract class BaseAcceptanceTestCase extends TestCase
         [$process, $pipes, $name] = $processAndPipes;
         proc_terminate($process, $signal);
         $this->lastStatus = proc_get_status($process);
-        Timeout::inSeconds(30, fn () => 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it")
-            ->until(function () use ($process) {
+        Timeout::inSeconds(30, fn (): string => 'termination of process: ' . var_export($this->lastStatus, true) . " after sending the `$signal` signal to it")
+            ->until(function () use ($process): bool {
                 $this->lastStatus = proc_get_status($process);
 
                 return false == $this->lastStatus['running'];
@@ -183,7 +183,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
     /**
      * @param int $duration milliseconds
      */
-    protected function enqueueJob(int $duration = 10, $tag = 'generic'): void
+    protected function enqueueJob(int $duration = 10, array|string|null $tag = 'generic'): void
     {
         $workable = ShellCommand::fromCommandLine('sleep ' . ($duration / 1000));
         $workable

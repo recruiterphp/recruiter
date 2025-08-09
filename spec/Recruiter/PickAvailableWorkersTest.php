@@ -58,6 +58,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals(3, count($workers));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithSomeDifferentSkills(): void
     {
         $this->withAvailableWorkers(['send-emails' => 3, 'count-transactions' => 3]);
@@ -74,6 +77,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals(6, $totalWorkersGiven);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testMoreWorkersThanAllowedPerUnit(): void
     {
         $this->withAvailableWorkers(['send-emails' => $this->workersPerUnit + 10]);
@@ -91,7 +97,7 @@ class PickAvailableWorkersTest extends TestCase
     /**
      * @throws Exception
      */
-    private function withAvailableWorkers($workers): void
+    private function withAvailableWorkers(array $workers): void
     {
         $workersThatShouldBeFound = [];
         foreach ($workers as $skill => $quantity) {
@@ -111,7 +117,7 @@ class PickAvailableWorkersTest extends TestCase
         ;
     }
 
-    private function withNoAvailableWorkers()
+    private function withNoAvailableWorkers(): void
     {
         $this->repository
             ->expects($this->any())
@@ -120,7 +126,7 @@ class PickAvailableWorkersTest extends TestCase
         ;
     }
 
-    private function assertArrayAreEquals($expected, $given)
+    private function assertArrayAreEquals(array $expected, array $given): void
     {
         sort($expected);
         sort($given);

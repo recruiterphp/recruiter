@@ -130,7 +130,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->assertEquals($aSchedulerAlreadyHaveSomeAttempts, $schedulers[0]->export()['attempts']);
     }
 
-    private function IHaveAScheduleWithALongStory(string $urn, $attempts)
+    private function IHaveAScheduleWithALongStory(string $urn, int $attempts): void
     {
         $scheduleTimes = [];
         for ($i = 1; $i <= $attempts; ++$i) {
@@ -167,14 +167,14 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         }
     }
 
-    private function fetchScheduledJobs()
+    private function fetchScheduledJobs(): array
     {
         $jobsRepository = new JobsRepository($this->recruiterDb);
 
         return $jobsRepository->all();
     }
 
-    private function fetchSchedulers()
+    private function fetchSchedulers(): array
     {
         $schedulersRepository = new SchedulersRepository($this->recruiterDb);
 

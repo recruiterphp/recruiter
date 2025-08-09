@@ -62,7 +62,7 @@ class RetriableExceptionFilter implements RetryPolicy
         return $this->filteredRetryPolicy->isLastRetry($job);
     }
 
-    private function ensureAreAllExceptions($exceptions)
+    private function ensureAreAllExceptions(array $exceptions): array
     {
         foreach ($exceptions as $exception) {
             if (!is_a($exception, 'Throwable', true)) {
@@ -73,12 +73,12 @@ class RetriableExceptionFilter implements RetryPolicy
         return $exceptions;
     }
 
-    private function isExceptionRetriable($exception)
+    private function isExceptionRetriable(?\Throwable $exception)
     {
         if (is_object($exception)) {
             return array_any(
                 $this->retriableExceptions,
-                fn ($retriableExceptionType) => $exception instanceof $retriableExceptionType,
+                fn ($retriableExceptionType): bool => $exception instanceof $retriableExceptionType,
             );
         }
 

@@ -231,7 +231,7 @@ class Worker
     public static function tryToAssignJobsToWorkers(MongoCollection $collection, array $jobs, array $workers): array
     {
         $assignment = array_combine(
-            array_map(fn ($id) => (string) $id, $workers),
+            array_map(fn ($id): string => (string) $id, $workers),
             $jobs,
         );
 

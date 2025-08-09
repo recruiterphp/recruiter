@@ -20,10 +20,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class RemoveSchedulerCommand extends Command
 {
-    /**
-     * @var SchedulerRepository
-     */
-    private $schedulerRepository;
+    private ?SchedulerRepository $schedulerRepository = null;
 
     public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
@@ -134,7 +131,7 @@ class RemoveSchedulerCommand extends Command
                 'policy' => $scheduler->schedulePolicy()->export(),
             ];
 
-            $stringifyValue = function ($value) {
+            $stringifyValue = function ($value): string {
                 if (is_array($value)) {
                     return var_export($value, true);
                 } else {

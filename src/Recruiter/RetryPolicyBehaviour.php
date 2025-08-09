@@ -13,12 +13,12 @@ trait RetryPolicyBehaviour
         $this->parameters = $parameters;
     }
 
-    public function retryOnlyWhenExceptionIs($retriableExceptionType)
+    public function retryOnlyWhenExceptionIs($retriableExceptionType): RetriableExceptionFilter
     {
         return new RetriableExceptionFilter($this, [$retriableExceptionType]);
     }
 
-    public function retryOnlyWhenExceptionsAre($retriableExceptionTypes)
+    public function retryOnlyWhenExceptionsAre($retriableExceptionTypes): RetriableExceptionFilter
     {
         return new RetriableExceptionFilter($this, $retriableExceptionTypes);
     }

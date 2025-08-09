@@ -35,7 +35,7 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
         $this->assertTrue($report->isThereAFailure());
     }
 
-    private function enqueueAnAnswerJob($answer, $scheduledAt)
+    private function enqueueAnAnswerJob(int $answer, T\Moment $scheduledAt): void
     {
         FactoryMethodCommand::from('Recruiter\Acceptance\SyncronousExecutionTestDummyObject::create')
             ->answer($answer)
@@ -49,7 +49,7 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
 
 class SyncronousExecutionTestDummyObject
 {
-    public static function create()
+    public static function create(): self
     {
         return new self();
     }

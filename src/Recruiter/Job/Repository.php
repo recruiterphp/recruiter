@@ -176,7 +176,7 @@ class Repository
         return $this->scheduled->countDocuments($query);
     }
 
-    public function queuedGroupedBy($field, array $query = [], $group = null): array
+    public function queuedGroupedBy(string $field, array $query = [], $group = null): array
     {
         $query['scheduled_at']['$lte'] = T\MongoDate::from(T\now());
         if (null !== $group) {
@@ -465,7 +465,7 @@ class Repository
     private function countRecentArchivedOrScheduledJobsWithManyAttempts(
         T\Moment $lowerLimit,
         T\Moment $upperLimit,
-        $collectionName,
+        string $collectionName,
     ): int {
         return count($this->recentArchivedOrScheduledJobsWithManyAttempts(
             $lowerLimit,

@@ -15,7 +15,7 @@ class TimeTable implements RetryPolicy
     public readonly int $howManyRetries;
 
     /**
-     * @throws \Exception
+     * @param array<string, string> $timeTable
      */
     public function __construct(private ?array $timeTable)
     {
@@ -58,17 +58,17 @@ class TimeTable implements RetryPolicy
         return new self($parameters['time_table']);
     }
 
-    private function hasBeenCreatedLessThan($job, $relativeTime)
+    private function hasBeenCreatedLessThan(JobAfterFailure|Job $job, string $relativeTime): bool
     {
         return $job->createdAt()->isAfter(
-            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
+            T\Moment::fromTimestamp(strtotime($relativeTime, T\now()->seconds())),
         );
     }
 
-    private function rescheduleIn($job, $relativeTime): void
+    private function rescheduleIn(JobAfterFailure $job, string $relativeTime): void
     {
         $job->scheduleAt(
-            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
+            T\Moment::fromTimestamp(strtotime($relativeTime, T\now()->seconds())),
         );
     }
 
@@ -80,14 +80,14 @@ class TimeTable implements RetryPolicy
         foreach ($timeTable as $timeWindow => $rescheduleTime) {
             $timeWindowInSeconds = ($now - strtotime((string) $timeWindow, $now)) - $timeWindowInSeconds;
             if ($timeWindowInSeconds <= 0) {
-                throw new \Exception("Time window `$timeWindow` is invalid, must be in the past");
+                throw new \InvalidArgumentException("Time window `$timeWindow` is invalid, must be in the past");
             }
             $rescheduleTimeInSeconds = (strtotime((string) $rescheduleTime, $now) - $now);
             if ($rescheduleTimeInSeconds <= 0) {
-                throw new \Exception("Reschedule time `$rescheduleTime` is invalid, must be in the future");
+                throw new \InvalidArgumentException("Reschedule time `$rescheduleTime` is invalid, must be in the future");
             }
             if ($rescheduleTimeInSeconds > $timeWindowInSeconds) {
-                throw new \Exception("Reschedule time `$rescheduleTime` is invalid, must be greater than the time window");
+                throw new \InvalidArgumentException("Reschedule time `$rescheduleTime` is invalid, must be greater than the time window");
             }
             $howManyRetries += floor($timeWindowInSeconds / $rescheduleTimeInSeconds);
         }

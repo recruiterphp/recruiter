@@ -26,7 +26,7 @@ class Job
         );
     }
 
-    public static function import($document, Repository $repository): self
+    public static function import(array $document, Repository $repository): self
     {
         return new self(
             $document,
@@ -61,7 +61,7 @@ class Job
         return $this->status['attempts'];
     }
 
-    public function retryWithPolicy(RetryPolicy $retryPolicy)
+    public function retryWithPolicy(RetryPolicy $retryPolicy): static
     {
         $this->retryPolicy = $retryPolicy;
 
@@ -254,7 +254,7 @@ class Job
         return $archived;
     }
 
-    private function emit($eventType, EventDispatcherInterface $eventDispatcher): void
+    private function emit(string $eventType, EventDispatcherInterface $eventDispatcher): void
     {
         $event = new Event($this->export());
         $eventDispatcher->dispatch($event, $eventType);
@@ -307,7 +307,7 @@ class Job
         return [];
     }
 
-    private static function initialize()
+    private static function initialize(): array
     {
         return array_merge(
             [
@@ -352,7 +352,7 @@ class Job
         }
     }
 
-    public static function rollbackLockedNotIn(MongoCollection $collection, array $excluded)
+    public static function rollbackLockedNotIn(MongoCollection $collection, array $excluded): int
     {
         try {
             $result = $collection->updateMany(
@@ -374,7 +374,7 @@ class Job
         }
     }
 
-    public static function lockAll(MongoCollection $collection, $jobs)
+    public static function lockAll(MongoCollection $collection, $jobs): void
     {
         $collection->updateMany(
             ['_id' => ['$in' => array_values($jobs)]],

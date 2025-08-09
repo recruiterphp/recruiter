@@ -10,19 +10,22 @@ class SelectByExceptionBuilder
     /**
      * @var array<RetriableException>
      */
-    private $exceptions;
+    private array $exceptions = [];
 
     /**
-     * @var ?string
+     * @var class-string<\Throwable>|null
      */
-    private $currentException;
+    private ?string $currentException = null;
 
     public function __construct()
     {
-        $this->exceptions = [];
-        $this->currentException = null;
     }
 
+    /**
+     * @param class-string<\Throwable> $exceptionClass
+     *
+     * @return $this
+     */
     public function when(string $exceptionClass): self
     {
         $this->currentException = $exceptionClass;

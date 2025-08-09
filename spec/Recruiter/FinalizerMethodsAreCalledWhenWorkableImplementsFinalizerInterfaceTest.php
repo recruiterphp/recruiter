@@ -54,7 +54,7 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
 
     public function testFinalizableSuccessfullMethodsAreCalledWhenJobIsDone(): void
     {
-        $workable = new FinalizableWorkable(fn () => true, $this->listener);
+        $workable = new FinalizableWorkable(fn (): true => true, $this->listener);
 
         $job = Job::around($workable, $this->repository);
         $job->execute($this->dispatcher);

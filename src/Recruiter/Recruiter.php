@@ -3,6 +3,7 @@
 namespace Recruiter;
 
 use MongoDB;
+use MongoDB\BSON\ObjectId;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;
@@ -168,12 +169,12 @@ class Recruiter
         }
 
         return [
-            array_map(fn ($value) => (string) $value, $assignments),
+            array_map(fn ($value): string => (string) $value, $assignments),
             $totalActualAssignments,
         ];
     }
 
-    public function scheduledJob($id)
+    public function scheduledJob(string|ObjectId $id): Job
     {
         return $this->jobs->scheduled($id);
     }

@@ -6,11 +6,14 @@ use Timeless\Interval;
 
 class WaitStrategy
 {
-    private int $timeToWaitAtLeast;
-    private int $timeToWaitAtMost;
+    private readonly int $timeToWaitAtLeast;
+    private readonly int $timeToWaitAtMost;
     private int $timeToWait;
 
-    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, private string $howToWait = 'usleep')
+    /**
+     * @param callable-string $howToWait
+     */
+    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, private readonly string $howToWait = 'usleep')
     {
         $this->timeToWaitAtLeast = $timeToWaitAtLeast->milliseconds();
         $this->timeToWaitAtMost = $timeToWaitAtMost->milliseconds();

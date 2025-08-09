@@ -7,7 +7,7 @@ use Recruiter\Workable\RecoverRepeatableFromException;
 class RepeatableInJob
 {
     // TODO: resolve duplication with WorkableInJob
-    public static function import($document): Repeatable
+    public static function import(array $document): Repeatable
     {
         $dataAboutWorkableObject = [
             'parameters' => null,

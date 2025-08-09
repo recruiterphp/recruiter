@@ -26,20 +26,11 @@ use Timeless\Interval;
 
 class WorkerCommand implements RobustCommand
 {
-    /**
-     * @var Worker
-     */
-    private $worker;
+    private ?Worker $worker = null;
 
-    /**
-     * @var LeadershipStrategy
-     */
-    private $leadershipStrategy;
+    private ?Anarchy $leadershipStrategy = null;
 
-    /**
-     * @var WaitStrategy
-     */
-    private $waitStrategy;
+    private ?ExponentialBackoffStrategy $waitStrategy = null;
 
     /**
      * @param Factory $factory
