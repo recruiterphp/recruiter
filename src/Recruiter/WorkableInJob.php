@@ -7,7 +7,10 @@ use Recruiter\Workable\RecoverWorkableFromException;
 class WorkableInJob
 {
     // TODO: resolve the duplication with RepeatableInJob
-    public static function import($document): Workable
+    /**
+     * @param array<string, mixed> $document
+     */
+    public static function import(array $document): Workable
     {
         $dataAboutWorkableObject = [
             'parameters' => null,
@@ -37,7 +40,10 @@ class WorkableInJob
         }
     }
 
-    public static function export($workable, $methodToCall)
+    /**
+     * @return array<string, array<string, string | array<mixed>>>
+     */
+    public static function export(Workable $workable, string $methodToCall): array
     {
         return [
             'workable' => [
@@ -48,12 +54,18 @@ class WorkableInJob
         ];
     }
 
-    public static function initialize()
+    /**
+     * @return array<string, array<string, string>>
+     */
+    public static function initialize(): array
     {
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($workable)
+    /**
+     * @return class-string<Workable>
+     */
+    private static function classNameOf(Workable $workable): string
     {
         $workableClassName = $workable::class;
         if (method_exists($workable, 'getClass')) {

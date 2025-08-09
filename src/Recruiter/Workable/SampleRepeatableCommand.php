@@ -12,7 +12,7 @@ class SampleRepeatableCommand implements Workable, Repeatable
     use WorkableBehaviour;
     use RepeatableBehaviour;
 
-    public function execute()
+    public function execute(): void
     {
         var_export(new \DateTime()->format('c'));
     }

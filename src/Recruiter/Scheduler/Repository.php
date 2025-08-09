@@ -5,16 +5,19 @@ namespace Recruiter\Scheduler;
 use MongoDB;
 use Recruiter\Scheduler;
 
-class Repository
+readonly class Repository
 {
-    private $schedulers;
+    private MongoDB\Collection $schedulers;
 
     public function __construct(MongoDB\Database $db)
     {
         $this->schedulers = $db->selectCollection('schedulers');
     }
 
-    public function all()
+    /**
+     * @return Scheduler[]
+     */
+    public function all(): array
     {
         return $this->map(
             $this->schedulers->find([], [
@@ -23,7 +26,7 @@ class Repository
         );
     }
 
-    public function save(Scheduler $scheduler)
+    public function save(Scheduler $scheduler): void
     {
         $document = $scheduler->export();
         $this->schedulers->replaceOne(
@@ -33,7 +36,7 @@ class Repository
         );
     }
 
-    public function create(Scheduler $scheduler)
+    public function create(Scheduler $scheduler): void
     {
         $document = $scheduler->export();
 
@@ -53,12 +56,17 @@ class Repository
         }
     }
 
-    public function deleteByUrn(string $urn)
+    public function deleteByUrn(string $urn): void
     {
         $this->schedulers->deleteOne(['urn' => $urn]);
     }
 
-    private function map($cursor)
+    /**
+     * @param iterable<array<string, mixed>> $cursor
+     *
+     * @return array<Scheduler>
+     */
+    private function map(iterable $cursor): array
     {
         $schedulers = [];
         foreach ($cursor as $document) {
