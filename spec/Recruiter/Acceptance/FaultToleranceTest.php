@@ -4,8 +4,8 @@ namespace Recruiter\Acceptance;
 
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\RetryPolicy\RetryManyTimes;
-use Recruiter\Workable\FailsInConstructor;
 use Recruiter\Workable\ExitsAbruptly;
+use Recruiter\Workable\FailsInConstructor;
 use Timeless as T;
 
 class FaultToleranceTest extends BaseAcceptanceTestCase
