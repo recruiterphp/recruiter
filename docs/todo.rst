@@ -1,42 +1,42 @@
-Documentazione da scrivere:
-============================
+Documentation to write:
+========================
 
 .. role:: strike
     :class: strike
 
-- :strike:`dipendenze`
-- perché esiste
-- :strike:`che problemi risolve` é sufficiente dire che permette l'esecuzione di routine in background?
-- struttura
-   - :strike:`cos'é recruiter`
-   - :strike:`cos'é un worker`
-   - :strike:`cos'é il cleaner`
+- :strike:`dependencies`
+- why it exists
+- :strike:`what problems it solves` is it sufficient to say that it allows background routine execution?
+- structure
+   - :strike:`what is recruiter`
+   - :strike:`what is a worker`
+   - :strike:`what is the cleaner`
 - setup
-   - :strike:`installazione`
-   - :strike:`lanciare recruiter`
-   - :strike:`lanciare workers`
-   - :strike:`lanciare cleaners`
+   - :strike:`installation`
+   - :strike:`launching recruiter`
+   - :strike:`launching workers`
+   - :strike:`launching cleaners`
 
-- esempi
-   - :strike:`hello world: task singolo che deve essere completato`
-   - :strike:`senza retry policy (hello world)`
-   - :strike:`schedule subito`
-   - :strike:`schedule nel futuro`
-   - :strike:`con retry policy semplice`
+- examples
+   - :strike:`hello world: single task that must be completed`
+   - :strike:`without retry policy (hello world)`
+   - :strike:`schedule immediately`
+   - :strike:`schedule in the future`
+   - :strike:`with simple retry policy`
    - :strike:`retryable exceptions`
-   - :strike:`retry policy complesse (exponential backoff)`
-   - :strike:`task ottimistico`
+   - :strike:`complex retry policies (exponential backoff)`
+   - :strike:`optimistic task`
 
-- approfondimenti
-   - :strike:`come si implementa una workable`
-   - :strike:`come si implementa una retry policy` (non é dettagliato, ma uno si può guardare l'implementazione di una delle tante esistenti per capire come fare...)
+- deep dives
+   - :strike:`how to implement a workable`
+   - :strike:`how to implement a retry policy` (not detailed, but one can look at the implementation of one of the many existing ones to understand how to do it...)
    - :strike:`tags`
-   - :strike:`recruiter statistiche`
+   - :strike:`recruiter statistics`
    - :strike:`hooks`
    - :strike:`repeatable jobs`
    - :strike:`working-on (priority queues)`
-   - :strike:`collezioni ( a che serve archived, etc.)`
-   - :strike:`come rimettere un job in coda`
-   - :strike:`esecuzione nei test`
-   - :strike:`iniettare il logger`
+   - :strike:`collections (what archived is for, etc.)`
+   - :strike:`how to put a job back in queue`
+   - :strike:`execution in tests`
+   - :strike:`inject the logger`
    - geezer

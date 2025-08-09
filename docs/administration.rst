@@ -1,7 +1,7 @@
 Administration console
 ===========================
 
-| La libreria fornisce alcuni comandi da console per la gestione del recruiter:
+| The library provides some console commands for recruiter management:
 
 .. _recovering:
 
@@ -9,11 +9,11 @@ Administration console
 Recovering a job
 ===========================
 
-| Nel caso in cui un volessimo rieseguire un `job` che si trova in :ref:`archivio<archived-collection>` possiamo farlo tramite il comando console **job:recover**
+| In case we want to re-execute a `job` that is in the :ref:`archive<archived-collection>` we can do it via the **job:recover** console command
 
-| Per poter eseguire questo comando é necessario conoscere l'id (MongoId del documento) del `job` che si vuole ripristinare, da passare come argomento del comando.
+| To execute this command it is necessary to know the ObjectId of the `job` you want to restore, to pass as argument to the command.
 
-| É possibile specificare la nuova data di schedulazione tramite l'opzione **scheduleAt**, altrimenti il job verrà rischedulato per l'esecuzione nella data corrente.
+| It is possible to specify the new scheduling date via the **scheduleAt** option, otherwise the job will be rescheduled for execution at the current date.
 
 .. code-block:: bash
 
@@ -23,11 +23,11 @@ Recovering a job
 Analytics
 ===========================
 
-| É possibile visulizzare le :ref:`statistiche<analytics-page>` anche in console tramite il comando: **bko:analytics**
+| It is possible to view the :ref:`statistics<analytics-page>` also in console via the command: **bko:analytics**
 
-| É possibile specificare l'uri del server mongo al quale connettersi tramite l'opzione ``target``.
+| You can specify the mongo server URI to connect to via the ``--target`` option, or by setting the MONGODB_URI environment variable (``--target`` takes precedence if both are provided).
 
-| É possibile limitare le statistiche ad un solo gruppo di job tramite l'opzione ``group``.
+| It is possible to limit statistics to a single group of jobs via the ``group`` option.
 
 .. code-block:: bash
 

@@ -2,40 +2,39 @@ Jobs
 ================
 
 ================
-Cos'é un Job
+What is a Job
 ================
 
-| Possiamo definire i ``Job`` come le unità di lavoro eseguite dal recruiter.
-| Essi si occupano di incapsulare l'oggetto ``Workable`` che abbiamo visto in precedenza (e quindi la procedura da esegure) oltre a tutte le altre informazioni necessarie alla corretta esecuzione di questa procedura, come ad esempio:
+| We can define ``Jobs`` as the work units executed by recruiter.
+| They encapsulate the ``Workable`` object that we have seen previously (and therefore the procedure to execute) in addition to all other information necessary for the correct execution of this procedure, such as:
 
-* la data di schedulazione,
-* la policy di retry in caso di fallimento,
-* lo stato attuale (da eseguire, in esecuzione, eseguito),
-* il gruppo a cui appartiene
-* altri (i.e. data di creazione, numero di tentativi effettuati, tags, ecc.)
+* the scheduling date,
+* the retry policy in case of failure,
+* the current state (to be executed, executing, executed),
+* the group it belongs to
+* others (i.e. creation date, number of attempts made, tags, etc.)
 
-| Un `job` può
+| A `job` can:
 
-* essere eseguito in process instantaneamente,
-* essere schedulato per l'esecuzione in background il prima possibile,
-* essere schedulato per l'esecuzione in background ad una determinata data/ora
-* essere eseguito in process instantaneamente, ed in caso di fallimento essere schedulato per l'esecuzione in background in accordo con le proprie policy di retry.
-* essere ritentato in caso di fallimento una o più volte, in accordo con delle specifiche politiche di retry.
+* be executed in process instantaneously,
+* be scheduled for background execution as soon as possible,
+* be scheduled for background execution at a specific date/time
+* be executed in process instantaneously, and in case of failure be scheduled for background execution according to its retry policies.
+* be retried in case of failure one or more times, according to specific retry policies.
 
-.. All'interno della libreria ``Recruiter`` `esistono già delle classi Workable utilizzabili`__, per questi esempi utilizzeremo la classe |recruiter.workable.shellCommand.class|_ che permette di eseguire dei comandi di shell in background.
 
-Per poter accodare dei job da eseguire dovremo avere in mano un istanza della classe |recruiter.recruiter.class|_.
+To queue jobs for execution we need to have an instance of the |recruiter.recruiter.class|_ class.
 
 .. warning::
-   | Il recruiter é studiato per garantire l'esecuzione di ogni job **almeno** una volta.
-   | Questo significa che, indipendentemente dalle policy di retry, in alcuni casi (anomali) un job potrebbe essere eseguito più di una volta.
-   | Ciò potrebbe accadere se, ad esempio, un `worker` dovesse morire fatalmente dopo aver eseguito il job ma prima di riuscire a modificare lo stato del job in ``eseguito``; in quel caso il job verrà, dopo un certo periodo di tempo, assegnato ad un altro worker e quindi eseguito una seconda volta.
+   | Recruiter is designed to guarantee the execution of each job **at least** once.
+   | This means that, regardless of retry policies, in some (abnormal) cases a job could be executed more than once.
+   | This could happen if, for example, a `worker` should die fatally after executing the job but before being able to change the job state to ``executed``; in that case the job will, after a certain period of time, be assigned to another worker and therefore executed a second time.
 
 ============
 Hello World
 ============
-| Abbiamo già visto questo esempio nel :ref:`capitolo relativo alla creazione di un oggetto Workable<workable>`.
-| Tenendo conto di aver sviluppato una classe **HttpRequestCommand** il codice più semplice che potremmo scrivere per accodare una richiesta Http é il seguente:
+| We have already seen this example in the :ref:`chapter on creating a Workable object<workable>`.
+| Assuming we have developed an **HttpRequestCommand** class, the simplest code we could write to queue an Http request is the following:
 
 .. code-block:: php
 
@@ -55,13 +54,13 @@ Hello World
       ->execute() // this is the method defined in the Workable class
    ;
 
-| in questo modo verrà schedulato un ``job`` che chiamerà il metodo ``execute()`` della classe ``HttpRequestCommand`` e verrà eseguito non appena un ``worker`` sarà disponibile.
+| this way a ``job`` will be scheduled that will call the ``execute()`` method of the ``HttpRequestCommand`` class and will be executed as soon as a ``worker`` is available.
 
 ==============================
 Schedule a Job in the future
 ==============================
-| Nel caso in cui volessimo che l'esecuzione del job sia programmata per il futuro (invece che quasi "istantanea"), possiamo farlo tramite il metodo ``scheduleAt()`` a cui dovremo pasasre un instanza di |timeless.moment.class|_
-| Se ad esempio volessimo programmare l'esecuzione di una chiamata http per il giorno ``19 gennaio 2038`` potremmo fare in questo modo:
+| In case we want the job execution to be scheduled for the future (instead of almost "instantaneous"), we can do it through the ``scheduleAt()`` method to which we need to pass an instance of |timeless.moment.class|_
+| If for example we wanted to schedule the execution of an http call for ``January 19, 2038`` we could do it this way:
 
 .. code-block:: php
 
@@ -83,7 +82,7 @@ Schedule a Job in the future
       ->execute()
    ;
 
-In questo modo il job verrà messo in coda e verrà eseguto non appena ci sarà un worker libero disponibile successivamente alla data '2038-01-19T00:00:00.000000Z'
+This way the job will be queued and executed as soon as there is a free worker available after the date '2038-01-19T00:00:00.000000Z'
 
 
 
@@ -93,14 +92,14 @@ In questo modo il job verrà messo in coda e verrà eseguto non appena ci sarà 
 Retry
 ============
 
-| Negli esempi visti in precdenza i job verrano eseguiti una sola volta, indipendentemente dal fatto che abbiano successo o meno.
+| In the examples seen previously, jobs will be executed only once, regardless of whether they succeed or fail.
 
-| In caso di fallimento di un job il recruiter ci dà la possibilità di specificare il fatto la sua esecuzione possa essere ritentata.
-| Per fare ciò dovremo assegnare una |retryPolicy.class|_ al job tramite il metodo ``retryWithPolicy(RetryPolicy $retryPolicy)``.
+| In case of job failure, recruiter gives us the possibility to specify that its execution can be retried.
+| To do this we need to assign a |retryPolicy.class|_ to the job through the ``retryWithPolicy(RetryPolicy $retryPolicy)`` method.
 
-| Vedremo più avanti :ref:`come poter creare una propria RetryPolicy<retry-policies>`, nel frattempo possiamo utilizzare le retry policies già incluse nella libreria recruiter.
+| We'll see later :ref:`how to create your own RetryPolicy<retry-policies>`, in the meantime we can use the retry policies already included in the recruiter library.
 
-| Supponiamo ad esempio di voler ritentare la nostra chiamata http nel caso in cui fallisca, di volere eseguire fino ad un massimo di tre retry e di voler attendere 60 secondi tra un tentativo e l'altro:
+| Let's assume for example that we want to retry our http call in case it fails, we want to execute up to a maximum of three retries and we want to wait 60 seconds between each attempt:
 
 .. code-block:: php
 
@@ -127,23 +126,23 @@ Retry
       ->execute()
    ;
 
-| In base a questo esempio il nostro job verrà eseguito fino ad un massimo di 4 volte,
-| la prima volta verrà eseguito in data: `2038-01-19T00:00:00.000Z` come da schedulazione, in seguito, in caso di fallimento, verranno fatti 3 nuovi tentativi distanziati 60 secondi l'uno dell'altro, che avranno quindi luogo nelle date:
+| Based on this example our job will be executed up to a maximum of 4 times,
+| the first time it will be executed on date: `2038-01-19T00:00:00.000Z` as scheduled, then, in case of failure, 3 new attempts will be made spaced 60 seconds apart from each other, which will therefore take place on the dates:
 | `2038-01-19T00:01:00.000Z`
 | `2038-01-19T00:02:00.000Z`
 | `2038-01-19T00:03:00.000Z`
 
-| Questo é un semplice esempio di come poter ripetere un job in caso di fallimento, le `Retry Policies` possono avere anche logiche molto più complesse, date uno sguardo alla :ref:`pagina dedicata<retry-policies>` per capirne le potenzialità.
+| This is a simple example of how to repeat a job in case of failure, the `Retry Policies` can have much more complex logic too, take a look at the :ref:`dedicated page<retry-policies>` to understand their potential.
 
 =============================
 Retriable Exceptions
 =============================
 
-| Indipendentemente dalla `RetryPolicy` utilizzata, possiamo sempre specificare in quali casi eseguire un nuovo tentativo e in quali no.
-| Il metodo ``retryWithPolicy`` permette infatti di specificare, come secondo argomento, un array di eccezioni per le quali é consentito eseguire un nuovo tentativo.
-| Nel caso in cui questo array sia vuoto (come nel caso di default), il job verrà tentato di nuovo qualsiasi eccezione venga sollevata.
-| Nel caso invece in cui questo array contiene una o più eccezioni, allora verrà effettuato un nuovo tentativo solo nel caso in cui venga intercettata un eccezione che sia un istanza di una delle classi contenute in questo array.
-| Es.:
+| Regardless of the `RetryPolicy` used, we can always specify in which cases to execute a new attempt and in which not.
+| The ``retryWithPolicy`` method in fact allows you to specify, as a second argument, an array of exceptions for which it is allowed to execute a new attempt.
+| In case this array is empty (as in the default case), the job will be attempted again whatever exception is raised.
+| In case this array contains one or more exceptions, then a new attempt will be made only if an exception is intercepted that is an instance of one of the classes contained in this array.
+| For example:
 
 .. code-block:: php
 
@@ -161,19 +160,19 @@ Retriable Exceptions
       ->execute()
    ;
 
-In questo caso il job verrà ripetuto solo in caso avvenga un eccezione di tipo ``Psr\Http\Client\NetworkExceptionInterface``, in tutti gli altri casi il job verrà archiviato.
+In this case the job will be repeated only if an exception of type ``Psr\Http\Client\NetworkExceptionInterface`` occurs, in all other cases the job will be archived.
 
 ===============
 Optimistic Jobs
 ===============
 
-| Ci potrebbero essere dei casi in cui abbiamo bisogno che una procedura sia eseguita nella maniera più reattiva possibile
-| Facciamo finta di essere un sistema di pagamento, e vogliamo avvisare un ipotetico merchant di un ipotetico acquisto andato a buon fine da parte di un ipotetico cliente.
-| Per assicurare la migliore user experience possibile ci interessa ovviamente notificare l'avvenuto pagamento al Merchant il prima possibile, in modo tale che il cliente riceva subito il suo prodotto.
-| Nel caso in cui l'endpoint atto a ricevere le notifiche di pagamento del Merchant non sia raggiungibile vorremmo che l'invio della notifica sia tentato nuovamente, magari dopo qualche minuto, sperando che nel frattempo l'endpoint sia tornato raggiungibile, non vogliamo però che il nostro processo si blocchi per qualche minuto quando potrebbe andare avanti a fare altre cose nel frattempo.
-| Il recruiter ci viene incontro anche in questo caso, é possibile infatti fare in modo che un job sia eseguito `in process` nel momento in cui viene schedulato, e, solo in caso di fallimento, venga accodato per l'esecuzione in background in modo da poter eseguire i successivi retry.
+| There could be cases where we need a procedure to be executed in the most reactive way possible
+| Let's pretend to be a payment system, and we want to notify a hypothetical merchant of a hypothetical purchase that went well by a hypothetical customer.
+| To ensure the best possible user experience we obviously want to notify the merchant of the successful payment as soon as possible, so that the customer receives their product immediately.
+| In case the endpoint designed to receive the merchant's payment notifications is not reachable we would like the notification sending to be attempted again, maybe after a few minutes, hoping that in the meantime the endpoint has become reachable again, but we don't want our process to be blocked for a few minutes when it could continue doing other things in the meantime.
+| Recruiter helps us in this case too, it is in fact possible to make a job be executed `in process` at the moment it is scheduled, and, only in case of failure, be queued for background execution so as to be able to execute subsequent retries.
 
-| Es.:
+| For example:
 
 .. code-block:: php
 
@@ -190,12 +189,12 @@ Optimistic Jobs
       ->execute()
    ;
 
-| Come potete notare l'unica cosa che abbiamo fatto é stata togliere la chiamata al metodo ``inBackground()``, in questo modo il comando verrà eseguito subito, e, solo in caso di fallimento, verrà inserito nella coda dei job da eseguire in background.
-| Nel caso in cui non venga settata una RetryPolicy, il processo verrà eseguito subito e, sia in caso di successo sia in caso di fallimento, verrà archiviato senza nessun successivo tentativo.
+| As you can notice the only thing we did was remove the call to the ``inBackground()`` method, this way the command will be executed immediately, and, only in case of failure, will be inserted into the queue of jobs to be executed in background.
+| In case a RetryPolicy is not set, the process will be executed immediately and, both in case of success and in case of failure, will be archived without any subsequent attempt.
 
 .. note::
-   | Il metodo `inBackground()` viene implicitamente invocato nel caso in cui il job venga schedulato per l'esecuzione futura tramite il metodo `scheduleAt()`
-   | Perciò queste 2 chiamate sono identiche ed in entrambi i casi l'esecuzione del job sarà esclusivamente in background.
+   | The `inBackground()` method is implicitly invoked in case the job is scheduled for future execution through the `scheduleAt()` method
+   | Therefore these 2 calls are identical and in both cases the job execution will be exclusively in background.
 
    .. code-block:: php
 
@@ -221,12 +220,12 @@ Optimistic Jobs
 .. _jobs-grouping:
 
 ==================
-Raggrupare i Job
+Grouping Jobs
 ==================
-| I `worker` (i processi che eseguono il lavoro descritto dai jobs) possono essere lanciati con l'intento di eseguire qualsiasi job disponibile oppure possono essere limitati all'esecuzione di un solo gruppo di jobs.
-| Questo modalità può tornarci utile, ad esempio, per :ref:`gestire priorità di esecuzione diverse a seconda dei jobs<priority>`.
+| The `workers` (the processes that execute the work described by the jobs) can be launched with the intent of executing any available job or can be limited to executing only one group of jobs.
+| This mode can be useful to us, for example, to :ref:`manage different execution priorities depending on the jobs<priority>`.
 
-| Ogni `job` può essere assegnato, al massimo, ad un singolo gruppo e per farlo si utilizza il metodo ``inGroup($group)``
+| Each `job` can be assigned, at most, to a single group and to do this we use the ``inGroup($group)`` method
 
 .. code-block:: php
 
@@ -242,7 +241,7 @@ Raggrupare i Job
 ==================
 Tags
 ==================
-| É anche possibile taggare i jobs in modo tale da agevolare la ricerca di jobs o altre attività di query (es. statistiche).
+| It is also possible to tag jobs in such a way as to facilitate searching for jobs or other query activities (e.g. statistics).
 
 .. code-block:: php
 
