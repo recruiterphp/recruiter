@@ -21,5 +21,11 @@ return new PhpCsFixer\Config()
         PhpCsFixer\Finder::create()
             ->in(__DIR__ . '/src')
             ->in(__DIR__ . '/spec')
+            ->append([
+                __FILE__,
+                __DIR__ . '/rector.php',
+                __DIR__ . '/bin/recruiter',
+                __DIR__ . '/bin/loader',
+            ]),
     )
 ;

@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
-foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload.php', __DIR__ . '/../vendor/autoload.php') as $file) {
+
+foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
     if (file_exists($file)) {
         require $file;
 
@@ -8,17 +9,16 @@ foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/auto
     }
 }
 
-use Recruiter\Geezer\Command\RobustCommandRunner;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Recruiter\Factory;
-use Recruiter\Infrastructure\Command\CleanerCommand;
-use Recruiter\Infrastructure\Command\RecruiterCommand;
-use Recruiter\Infrastructure\Command\WorkerCommand;
 use Recruiter\Infrastructure\Command\Bko\AnalyticsCommand;
 use Recruiter\Infrastructure\Command\Bko\JobRecoverCommand;
 use Recruiter\Infrastructure\Command\Bko\RemoveSchedulerCommand;
+use Recruiter\Infrastructure\Command\CleanerCommand;
+use Recruiter\Infrastructure\Command\RecruiterCommand;
+use Recruiter\Infrastructure\Command\WorkerCommand;
 use Symfony\Component\Console\Application;
 
 $output = "[%context.datetime%][%context.hostname%:%context.pid%][%context.program%][%level_name%][%context.workerId%] %message%\n";
@@ -60,8 +60,8 @@ function getLogLevel(array $arguments, $default)
     $logLevelValue = strtoupper($arguments[$logLevelArgumentPosition + 1]);
 
     if (!in_array($logLevelValue, $allowedValues)) {
-        throw new \InvalidArgumentException("Log level `$logLevelValue` is not a valid logging level, use one of: " . var_export($allowedValues, true));
+        throw new InvalidArgumentException("Log level `$logLevelValue` is not a valid logging level, use one of: " . var_export($allowedValues, true));
     }
 
-    return constant("Monolog\Logger::" . $logLevelValue);
+    return constant('Monolog\Logger::' . $logLevelValue);
 }
