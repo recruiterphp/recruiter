@@ -4,7 +4,12 @@ namespace Recruiter;
 
 class RetryPolicyInJob
 {
-    public static function import($document)
+    /**
+     * @param array{retry_policy?: array{class?: class-string, parameters: array<mixed>}} $document
+     *
+     * @throws \Exception
+     */
+    public static function import(array $document): RetryPolicy
     {
         if (!array_key_exists('retry_policy', $document)) {
             throw new \Exception('Unable to import Job without data about RetryPolicy object');
@@ -23,7 +28,10 @@ class RetryPolicyInJob
         return $dataAboutRetryPolicyObject['class']::import($dataAboutRetryPolicyObject['parameters']);
     }
 
-    public static function export($retryPolicy)
+    /**
+     * @return array{retry_policy: array{class: class-string<RetryPolicy>, parameters: array<mixed>}}
+     */
+    public static function export(RetryPolicy $retryPolicy): array
     {
         return [
             'retry_policy' => [
@@ -33,7 +41,10 @@ class RetryPolicyInJob
         ];
     }
 
-    public static function initialize()
+    /**
+     * @return array{}
+     */
+    public static function initialize(): array
     {
         return [];
     }

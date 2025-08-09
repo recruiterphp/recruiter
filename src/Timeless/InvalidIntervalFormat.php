@@ -2,6 +2,6 @@
 
 namespace Timeless;
 
-class InvalidIntervalFormat extends \Exception
+class InvalidIntervalFormat extends \InvalidArgumentException
 {
 }

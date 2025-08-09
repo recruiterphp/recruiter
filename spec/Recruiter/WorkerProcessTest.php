@@ -4,9 +4,9 @@ namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Recruiter\Worker\NullProcess;
 use Recruiter\Worker\Process;
 use Recruiter\Worker\Repository;
-use Sink\BlackHole;
 
 class WorkerProcessTest extends TestCase
 {
@@ -32,7 +32,7 @@ class WorkerProcessTest extends TestCase
     public function testIfNotAliveWhenIsAliveReturnsBlackHole(): void
     {
         $process = $this->givenWorkerProcessAlive();
-        $this->assertInstanceOf(BlackHole::class, $process->ifDead());
+        $this->assertInstanceOf(NullProcess::class, $process->ifDead());
     }
 
     public function testRetireWorkerIfNotAlive(): void
