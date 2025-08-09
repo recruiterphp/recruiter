@@ -38,7 +38,7 @@ class LazyBones implements Workable
 
     public static function import(array $parameters): static
     {
-        return new self(
+        return new static(
             $parameters['us_to_sleep'],
             $parameters['us_of_delta'],
         );

@@ -17,14 +17,20 @@ class FactoryMethodCommand implements Workable
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }
 
-    private static function singleStep($step)
+    private static function singleStep($step): self
     {
         return new self([
             $step,
         ]);
     }
 
-    private static function stepFor($class, $method, $arguments)
+    /**
+     * @param class-string $class
+     * @param array<mixed> $arguments
+     *
+     * @return array<string, mixed>
+     */
+    private static function stepFor(string $class, string $method, array $arguments): array
     {
         $step = [
             'class' => $class,
@@ -107,6 +113,6 @@ class FactoryMethodCommand implements Workable
 
     public static function import(array $parameters): static
     {
-        return new self($parameters['steps']);
+        return new static($parameters['steps']);
     }
 }

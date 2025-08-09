@@ -9,7 +9,7 @@ class ShellCommand implements Workable
 {
     use WorkableBehaviour;
 
-    public static function fromCommandLine($commandLine)
+    public static function fromCommandLine($commandLine): self
     {
         return new self($commandLine);
     }
@@ -18,7 +18,7 @@ class ShellCommand implements Workable
     {
     }
 
-    public function execute()
+    public function execute(): string
     {
         exec($this->commandLine, $output, $returnCode);
         $output = implode(PHP_EOL, $output);
@@ -36,6 +36,6 @@ class ShellCommand implements Workable
 
     public static function import(array $parameters): static
     {
-        return new self($parameters['command']);
+        return new static($parameters['command']);
     }
 }
