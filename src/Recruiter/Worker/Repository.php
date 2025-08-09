@@ -37,7 +37,7 @@ class Repository
     public function refresh(Worker $worker): void
     {
         $updated = $this->roster->findOne(['_id' => $worker->id()]);
-        assert(is_array($updated));
+        assert(is_array($updated), new \LogicException("Document with _id {$worker->id()} is missing!"));
         $worker->updateWith($updated);
     }
 
