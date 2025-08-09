@@ -11,5 +11,4 @@ parameters:
     - '#recruiter_stept_back#'
     - '#afterSuccess.*0 required#'
     - '#Unsafe usage of new static\(\).#'
-    - '#to an undefined .* Sink\\BlackHole#'
   inferPrivatePropertyTypeFromConstructor: true

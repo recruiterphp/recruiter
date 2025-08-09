@@ -9,12 +9,12 @@ class ShellCommand implements Workable
 {
     use WorkableBehaviour;
 
-    public static function fromCommandLine($commandLine): self
+    public static function fromCommandLine(string $commandLine): self
     {
         return new self($commandLine);
     }
 
-    private function __construct(private $commandLine)
+    private function __construct(private string $commandLine)
     {
     }
 
@@ -29,11 +29,17 @@ class ShellCommand implements Workable
         return $output;
     }
 
+    /**
+     * @return array{command: string}
+     */
     public function export(): array
     {
         return ['command' => $this->commandLine];
     }
 
+    /**
+     * @param array{command: string} $parameters
+     */
     public static function import(array $parameters): static
     {
         return new static($parameters['command']);

@@ -7,19 +7,19 @@ namespace Recruiter;
 /**
  * Class SynchronousExecutionReport.
  */
-class SynchronousExecutionReport
+final readonly class SynchronousExecutionReport
 {
     /**
-     * @param array $data = []
+     * @param array<string, JobExecution> $data
      */
-    public function __construct(private readonly array $data = [])
+    public function __construct(private array $data = [])
     {
     }
 
     /**
-     *. @params array $data : key value array where key are the id of the job and value is the JobExecution.
+     * @param array<string, JobExecution> $data
      */
-    public static function fromArray(array $data): SynchronousExecutionReport
+    public static function fromArray(array $data): self
     {
         return new self($data);
     }
@@ -29,7 +29,10 @@ class SynchronousExecutionReport
         return array_any($this->data, fn ($jobExecution, $jobId) => $jobExecution->isFailed());
     }
 
-    public function toArray()
+    /**
+     * @return array<string, JobExecution>
+     */
+    public function toArray(): array
     {
         return $this->data;
     }

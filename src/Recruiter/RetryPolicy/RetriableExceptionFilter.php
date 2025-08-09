@@ -11,15 +11,16 @@ class RetriableExceptionFilter implements RetryPolicy
     private $retriableExceptions;
 
     /**
-     * @param string $exceptionClass fully qualified class or interface name
-     *
-     * @return self
+     * @param class-string $exceptionClass fully qualified class or interface name
      */
-    public static function onlyFor($exceptionClass, RetryPolicy $retryPolicy)
+    public static function onlyFor(string $exceptionClass, RetryPolicy $retryPolicy): self
     {
         return new self($retryPolicy, [$exceptionClass]);
     }
 
+    /**
+     * @param array<class-string> $retriableExceptions
+     */
     public function __construct(private readonly RetryPolicy $filteredRetryPolicy, array $retriableExceptions = ['Exception'])
     {
         $this->retriableExceptions = $this->ensureAreAllExceptions($retriableExceptions);

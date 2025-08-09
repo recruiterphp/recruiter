@@ -145,28 +145,26 @@ class Interval
         return new \DateInterval("PT{$this->seconds()}S");
     }
 
-    public static function parse($string)
+    public static function parse(string $string): self
     {
-        if (is_string($string)) {
-            $tokenToFunction = [
-                'milliseconds' => 'milliseconds', 'millisecond' => 'milliseconds', 'ms' => 'milliseconds',
-                'seconds' => 'seconds', 'second' => 'seconds', 's' => 'seconds',
-                'minutes' => 'minutes', 'minute' => 'minutes', 'm' => 'minutes',
-                'hours' => 'hours', 'hour' => 'hours', 'h' => 'hours',
-                'days' => 'days', 'day' => 'days', 'd' => 'days',
-                'weeks' => 'weeks', 'week' => 'weeks', 'w' => 'weeks',
-                'months' => 'months', 'month' => 'months', 'mo' => 'months',
-                'years' => 'years', 'year' => 'years', 'y' => 'years',
-            ];
-            $units = implode('|', array_keys($tokenToFunction));
-            if (preg_match("/^[^\\d]*(?P<quantity>\\d+)\\s*(?P<unit>{$units})(?:\\W.*|$)/", $string, $matches)) {
-                $callable = 'Timeless\\' . $tokenToFunction[$matches['unit']];
+        $tokenToFunction = [
+            'milliseconds' => 'milliseconds', 'millisecond' => 'milliseconds', 'ms' => 'milliseconds',
+            'seconds' => 'seconds', 'second' => 'seconds', 's' => 'seconds',
+            'minutes' => 'minutes', 'minute' => 'minutes', 'm' => 'minutes',
+            'hours' => 'hours', 'hour' => 'hours', 'h' => 'hours',
+            'days' => 'days', 'day' => 'days', 'd' => 'days',
+            'weeks' => 'weeks', 'week' => 'weeks', 'w' => 'weeks',
+            'months' => 'months', 'month' => 'months', 'mo' => 'months',
+            'years' => 'years', 'year' => 'years', 'y' => 'years',
+        ];
+        $units = implode('|', array_keys($tokenToFunction));
+        if (preg_match("/^[^\\d]*(?P<quantity>\\d+)\\s*(?P<unit>{$units})(?:\\W.*|$)/", $string, $matches)) {
+            $callable = 'Timeless\\' . $tokenToFunction[$matches['unit']];
 
-                return call_user_func($callable, (int) $matches['quantity']);
-            }
-            if (!preg_match('/^\d+$/', $string)) {
-                throw new InvalidIntervalFormat("'{$string}' is not a valid Interval format");
-            }
+            return call_user_func($callable, (int) $matches['quantity']);
+        }
+        if (!preg_match('/^\d+$/', $string)) {
+            throw new InvalidIntervalFormat("'{$string}' is not a valid Interval format");
         }
         if (is_numeric($string)) {
             $duration = floor(floatval($string));

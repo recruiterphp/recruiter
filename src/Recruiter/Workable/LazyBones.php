@@ -2,6 +2,7 @@
 
 namespace Recruiter\Workable;
 
+use Random\RandomException;
 use Recruiter\Workable;
 use Recruiter\WorkableBehaviour;
 
@@ -14,7 +15,7 @@ class LazyBones implements Workable
         return new self($timeInSeconds * 1000000, $deltaInSeconds * 1000000);
     }
 
-    public static function waitForMs($timeInMs, $deltaInMs = 0): self
+    public static function waitForMs(int $timeInMs, int $deltaInMs = 0): self
     {
         return new self($timeInMs * 1000, $deltaInMs * 1000);
     }
@@ -23,11 +24,17 @@ class LazyBones implements Workable
     {
     }
 
+    /**
+     * @throws RandomException
+     */
     public function execute(): void
     {
-        usleep($this->usToSleep + random_int(intval(-$this->usOfDelta), $this->usOfDelta));
+        usleep($this->usToSleep + random_int(-$this->usOfDelta, $this->usOfDelta));
     }
 
+    /**
+     * @return array{us_to_sleep: int, us_of_delta: int}
+     */
     public function export(): array
     {
         return [
@@ -36,6 +43,9 @@ class LazyBones implements Workable
         ];
     }
 
+    /**
+     * @param array{us_to_sleep: int, us_of_delta: int} $parameters
+     */
     public static function import(array $parameters): static
     {
         return new static(

@@ -2,16 +2,14 @@
 
 namespace Recruiter\Worker;
 
-use Sink\BlackHole;
-
-class Process
+readonly class Process implements ProcessInterface
 {
-    public static function withPid(int $pid)
+    public static function withPid(int $pid): self
     {
         return new self($pid);
     }
 
-    public function __construct(private readonly int $pid)
+    public function __construct(private int $pid)
     {
     }
 
@@ -22,10 +20,10 @@ class Process
         }
     }
 
-    public function ifDead(): BlackHole|static
+    public function ifDead(): NullProcess|static
     {
         if ($this->isAlive()) {
-            return new BlackHole();
+            return new NullProcess();
         }
 
         return $this;

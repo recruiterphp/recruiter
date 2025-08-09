@@ -13,13 +13,15 @@ interface SchedulePolicy
 
     /**
      * Export schedule policy parameters.
+     *
+     * @return array<string, mixed> An associative array of parameters that can be used to recreate the policy
      */
     public function export(): array;
 
     /**
      * Import schedule policy parameters.
      *
-     * @param array $parameters Previously exported parameters
+     * @param array<string, mixed> $parameters Previously exported parameters
      */
     public static function import(array $parameters): SchedulePolicy;
 }

@@ -23,6 +23,11 @@ class Scheduler
         );
     }
 
+    /**
+     * @param array<string, mixed> $document
+     *
+     * @throws \Exception
+     */
     public static function import(array $document, Repository $repository): self
     {
         return new self(
@@ -34,25 +39,34 @@ class Scheduler
         );
     }
 
+    /**
+     * @param array<string, mixed> $status
+     */
     public function __construct(private array $status, private readonly Repeatable $repeatable, private ?SchedulePolicy $schedulePolicy, private ?RetryPolicy $retryPolicy, private readonly Repository $schedulers)
     {
     }
 
-    public function create()
+    /**
+     * @return $this
+     */
+    public function create(): self
     {
         $this->schedulers->create($this);
 
         return $this;
     }
 
-    public function repeatWithPolicy(SchedulePolicy $schedulePolicy)
+    public function repeatWithPolicy(SchedulePolicy $schedulePolicy): self
     {
         $this->schedulePolicy = $schedulePolicy;
 
         return $this;
     }
 
-    private static function initialize()
+    /**
+     * @return array<string, mixed>
+     */
+    private static function initialize(): array
     {
         return [
             'urn' => null,
@@ -65,7 +79,10 @@ class Scheduler
         ];
     }
 
-    public function export()
+    /**
+     * @return array<string, mixed>
+     */
+    public function export(): array
     {
         return array_merge(
             $this->status,
@@ -79,7 +96,7 @@ class Scheduler
         );
     }
 
-    private function wasAlreadyScheduled($nextScheduling)
+    private function wasAlreadyScheduled(T\Moment $nextScheduling): bool
     {
         if (!$this->status['last_scheduling']['scheduled_at']) {
             return false;
@@ -90,7 +107,7 @@ class Scheduler
         return $lastScheduling == $nextScheduling;
     }
 
-    private function aJobIsStillRunning(JobsRepository $jobs)
+    private function aJobIsStillRunning(JobsRepository $jobs): bool
     {
         if (!$this->status['last_scheduling']['job_id']) {
             return false;
@@ -105,7 +122,7 @@ class Scheduler
         }
     }
 
-    public function schedule(JobsRepository $jobs)
+    public function schedule(JobsRepository $jobs): void
     {
         if (!$this->schedulePolicy) {
             throw new \RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
@@ -136,7 +153,12 @@ class Scheduler
         $this->schedulers->save($this);
     }
 
-    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
+    /**
+     * @param class-string[] $retriableExceptionTypes
+     *
+     * @return $this
+     */
+    public function retryWithPolicy(RetryPolicy $retryPolicy, array $retriableExceptionTypes = []): self
     {
         $this->retryPolicy = $this->filterForRetriableExceptions(
             $retryPolicy,
@@ -146,31 +168,34 @@ class Scheduler
         return $this;
     }
 
-    public function withUrn(string $urn)
+    public function withUrn(string $urn): self
     {
         $this->status['urn'] = $urn;
 
         return $this;
     }
 
-    public function unique(bool $unique)
+    public function unique(bool $unique): self
     {
         $this->status['unique'] = $unique;
 
         return $this;
     }
 
-    public function urn()
+    public function urn(): string
     {
         return $this->status['urn'];
     }
 
-    public function schedulePolicy()
+    public function schedulePolicy(): ?SchedulePolicy
     {
         return $this->schedulePolicy;
     }
 
-    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
+    /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     */
+    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, string|array $retriableExceptionTypes = []): RetryPolicy
     {
         if (!is_array($retriableExceptionTypes)) {
             $retriableExceptionTypes = [$retriableExceptionTypes];

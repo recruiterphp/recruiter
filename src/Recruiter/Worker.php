@@ -23,6 +23,9 @@ class Worker
         return $worker;
     }
 
+    /**
+     * @param array<string, mixed> $status
+     */
     public function __construct(private array $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
     {
     }
@@ -55,11 +58,17 @@ class Worker
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return $this->status;
     }
 
+    /**
+     * @param array<string, mixed> $document
+     */
     public function updateWith(array $document): void
     {
         $this->status = self::fromMongoDocumentToInternalStatus($document);
@@ -76,6 +85,9 @@ class Worker
         return $this->repository->retireWorkerWithIdIfNotAssigned($this->status['_id']);
     }
 
+    /**
+     * @throws CannotRetireWorkerAtWorkException
+     */
     public function retire(): void
     {
         if ($this->hasBeenAssignedToDoSomething()) {
@@ -91,14 +103,14 @@ class Worker
         $this->repository->atomicUpdate($this, ['last_seen_at' => $lastSeenAt]);
     }
 
-    private function workOn($job): void
+    private function workOn(Job $job): void
     {
         $this->beforeExecutionOf($job);
         $job->execute($this->recruiter->getEventDispatcher());
         $this->afterExecutionOf($job);
     }
 
-    private function beforeExecutionOf($job): void
+    private function beforeExecutionOf(Job $job): void
     {
         $this->status['working'] = true;
         $this->status['working_on'] = $job->id();
@@ -107,7 +119,7 @@ class Worker
         $this->save();
     }
 
-    private function afterExecutionOf($job): void
+    private function afterExecutionOf(Job $job): void
     {
         try {
             $this->memoryLimit->ensure(memory_get_usage());
@@ -136,7 +148,7 @@ class Worker
         $this->save();
     }
 
-    private function retireAfterMemoryLimitIsExceeded()
+    private function retireAfterMemoryLimitIsExceeded(): void
     {
         $this->repository->retireWorkerWithId($this->id());
     }
@@ -156,11 +168,19 @@ class Worker
         $this->repository->save($this);
     }
 
-    private static function fromMongoDocumentToInternalStatus($document)
+    /**
+     * @param array<string, mixed> $document
+     *
+     * @return array<string, mixed>
+     */
+    private static function fromMongoDocumentToInternalStatus(array $document): array
     {
         return $document;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private static function initialize(): array
     {
         return [
@@ -180,7 +200,10 @@ class Worker
         return '*' === $worksOn;
     }
 
-    public static function pickAvailableWorkers(MongoCollection $collection, $workersPerUnit): array
+    /**
+     * @return array<array{0: string, 1: array<ObjectId>}>
+     */
+    public static function pickAvailableWorkers(MongoCollection $collection, int $workersPerUnit): array
     {
         $result = [];
         $workers = iterator_to_array($collection->find(['available' => true], ['projection' => ['_id' => 1, 'work_on' => 1]]));
@@ -199,7 +222,13 @@ class Worker
         return $result;
     }
 
-    public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers): array
+    /**
+     * @param array<mixed> $jobs
+     * @param array<mixed> $workers
+     *
+     * @return array{0: array<string, mixed>, 1: int}
+     */
+    public static function tryToAssignJobsToWorkers(MongoCollection $collection, array $jobs, array $workers): array
     {
         $assignment = array_combine(
             array_map(fn ($id) => (string) $id, $workers),
@@ -234,7 +263,12 @@ class Worker
         return array_values(array_unique($jobs));
     }
 
-    public static function retireDeadWorkers(Repository $roster, \DateTimeImmutable $now, Interval $consideredDeadAfter)
+    /**
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws \DateInvalidOperationException
+     */
+    public static function retireDeadWorkers(Repository $roster, \DateTimeImmutable $now, Interval $consideredDeadAfter): array
     {
         $consideredDeadAt = $now->sub($consideredDeadAfter->toDateInterval());
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);

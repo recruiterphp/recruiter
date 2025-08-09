@@ -2,7 +2,12 @@
 
 namespace Recruiter;
 
-function array_group_by($array, ?callable $f = null): array
+/**
+ * @param array<mixed> $array
+ *
+ * @return array<mixed>
+ */
+function array_group_by(array $array, ?callable $f = null): array
 {
     $f = $f ?: (fn ($value) => $value);
 

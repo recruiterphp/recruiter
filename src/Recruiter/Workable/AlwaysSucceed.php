@@ -9,7 +9,7 @@ class AlwaysSucceed implements Workable
 {
     use WorkableBehaviour;
 
-    public function execute()
+    public function execute(): void
     {
         // It's easy to do nothing right :-)
     }

@@ -4,7 +4,10 @@ namespace Recruiter;
 
 class SchedulePolicyInJob
 {
-    public static function import($document): SchedulePolicy
+    /**
+     * @param array{schedule_policy?: array{class?: class-string, parameters: array<mixed>}} $document
+     */
+    public static function import(array $document): SchedulePolicy
     {
         if (!array_key_exists('schedule_policy', $document)) {
             throw new \Exception('Unable to import Job without data about SchedulePolicy object');
@@ -23,7 +26,10 @@ class SchedulePolicyInJob
         return $dataAboutSchedulePolicyObject['class']::import($dataAboutSchedulePolicyObject['parameters']);
     }
 
-    public static function export($schedulePolicy)
+    /**
+     * @return array{schedule_policy: array{class: class-string<SchedulePolicy>, parameters: array<mixed>}}
+     */
+    public static function export(SchedulePolicy $schedulePolicy): array
     {
         return [
             'schedule_policy' => [
@@ -33,7 +39,10 @@ class SchedulePolicyInJob
         ];
     }
 
-    public static function initialize()
+    /**
+     * @return array{}
+     */
+    public static function initialize(): array
     {
         return [];
     }
