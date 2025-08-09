@@ -4,7 +4,7 @@ Setup
 ============
 Dependencies
 ============
-| You need `Php <https://php.net/>`_ version > 7.2
+| You need `Php <https://php.net/>`_ version >= 8.4
 | You need a running `Mongodb <https://www.mongodb.com/>`_ instance
 
 
@@ -23,9 +23,9 @@ You can install Recruiter through `Composer`_ by running the following command i
 ============
 Setup
 ============
-| Dovrai creare un file di bootstrap per i processi worker, in modo tale da includere le tue classi cossiché possano essere utilizzate dal worker.
+| You will need to create a bootstrap file for the worker processes, in order to include your classes so they can be used by the worker.
 
-| Se ad esempio utilizzi l'autoloading di `composer` per il tuo progetto, puoi scrivere un file di bootstrap semplice come questo:
+| If for example you use `composer` autoloading for your project, you can write a simple bootstrap file like this:
 
 .. code-block:: php
 
@@ -37,7 +37,7 @@ Setup
    // in the bootstrap file you have access to a Recruiter\Recruiter instance through global variable `$recruiter`.
    // $recruiter;
 
-| Dopodiché dovrai lanciare i processi `recruiter`, `worker` e `cleaner`
+| After that you will need to launch the `recruiter`, `worker` and `cleaner` processes. You can specify the MongoDB URI via ``--target`` or by setting the MONGODB_URI environment variable (``--target`` takes precedence):
 
 .. code-block:: bash
 

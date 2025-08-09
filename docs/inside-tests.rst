@@ -1,20 +1,20 @@
-Esecuzione dei jobs all'interno dei tests:
+Executing jobs within tests:
 =======================================================
 
-| Durante l'esecuzione di test che esercitano del codice che utilizza la libreria `recruiter` per accodare dei `jobs`, ci troviamo davanti al problema di dover far si che quei `jobs` vengano eseguiti pena il possibile fallimento dei test.
+| During the execution of tests that exercise code using the `recruiter` library to queue `jobs`, we face the problem of having to ensure that those `jobs` are executed to avoid possible test failures.
 
-| Per fare in modo che i `jobs` in coda vengano eseguiti potremmo banalmente replicare quello che avviene nell'ambiente di produzione e quindi attivare i processi di `recruiter`, `jobs` e `cleaner`.
+| To make the queued `jobs` execute we could simply replicate what happens in the production environment and therefore activate the `recruiter`, `worker` and `cleaner` processes.
 
-| A seconda dell'ambiente di test in cui ci troviamo, questa soluzione può presentare degli svantaggi, come ad esempio:
+| Depending on the test environment we are in, this solution can present disadvantages, such as:
 
-  * **Maggiore difficoltà di esecuzione dei test**: in quanto il nostro ambiente deve prevedere l'esecuzione di long running process ed assicurarsi che siano attivi durante l'intera esecuzione del test.
-  * **Diminuzione della velocità di esecuzione dei test**: Nel caso in cui i test dipendano dal risultato dell'esecuzione dei job dovremmo attendere la loro esecuzione da parte dei worker, che per quanto reattivi possano essere non possono essere istantanei; dobbiamo inoltre considerare il fatto che i job potrebbero essere schedulati nel futuro e che quindi i worker non potranno eseguirli finché la data di schedulazione non sia passata.
-  * **Impossibilità di dipendere da job schedulati molto avanti nel futuro**: Se nel caso in cui i job siano schedulati a qualche secondo di distanza dal momento corrente porta al solo rallentamento di esecuzione dei test, il caso in cui i job siano schedulati molto avanti nel futuro (es. il giorno seguente o il mese seguente) porta all'impossibilità di esecuzione dei test (non possiamo certo attendere cosi tanto tempo per terminarne l'esecuzione di un test).
+  * **Greater difficulty in test execution**: since our environment must provide for the execution of long running processes and ensure they are active during the entire test execution.
+  * **Decreased test execution speed**: In case tests depend on the result of job execution we would have to wait for their execution by workers, which no matter how reactive they may be cannot be instantaneous; we must also consider that jobs could be scheduled in the future and therefore workers will not be able to execute them until the scheduling date has passed.
+  * **Impossibility of depending on jobs scheduled far in the future**: If jobs scheduled a few seconds away from the current moment only lead to slower test execution, jobs scheduled far in the future (e.g. the next day or next month) make test execution impossible (we certainly can't wait so long to finish executing a test).
 
-| Tutti questi punti possono essere risolti utilizzando un metodo, che ci mette a disposizione la classe |recruiter.recruiter.class|_, che permette l'esecuzione, nel processo corrente, di tutti i job precedentemente accodati.
+| All these points can be resolved using a method, provided by the |recruiter.recruiter.class|_ class, which allows the execution, in the current process, of all previously queued jobs.
 
-| Il metodo é ``flushJobsSynchronously()`` e può essere chiamato su qualsiasi istanza della classe |recruiter.recruiter.class|_ (quindi non per forza la stessa istanza utilizzata per accodare i `job`).
-| Grazie a questo metodo possiamo assicurarci che tutti i job in coda vengano eseguiti senza dover avere un ambiente con i processi `recruiter`, `worker` e `cleaner` attivi e senza dover attendere la data di schedulazione di ognuno di essi.
+| The method is ``flushJobsSynchronously()`` and can be called on any instance of the |recruiter.recruiter.class|_ class (so not necessarily the same instance used to queue the `jobs`).
+| Thanks to this method we can ensure that all queued jobs are executed without having to have an environment with active `recruiter`, `worker` and `cleaner` processes and without having to wait for the scheduling date of each of them.
 
 
 .. code-block:: php

@@ -3,25 +3,25 @@
 Analytics
 ===========================
 
-| Il recruiter mette a disposizione delle statistiche sullo stato attuale delle code.
-| Questo può essere utilizzato, ad esempio, per monitorare che tutte le code vengano smaltite correttamente.
+| Recruiter provides statistics on the current state of queues.
+| This can be used, for example, to monitor that all queues are processed correctly.
 
-| Per poter ricavare i dati statistici sullo stato delle code bisogna chiamare il metodo ``analytics`` dell'oggetto ``Recruiter\Recruiter``.
-| Il valore restituito sarà un array contenente:
+| To obtain statistical data on the state of queues you need to call the ``analytics`` method of the ``Recruiter\Recruiter`` object.
+| The returned value will be an array containing:
 
 * **jobs**:
-   - **queued**: il numero di jobs in coda con una data di schedulazione passata (e quindi da eseguire), questo numero dovrebbe rimanere stabile.
-   - **postponed**: il numero di jobs in coda con una data di schedulazione futura (da eseguire solo quando la data di schedulazione sarà passata).
+   - **queued**: the number of jobs in queue with a past scheduling date (and therefore to be executed), this number should remain stable.
+   - **postponed**: the number of jobs in queue with a future scheduling date (to be executed only when the scheduling date has passed).
 
 * **throughput**:
-   - **value**: numero di job eseguiti al minuto
-   - **value_per_second**: numero di job eseguiti al secondo
+   - **value**: number of jobs executed per minute
+   - **value_per_second**: number of jobs executed per second
 
 * **latency**:
-   - **average**: Il numero medio di secondi che passa dalla data di schedulazione alla data di esecuzione del job. Un valore alto significa che ci sono troppi pochi worker in esecuzione per quella specifica coda.
+   - **average**: The average number of seconds that passes from the scheduling date to the job execution date. A high value means there are too few workers running for that specific queue.
 
 * **execution_time**:
-   - **average**: il tempo di esecuzione medio di un job.
+   - **average**: the average execution time of a job.
 
 .. code-block:: php
 
@@ -52,8 +52,8 @@ Analytics
    //    ),
    // )
 
-| Per visualizzare le statistiche relative ad uno specifico gruppo di job é possibile passare il gruppo come primo argomento alla funzione analytics.
-| Per ulteriori modalità di utilizzo fare riferimento direttamente `al codice sorgente del metodo "analytics" <https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Recruiter.php>`_.
+| To view statistics related to a specific group of jobs it is possible to pass the group as the first argument to the analytics function.
+| For additional usage modes refer directly to `the source code of the "analytics" method <https://github.com/recruiterphp/recruiter/blob/master/src/Recruiter/Recruiter.php>`_.
 
 .. code-block:: php
 

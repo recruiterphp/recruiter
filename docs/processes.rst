@@ -7,22 +7,22 @@ Processes
 Recruiter process
 =================================
 
-| Il processo `recruiter` é colui che si occupa di assegnare, al momento giusto, i job presenti in coda ai vari `worker` che sono in esecuzione.
+| The `recruiter` process is responsible for assigning, at the right time, the jobs in queue to the various `workers` that are running.
 
-| E' importante che una sola instanza del processo `recruiter` sia live in un determinato momento, ma lo sviluppatore non deve preoccuparsene in quanto il `recruiter` include al suo interno un meccanismo di muta esclusione, é quindi possibile eseguire più processi in contemporanea (ad esempio se si hanno più server identici, ognuno dei quali lancia la propria istanza di `recruiter`) senza che ci siano problemi di concorrenza.
-| Per maggiori informazioni riguardo a questa funzionalità guardare il capitolo relativo a :ref:`Geezer<geezer>`
+| It is important that only one instance of the `recruiter` process is live at any given time, but the developer should not worry about this since the `recruiter` includes an internal mutual exclusion mechanism, so it is possible to run multiple processes simultaneously (for example if you have multiple identical servers, each of which launches its own instance of `recruiter`) without concurrency problems.
+| For more information about this functionality see the chapter on :ref:`Geezer<geezer>`
 
-| Il processo `recruiter` per funzionare ha bisogno di collegarsi ad un istanza di mongodb, é possibile specificare l'URI tramite l'opzione **--target ${MONGOURI}** (se non specificata il processo `recruiter` proverà a collegarsi a `localhost:27017`)
+| The `recruiter` process needs to connect to a mongodb instance to work. You can specify the URI via the **--target** option, or by setting the MONGODB_URI environment variable (``--target`` takes precedence if both are provided, otherwise defaults to `localhost:27017`)
 
-| Se si vuole approfittare degli :ref:`hook<recruiter-hooks>` messi a disposizione dal processo `recruiter` é indispensabile passare al comando uno script php da includere, in modo tale che le funzioni definite dall'utente siano visibili. Questo può essere fatto tramite l'opzione **--bootstrap**
+| If you want to take advantage of the :ref:`hooks<recruiter-hooks>` provided by the `recruiter` process, it is essential to pass a php script to include to the command, so that user-defined functions are visible. This can be done via the **--bootstrap** option
 
-| Per lanciare il processo `recruiter` utilizzare il seguente comando:
+| To launch the `recruiter` process use the following command:
 
 .. code-block:: bash
 
    $ php vendor/bin/recruiter start:recruiter --target 127.0.0.1:27017
 
-Per una lista completa delle opzioni lanciare il comando:
+For a complete list of options run the command:
 
 .. code-block:: bash
 
@@ -38,22 +38,22 @@ Per una lista completa delle opzioni lanciare il comando:
 Worker process
 =================================
 
-| Il processo `worker` é colui che si occupa effettivamente di eseguire un determinato job.
-| Al proprio avvio il processo `worker` comunica al processo `recruiter` il fatto di essere disponibile ad accettare lavori.
-| E' possibile eseguire più processi `worker` in contemporanea, ognuno di questi eseguirà un singolo job alla volta.
-| E' possibile limitare un `worker` all'esecuzione di un solo specifico gruppo di lavori, questo é un metodo per poter gesitre in maniera blanda le :ref:`priorità<priority>`.
+| The `worker` process is responsible for actually executing a specific job.
+| When starting, the `worker` process communicates to the `recruiter` process that it is available to accept work.
+| It is possible to run multiple `worker` processes simultaneously, each of these will execute a single job at a time.
+| It is possible to limit a `worker` to executing only a specific group of jobs, this is a method to manage :ref:`priorities<priority>` in a soft way.
 
-| Il processo `worker` per funzionare ha bisogno di collegarsi ad un istanza di mongodb, é possibile specificare l'URI tramite l'opzione **--target ${MONGOURI}** (se non specificata il processo `worker` proverà a collegarsi a `localhost:27017`)
+| The `worker` process needs to connect to a mongodb instance to work. You can specify the URI via the **--target** option, or by setting the MONGODB_URI environment variable (``--target`` takes precedence if both are provided, otherwise defaults to `localhost:27017`)
 
-| Ad eccezione di alcuni rari casi, il processo `worker` dovrà eseguire codice facente parte del progetto in cui viene incluso, é quindi indispensabile passare al comando uno script php da includere, in modo tale che le classi definite dall'utente siano visibili. Questo può essere fatto tramite l'opzione **--bootrap**
+| Except for some rare cases, the `worker` process will have to execute code that is part of the project in which it is included, so it is essential to pass a php script to include to the command, so that user-defined classes are visible. This can be done via the **--bootstrap** option
 
-| Per lanciare il processo `worker` utilizzare il seguente comando:
+| To launch the `worker` process use the following command:
 
 .. code-block:: bash
 
    $ php vendor/bin/recruiter start:worker --target 127.0.0.1:27017 --bootstrap $APP_BASE_PATH/worker-boostrap.php
 
-Per una lista completa delle opzioni lanciare il comando:
+For a complete list of options run the command:
 
 .. code-block:: bash
 
@@ -66,19 +66,19 @@ Per una lista completa delle opzioni lanciare il comando:
 Cleaner process
 =================================
 
-| Il processo `cleaner` si occupa di mantenere coerente lo stato della libreria.
-| Ad esempio un determinato `worker` potrebbe morire in maniera fatale durante l'esecuzione di un job, lasciando il job lockato e quindi non più eseguibile da altri.
-| Grazie al processo `cleaner` i job possono essere rimessi nella coda di esecuzione dopo un determinato periodo di stallo.
+| The `cleaner` process is responsible for maintaining the consistent state of the library.
+| For example, a specific `worker` could die fatally during the execution of a job, leaving the job locked and therefore no longer executable by others.
+| Thanks to the `cleaner` process, jobs can be put back into the execution queue after a certain period of stall.
 
-| Il processo `cleaner` per funzionare ha bisogno di collegarsi ad un istanza di mongodb, é possibile specificare l'URI tramite l'opzione **--target ${MONGOURI}** (se non specificata il processo `cleaner` proverà a collegarsi a `localhost:27017`)
+| The `cleaner` process needs to connect to a mongodb instance to work. You can specify the URI via the **--target** option, or by setting the MONGODB_URI environment variable (``--target`` takes precedence if both are provided, otherwise defaults to `localhost:27017`)
 
-| Per lanciare il processo `cleaner` utilizzare il seguente comando:
+| To launch the `cleaner` process use the following command:
 
 .. code-block:: bash
 
    $ php vendor/bin/recruiter start:cleaner --target 127.0.0.1:27017
 
-Per una lista completa delle opzioni lanciare il comando:
+For a complete list of options run the command:
 
 .. code-block:: bash
 
@@ -88,9 +88,9 @@ Per una lista completa delle opzioni lanciare il comando:
 =================================
 Logging
 =================================
-| Come abbiamo visto nei paragrafi precedenti, é possibile lanciare i vari processi (`recruiter`, `worker` e `cleaner`) grazie allo script php ``vendor/bin/recruiter``.
-| Lo script php ``vendor/bin/recruiter`` non fa altro che creare una istanza di |symfony.console.application.doc|_, registrare i vari |symfony.console.command.doc|_ (Recruiter, Worker e Clenaer Commands) ed eseguire l'applicazione symfony.
-| Lo script crea i comandi Recruiter, Worker e Cleaner iniettandogli un istanza di |psr.loginterface.doc|_ che logga su standard output. Nel caso in cui si desiderasse una diversa tipologia di |psr.loginterface.doc|_ bisogna includere questi comandi nella propria ``Symfony\Component\Console\Application`` in modo tale da poterli inizializzare iniettandogli il logger che si vuole.
+| As we have seen in the previous paragraphs, it is possible to launch the various processes (`recruiter`, `worker` and `cleaner`) thanks to the php script ``vendor/bin/recruiter``.
+| The php script ``vendor/bin/recruiter`` does nothing more than create an instance of |symfony.console.application.doc|_, register the various |symfony.console.command.doc|_ (Recruiter, Worker and Cleaner Commands) and execute the symfony application.
+| The script creates the Recruiter, Worker and Cleaner commands by injecting them with an instance of |psr.loginterface.doc|_ that logs to standard output. In case you wanted a different type of |psr.loginterface.doc|_ you need to include these commands in your own ``Symfony\Component\Console\Application`` so that you can initialize them by injecting the logger you want.
 
 
 .. code-block:: php

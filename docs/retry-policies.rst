@@ -7,9 +7,9 @@ Retry Policies
 Implements a custom RetryPolicy
 ===================================
 
-| All'interno della libreria sono presenti delle RetryPolicy che coprono i casi più comuni.
-| In caso di necessità potremo comunque creare una nuova policy in modo da coprire la nostra necessità.
-| Per creare una nuova policy dovremo creare una classe che implementi l'interfaccia |retryPolicy.class|_
+| The library contains RetryPolicies that cover the most common cases.
+| If needed, we can create a new policy to cover our specific needs.
+| To create a new policy, we need to create a class that implements the |retryPolicy.class|_ interface
 
 ===================================
 DoNotDoItAgain
@@ -41,11 +41,11 @@ This is the default (implicit) `RetryPolicy`, use it only if you want to make ex
 ExponentialBackoff
 ===================================
 
-Questa `RetryPolicy` permette di ritentare l'esecuzione di un job ad intervalli esponenziali.
-Ad esempio possiamo impostare di avere un massimo di 10 retry con un intervallo iniziale di 30 secondi.
-Questo significa che dopo il primo fallimento verrà effettuato un retry dopo 30 secondi, in caso anche questo fallisca verrà effettuato un altro retry dopo 60 secondi, nel caso in cui anche questo fallisca verrà effettuato un nuovo retry dopo 120 secondi e cosi via, fino ad un massimo di 10 nuovi tentativi.
+This `RetryPolicy` allows you to retry job execution at exponential intervals.
+For example, we can set a maximum of 10 retries with an initial interval of 30 seconds.
+This means that after the first failure, a retry will be attempted after 30 seconds, if this also fails another retry will be attempted after 60 seconds, if this also fails a new retry will be attempted after 120 seconds and so on, up to a maximum of 10 new attempts.
 
-L' `ExponentialBackoff` policy accetta come parametri il numero massimo di tentativi da effettuare ed i secondi iniziali di intervallo prima di effettuare il primo tentativo.
+The `ExponentialBackoff` policy accepts as parameters the maximum number of attempts to make and the initial seconds of interval before making the first attempt.
 
 Examples:
 
@@ -73,8 +73,8 @@ Examples:
 
 
 
-..TODO: verificare al parte seguente prima di pubblicarla
-.. Questa policy comprende anche un factory method che accetta il numero di secondi massimo in cui riprovare ed il numero di secondi iniziali di intervallo prima di effettuare il primo tentativo:
+..TODO: verify the following part before publishing it
+.. This policy also includes a factory method that accepts the maximum number of seconds to retry and the initial number of seconds of interval before making the first attempt:
 ..
 .. Examples:
 ..
@@ -106,8 +106,8 @@ Examples:
 RetryForevers
 ==================
 
-Questa `RetryPolicy` permette di ritentare l'esecuzione di un job all'infinito specificando l'intervallo di tempo tra un tentativo e l'altro.
-Se ad esempio volessimo eseguire un job all'infinito aspettando 30 secondi tra un tentativo e l'altro possiamo scrivere:
+This `RetryPolicy` allows you to retry job execution infinitely by specifying the time interval between one attempt and another.
+If for example we wanted to run a job infinitely waiting 30 seconds between one attempt and another, we can write:
 
 .. code-block:: php
 
@@ -137,8 +137,8 @@ Se ad esempio volessimo eseguire un job all'infinito aspettando 30 secondi tra u
 RetryManyTimes
 ==================
 
-Questa `RetryPolicy` permette di ritentare l'esecuzione di un job un numero finito di volte specificando l'intervallo di tempo tra un tentativo e l'altro.
-Se ad esempio vogliamo ritentare un job per 3 volte, aspettando 30 secondi tra un tentativoo e l'altro, possiamo scrivere:
+This `RetryPolicy` allows you to retry job execution a finite number of times by specifying the time interval between one attempt and another.
+If for example we want to retry a job 3 times, waiting 30 seconds between one attempt and another, we can write:
 
 .. code-block:: php
 
@@ -168,16 +168,16 @@ Se ad esempio vogliamo ritentare un job per 3 volte, aspettando 30 secondi tra u
 TimeTable
 ==================
 
-Questa `RetryPolicy` permette di ritentare l'esecuzione di un job ad intervalli regolari dipendenti da quanto tempo é passato rispetto alla creazione del job.
+This `RetryPolicy` allows you to retry job execution at regular intervals depending on how much time has passed since the job was created.
 
-Ad esempio se volessimo ritentare il job
-* ogni minuto per i primi 5 minuti di vita del job,
-* ogni 5 minuti per la prima ora (cioé i successivi 55 minuti)
-.. * ogni 5 minuti per i successivi 55 minuti
-* ed ogni ora per le prime 24 ore (cioé le successive 23 ore)
-.. * ogni ora per le successive 23 ore
+For example, if we wanted to retry the job
+* every minute for the first 5 minutes of the job's life,
+* every 5 minutes for the first hour (i.e., the next 55 minutes)
+.. * every 5 minutes for the next 55 minutes
+* and every hour for the first 24 hours (i.e., the next 23 hours)
+.. * every hour for the next 23 hours
 
-Possiamo scrivere il seguente codice:
+We can write the following code:
 
 .. code-block:: php
 
@@ -205,7 +205,7 @@ Possiamo scrivere il seguente codice:
 
 
 .. warning::
-   Questa policy accetta un array chiave-valore dove sia le chiavi che i valori devono essere stringhe parsabili dalla funzione php `strtotime`_
+   This policy accepts a key-value array where both keys and values must be strings parsable by the php `strtotime`_ function
 
    .. _strtotime: https://www.php.net/manual/en/function.strtotime.php
 

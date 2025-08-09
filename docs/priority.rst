@@ -3,43 +3,43 @@
 How to handle priority
 =================================
 
-| Supponiamo di avere un applicazione di tipo e-commerce che abbia al suo interno queste funzionalità.
+| Let's suppose we have an e-commerce application that has these functionalities within it:
 
-* invio di un messaggio email di double-option (per la verifica dell'indirizzo email prima dell'acquisto).
-* invio di una email di conferma acquisto.
-* invio di una email di follow-up agli utenti che non hanno completato l'acquisto dopo 7 giorni.
+* sending a double-optin email message (for email address verification before purchase).
+* sending a purchase confirmation email.
+* sending a follow-up email to users who have not completed their purchase after 7 days.
 
-| In tutti e tre i casi si tratta dell'invio di un email (possiamo avere quindi un solo tipo di ``Workable``), ma tutte e tre hanno una diversa priorità:
+| In all three cases it involves sending an email (we can therefore have just one type of ``Workable``), but all three have a different priority:
 
-| Nel primo caso vogliamo che l'email arrivi il prima possibile, l'utente é davanti allo schermo che attende quell'email e vogliamo dargli il miglior servizio possibile, inoltre più tardi arriva e più é facile che l'acquisto venga abbandonato.
+| In the first case we want the email to arrive as soon as possible, the user is in front of the screen waiting for that email and we want to give them the best possible service, also the later it arrives the more likely the purchase will be abandoned.
 
-| Nel secondo caso vogliamo che l'email arrivi non troppo dopo che l'acquisto sia stato completato ma senza neanche una particolare fretta, cercando un compromesso tra il dare il miglior servizio possibile all'utente e a non sovraccaricare troppo il nostro sistema.
+| In the second case we want the email to arrive not too long after the purchase has been completed but without any particular urgency, seeking a compromise between giving the best possible service to the user and not overloading our system too much.
 
-| Nell'ultimo caso invece non abbiamo nessuna fretta, infatti che l'email venga inviata dopo 7 giorni esatti o dopo 7 giorni e 2 minuti cambia molto poco, l'utente non se ne accorgerà ed anche il business (in questa nostra ipotesi) non ne risentirà.
+| In the last case instead we have no hurry, in fact whether the email is sent after exactly 7 days or after 7 days and 2 minutes changes very little, the user will not notice and the business (in our hypothesis) will not suffer either.
 
-| Per attuare questa strategia possiamo innanzitutto :ref:`suddividere i jobs in diversi gruppi<jobs-grouping>`, in questo specifico caso andremo quindi a creare 3 gruppi:
+| To implement this strategy we can first :ref:`divide jobs into different groups<jobs-grouping>`, in this specific case we will therefore create 3 groups:
 
 * `double-optin-email` (or `high-priority`)
 * `confirmation-email` (or `generics`)
 * `follow-up-email` (or `low-priority`)
 
-| Una volta fatto ciò, andremo ad istruire i ``workers`` per prendersi carico solo di una determinata tipologia di gruppo. In questo modo, grazie al numero di ``workers`` presenti su ogni coda (gruppo) avremo velocità di evasione dei ``jobs`` differenti.
-| Ad esempio supponiamo di voler abilitare sette workers, possiamo suddividerli in questa modalità:
+| Once this is done, we will instruct the ``workers`` to take charge of only a specific type of group. This way, thanks to the number of ``workers`` present on each queue (group) we will have different processing speeds for ``jobs``.
+| For example, suppose we want to enable seven workers, we can divide them in this way:
 
-* 1 worker che lavora sulla coda ``follow-up-email`` (or ``low-priority``)
-* 2 worker che lavorano sulla coda ``confirmation-email`` (or ``generics``)
-* 4 worker che lavorano sulla coda ``double-optin-email`` (or ``high-priority``)
+* 1 worker that works on the ``follow-up-email`` (or ``low-priority``) queue
+* 2 workers that work on the ``confirmation-email`` (or ``generics``) queue
+* 4 workers that work on the ``double-optin-email`` (or ``high-priority``) queue
 
-| Cosi facendo verrà eseguito:
+| By doing this, the following will be executed:
 
-- un solo job facente parte del gruppo ``follow-up-email`` alla volta (Quindi nel caso in cui ci siano 2 jobs nel gruppo ``low-priority`` schedulati entrambi per lo stesso orario, il secondo verrà eseguito solo al termine del primo).
-- due job facenti parti del gruppo ``confirmation-email`` in parallelo
-- quattro job facenti parti del gruppo ``double-optin-email`` in parallelo
+- only one job belonging to the ``follow-up-email`` group at a time (So in case there are 2 jobs in the ``low-priority`` group both scheduled for the same time, the second will be executed only after the first one is completed).
+- two jobs belonging to the ``confirmation-email`` group in parallel
+- four jobs belonging to the ``double-optin-email`` group in parallel
 
-| In linea di massima possiamo affermare che più worker ci sono per una determinata coda (gruppo) e più quella coda verrà smaltita velocemente.
+| Generally speaking, we can say that the more workers there are for a specific queue (group), the faster that queue will be processed.
 
-| Per limitare il lavoro di un worker ad uno specifico gruppo di jobs dovremo utilizzare l'opzione **work-on** al lancio del processo `worker`.
-| Ad esempio:
+| To limit a worker's work to a specific group of jobs we will need to use the **work-on** option when launching the `worker` process.
+| For example:
 
 .. code-block:: bash
 
