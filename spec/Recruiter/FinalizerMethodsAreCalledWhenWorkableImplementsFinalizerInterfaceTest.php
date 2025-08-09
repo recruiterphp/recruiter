@@ -101,17 +101,17 @@ class FinalizableWorkable implements Workable, Finalizable
         $this->listener->methodWasCalled(__FUNCTION__);
     }
 
-    public function afterFailure(\Exception $e): void
+    public function afterFailure(\Throwable $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function afterLastFailure(\Exception $e): void
+    public function afterLastFailure(\Throwable $e): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }
 
-    public function finalize(?\Exception $e = null): void
+    public function finalize(?\Throwable $e = null): void
     {
         $this->listener->methodWasCalled(__FUNCTION__, $e);
     }

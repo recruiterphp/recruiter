@@ -118,5 +118,5 @@ function fromDateInterval(\DateInterval $interval): Interval
         $seconds = bcadd($seconds, bcmul((string) $interval->y, '31556874'));
     }
 
-    return seconds($seconds);
+    return seconds((int) $seconds);
 }

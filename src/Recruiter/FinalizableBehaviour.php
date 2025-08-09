@@ -18,7 +18,7 @@ trait FinalizableBehaviour
     {
     }
 
-    public function finalize(?\Exception $e = null): void
+    public function finalize(?\Throwable $e = null): void
     {
     }
 }

@@ -263,7 +263,10 @@ class Job
         }
     }
 
-    private function triggerOnWorkable($method, ?\Throwable $e = null)
+    /**
+     * @param 'afterSuccess'|'afterFailure'|'afterLastFailure' $method
+     */
+    private function triggerOnWorkable(string $method, ?\Throwable $e = null): void
     {
         if ($this->workable instanceof Finalizable) {
             $this->workable->$method($e);
@@ -274,19 +277,21 @@ class Job
         }
     }
 
-    private function hasBeenScheduled()
+    private function hasBeenScheduled(): bool
     {
         return array_key_exists('scheduled_at', $this->status);
     }
 
-    private function scheduledAt()
+    private function scheduledAt(): ?Moment
     {
         if ($this->hasBeenScheduled()) {
             return T\MongoDate::toMoment($this->status['scheduled_at']);
         }
+
+        return null;
     }
 
-    private function tagsToUseFor(Workable $workable)
+    private function tagsToUseFor(Workable $workable): array
     {
         $tagsToUse = [];
         if ($workable instanceof Taggable) {

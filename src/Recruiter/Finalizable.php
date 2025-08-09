@@ -8,9 +8,9 @@ interface Finalizable
 {
     public function afterSuccess(): void;
 
-    public function afterFailure(\Exception $e): void;
+    public function afterFailure(\Throwable $e): void;
 
-    public function afterLastFailure(\Exception $e): void;
+    public function afterLastFailure(\Throwable $e): void;
 
-    public function finalize(?\Exception $e = null): void;
+    public function finalize(?\Throwable $e = null): void;
 }
