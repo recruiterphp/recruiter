@@ -34,11 +34,11 @@ class Repository
         );
     }
 
-    public function refresh($worker)
+    public function refresh(Worker $worker): void
     {
-        $worker->updateWith(
-            $this->roster->findOne(['_id' => $worker->id()]),
-        );
+        $updated = $this->roster->findOne(['_id' => $worker->id()]);
+        assert(is_array($updated));
+        $worker->updateWith($updated);
     }
 
     public function deadWorkers($consideredDeadAt)
