@@ -57,6 +57,9 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         );
     }
 
+    /**
+     * @return array<array{bool, int, string, bool}>
+     */
     public static function provideMemoryConsumptions(): array
     {
         return [

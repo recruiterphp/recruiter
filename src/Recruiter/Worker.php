@@ -201,7 +201,7 @@ class Worker
     }
 
     /**
-     * @return array<array{0: string, 1: array<ObjectId>}>
+     * @return array<array{string, array<ObjectId>}>
      */
     public static function pickAvailableWorkers(MongoCollection $collection, int $workersPerUnit): array
     {
@@ -223,10 +223,10 @@ class Worker
     }
 
     /**
-     * @param array<mixed> $jobs
-     * @param array<mixed> $workers
+     * @param array<mixed>    $jobs
+     * @param array<ObjectId> $workers
      *
-     * @return array{0: array<string, mixed>, 1: int}
+     * @return array{array<string, mixed>, int}
      */
     public static function tryToAssignJobsToWorkers(MongoCollection $collection, array $jobs, array $workers): array
     {
@@ -264,7 +264,7 @@ class Worker
     }
 
     /**
-     * @return array<int, array<string, mixed>>
+     * @return ObjectId[]
      *
      * @throws \DateInvalidOperationException
      */

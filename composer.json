@@ -29,6 +29,7 @@
     "php": "^8.4",
     "ext-bcmath": "*",
     "ext-mongodb": ">=1.1",
+    "ext-pcntl": "*",
     "ext-posix": "*",
     "dragonmantank/cron-expression": "^3.4",
     "gabrielelana/byte-units": "^0.5",
@@ -42,7 +43,6 @@
     "ulrichsg/getopt-php": "^4.0"
   },
   "require-dev": {
-    "ext-pcntl": "*",
     "dms/phpunit-arraysubset-asserts": "^0.5",
     "ergebnis/composer-normalize": "^2.47",
     "friendsofphp/php-cs-fixer": "^3.85",

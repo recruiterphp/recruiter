@@ -52,21 +52,33 @@ class Recruiter
         return $this->jobs->scheduledCount();
     }
 
-    public function queuedGroupedBy($field, array $query = [], $group = null): array
+    /**
+     * @param array<string,mixed> $query
+     *
+     * @return array<string,int>
+     */
+    public function queuedGroupedBy(string $field, array $query = [], ?string $group = null): array
     {
         return $this->jobs->queuedGroupedBy($field, $query, $group);
     }
 
+    /**
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
+     */
     #[\Deprecated(message: 'use the method `analytics` instead')]
-    public function statistics($group = null, ?Moment $at = null, array $query = []): array
+    public function statistics(?string $group = null, ?Moment $at = null, array $query = []): array
     {
         return $this->analytics($group, $at, $query);
     }
 
     /**
-     * @return array<string,mixed>
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
      */
-    public function analytics($group = null, ?Moment $at = null, array $query = []): array
+    public function analytics(?string $group = null, ?Moment $at = null, array $query = []): array
     {
         $totalsScheduledJobs = $this->jobs->scheduledCount($group, $query);
         $queued = $this->jobs->queued($group, $at, $at?->before(T\hour(24)), $query);
@@ -108,6 +120,9 @@ class Recruiter
     {
     }
 
+    /**
+     * @return array{array<string>, int}
+     */
     public function assignJobsToWorkers(): array
     {
         return $this->assignLockedJobsToWorkers($this->bookJobsForWorkers());
@@ -123,6 +138,8 @@ class Recruiter
 
     /**
      * @step
+     *
+     * @return array<array{array<ObjectId>, array<ObjectId>}>
      */
     public function bookJobsForWorkers(): array
     {
@@ -136,8 +153,8 @@ class Recruiter
 
             $result = Job::pickReadyJobsForWorkers($scheduled, $worksOn, $workers);
             if ($result) {
-                [$worksOn, $workers, $jobs] = $result;
-                [$assignments, $jobs, $workers] = $this->combineJobsWithWorkers($jobs, $workers);
+                [, $workers, $jobs] = $result;
+                [, $jobs, $workers] = $this->combineJobsWithWorkers($jobs, $workers);
 
                 Job::lockAll($scheduled, $jobs);
                 $bookedJobs[] = [$jobs, $workers];
@@ -149,6 +166,10 @@ class Recruiter
 
     /**
      * @step
+     *
+     * @param array<array{array<ObjectId>, array<ObjectId>}> $bookedJobs
+     *
+     * @return array{array<string>, int}
      */
     public function assignLockedJobsToWorkers(array $bookedJobs): array
     {
@@ -183,6 +204,8 @@ class Recruiter
      * @step
      *
      * @return int how many jobs were unlocked as a result
+     *
+     * @throws \DateInvalidOperationException
      */
     public function retireDeadWorkers(\DateTimeImmutable $now, Interval $consideredDeadAfter): int
     {
@@ -266,7 +289,13 @@ class Recruiter
         );
     }
 
-    private function combineJobsWithWorkers($jobs, $workers): array
+    /**
+     * @param array<ObjectId> $jobs
+     * @param array<ObjectId> $workers
+     *
+     * @return array{int, array<ObjectId>, array<ObjectId>}
+     */
+    private function combineJobsWithWorkers(array $jobs, array $workers): array
     {
         $assignments = min(count($workers), count($jobs));
         $workers = array_slice($workers, 0, $assignments);

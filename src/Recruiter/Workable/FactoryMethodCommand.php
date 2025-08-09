@@ -6,6 +6,12 @@ use Recruiter\JobToSchedule;
 use Recruiter\Recruiter;
 use Recruiter\Workable;
 
+/**
+ * To make PHPStan happy, we need to add a docblock for the magic __call method.
+ *
+ * @method myObject()
+ * @method answer(int $answer)
+ */
 class FactoryMethodCommand implements Workable
 {
     /**

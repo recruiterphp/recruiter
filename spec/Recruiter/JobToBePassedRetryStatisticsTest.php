@@ -44,7 +44,10 @@ class WorkableThatUsesRetryStatistics implements Workable, Retriable
         return new DoNotDoItAgain();
     }
 
-    public function execute(array $retryStatistics)
+    /**
+     * @param array<string, mixed> $retryStatistics
+     */
+    public function execute(array $retryStatistics): void
     {
     }
 }

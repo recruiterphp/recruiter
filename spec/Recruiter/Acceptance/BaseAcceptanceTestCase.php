@@ -21,11 +21,21 @@ abstract class BaseAcceptanceTestCase extends TestCase
     protected Collection $archived;
     protected Collection $roster;
     protected Collection $schedulers;
+    /** @var string[] */
     protected array $files;
     protected int $jobs;
+    /** @var ?array{resource, array<resource>, 'recruiter'} */
     private ?array $processRecruiter;
+
+    /** @var ?array{resource, array<resource>, 'cleaner'} */
     private ?array $processCleaner;
+
+    /** @var array{resource, array<resource>, 'worker'}[] */
     private array $processWorkers;
+
+    /**
+     * @var array <string, bool|int|string>
+     */
     private array $lastStatus;
 
     protected function setUp(): void
@@ -78,6 +88,10 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->roster->countDocuments();
     }
 
+    /**
+     * @throws \DateInvalidOperationException
+     * @throws \DateMalformedStringException
+     */
     protected function waitForNumberOfWorkersToBe(int $expectedNumber, int $howManySeconds = 1): void
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
@@ -89,6 +103,9 @@ abstract class BaseAcceptanceTestCase extends TestCase
         ;
     }
 
+    /**
+     * @return array{resource, array<resource>, 'recruiter'}
+     */
     protected function startRecruiter(): array
     {
         $descriptors = [
@@ -100,6 +117,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         /* $process = proc_open('exec php bin/recruiter --backoff-to=5s --lease-time 10s --considered-dead-after 20s >> /tmp/recruiter.log 2>&1', $descriptors, $pipes, $cwd); */
 
         $process = proc_open('exec php bin/recruiter start:recruiter --backoff-to 5000ms --lease-time 10s --considered-dead-after 20s >> /tmp/recruiter.log 2>&1', $descriptors, $pipes, $cwd);
+        assert(is_resource($process));
 
         Timeout::inSeconds(1, 'recruiter to be up')
             ->until(function () use ($process): bool {
@@ -114,6 +132,9 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->processRecruiter;
     }
 
+    /**
+     * @return array{resource, array<resource>, 'cleaner'}
+     */
     protected function startCleaner(): array
     {
         $descriptors = [
@@ -135,7 +156,12 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->processCleaner;
     }
 
-    protected function startWorker(array $additionalOptions = [])
+    /**
+     * @param array<string, scalar|\Stringable> $additionalOptions
+     *
+     * @return array{resource, array<resource>, 'worker'}
+     */
+    protected function startWorker(array $additionalOptions = []): array
     {
         $descriptors = [
             0 => ['pipe', 'r'],
@@ -166,6 +192,9 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return end($this->processWorkers);
     }
 
+    /**
+     * @param array{resource, array<resource>, string} $processAndPipes
+     */
     protected function stopProcessWithSignal(array $processAndPipes, int $signal): void
     {
         [$process, $pipes, $name] = $processAndPipes;
@@ -181,7 +210,8 @@ abstract class BaseAcceptanceTestCase extends TestCase
     }
 
     /**
-     * @param int $duration milliseconds
+     * @param int                  $duration milliseconds
+     * @param string[]|string|null $tag
      */
     protected function enqueueJob(int $duration = 10, array|string|null $tag = 'generic'): void
     {
@@ -216,7 +246,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         }
     }
 
-    private function terminateProcesses(int $signal): void
+    private function terminateProcesses(int $signal = SIGKILL): void
     {
         if ($this->processRecruiter) {
             $this->stopProcessWithSignal($this->processRecruiter, $signal);
@@ -232,13 +262,13 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->processWorkers = [];
     }
 
-    protected function restartWorkerGracefully($workerIndex): void
+    protected function restartWorkerGracefully(int $workerIndex): void
     {
         $this->stopProcessWithSignal($this->processWorkers[$workerIndex], SIGTERM);
         $this->processWorkers[$workerIndex] = $this->startWorker();
     }
 
-    protected function restartWorkerByKilling($workerIndex): void
+    protected function restartWorkerByKilling(int $workerIndex): void
     {
         $this->stopProcessWithSignal($this->processWorkers[$workerIndex], SIGKILL);
         $this->processWorkers[$workerIndex] = $this->startWorker();
@@ -271,6 +301,9 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $logs;
     }
 
+    /**
+     * @param array<string, scalar|\Stringable> $options
+     */
     private function optionsToString(array $options = []): string
     {
         $optionsString = '';

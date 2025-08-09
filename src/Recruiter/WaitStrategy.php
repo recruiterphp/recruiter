@@ -9,15 +9,17 @@ class WaitStrategy
     private readonly int $timeToWaitAtLeast;
     private readonly int $timeToWaitAtMost;
     private int $timeToWait;
+    private \Closure $howToWait;
 
     /**
-     * @param callable-string $howToWait
+     * @param callable|callable-string $howToWait
      */
-    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, private readonly string $howToWait = 'usleep')
+    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, callable|string $howToWait = 'usleep')
     {
         $this->timeToWaitAtLeast = $timeToWaitAtLeast->milliseconds();
         $this->timeToWaitAtMost = $timeToWaitAtMost->milliseconds();
         $this->timeToWait = $timeToWaitAtLeast->milliseconds();
+        $this->howToWait = $howToWait(...);
     }
 
     public function reset(): self

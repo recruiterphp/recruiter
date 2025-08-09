@@ -4,7 +4,6 @@ namespace Recruiter;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Job\Repository;
 use Recruiter\Workable\AlwaysFail;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +26,6 @@ class JobTest extends TestCase
         $job = Job::around(new AlwaysFail(), $this->repository);
         $retryStatistics = $job->retryStatistics();
         $this->assertArrayHasKey('job_id', $retryStatistics);
-        $this->assertIsString($retryStatistics['job_id']);
         $this->assertArrayHasKey('retry_number', $retryStatistics);
         $this->assertEquals(0, $retryStatistics['retry_number']);
         $this->assertArrayHasKey('last_execution', $retryStatistics);
@@ -55,13 +53,5 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('trace', $lastExecution);
         $this->assertEquals("Sorry, I'm good for nothing", $lastExecution['message']);
         $this->assertMatchesRegularExpression('/.*AlwaysFail->execute.*/', $lastExecution['trace']);
-    }
-
-    public function testArrayAsGroupIsNotAllowed(): void
-    {
-        $this->expectException(\RuntimeException::class);
-        $memoryLimit = new MemoryLimit(1);
-        $job = Job::around(new AlwaysFail(), $this->repository);
-        $job->inGroup(['test']);
     }
 }

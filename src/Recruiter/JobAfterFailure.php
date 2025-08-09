@@ -22,7 +22,7 @@ class JobAfterFailure
         return $this->job->createdAt();
     }
 
-    public function inGroup(array|string $group): void
+    public function inGroup(string $group): void
     {
         $this->job->inGroup($group);
         $this->job->save();
@@ -40,7 +40,7 @@ class JobAfterFailure
         $this->job->save();
     }
 
-    public function archive($why): void
+    public function archive(string $why): void
     {
         $this->hasBeenArchived = true;
         $this->job->archive($why);

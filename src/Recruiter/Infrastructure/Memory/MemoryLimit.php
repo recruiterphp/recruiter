@@ -18,7 +18,7 @@ class MemoryLimit
     /**
      * @throws \Exception
      */
-    public function __construct(string $limit)
+    public function __construct(string|int $limit)
     {
         try {
             $this->limit = ByteUnits\parse($limit);

@@ -447,6 +447,9 @@ class RepositoryTest extends TestCase
         ;
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     private function workableMockWithCustomParameters(array $parameters): MockObject&Workable
     {
         $workable = $this->workableMock();
@@ -459,6 +462,9 @@ class RepositoryTest extends TestCase
         return $workable;
     }
 
+    /**
+     * @param ?array<string, mixed> $workableParameters
+     */
     private function jobMockWithAttemptsAndCustomParameters(
         ?Moment $createdAt = null,
         ?Moment $endedAt = null,

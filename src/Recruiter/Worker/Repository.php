@@ -45,6 +45,9 @@ class Repository
         $worker->updateWith($updated);
     }
 
+    /**
+     * @return CursorInterface<array{_id: ObjectId, assigned_to?: array<string, ObjectId>}>
+     */
     public function deadWorkers(\DateTimeImmutable $consideredDeadAt): CursorInterface
     {
         return $this->roster->find(

@@ -6,10 +6,16 @@ use Symfony\Contracts\EventDispatcher;
 
 class Event extends EventDispatcher\Event
 {
+    /**
+     * @param array<string, mixed> $jobExport
+     */
     public function __construct(private readonly array $jobExport)
     {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return $this->jobExport;

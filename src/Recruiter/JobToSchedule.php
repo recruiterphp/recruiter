@@ -25,9 +25,11 @@ class JobToSchedule
     }
 
     /**
+     * @param class-string[]|class-string $retriableExceptionTypes
+     *
      * @return $this
      */
-    public function retryManyTimes($howManyTimes, Interval $timeToWaitBeforeRetry, $retriableExceptionTypes = []): static
+    public function retryManyTimes(int $howManyTimes, Interval $timeToWaitBeforeRetry, array|string $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -40,9 +42,11 @@ class JobToSchedule
     }
 
     /**
+     * @param class-string[]|class-string $retriableExceptionTypes
+     *
      * @return $this
      */
-    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = []): static
+    public function retryWithPolicy(RetryPolicy $retryPolicy, array|string $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -82,6 +86,8 @@ class JobToSchedule
     }
 
     /**
+     * @param string[]|string|null $group
+     *
      * @return $this
      */
     public function inGroup(array|string|null $group): static
@@ -93,7 +99,12 @@ class JobToSchedule
         return $this;
     }
 
-    public function taggedAs(array|string $tags): static
+    /**
+     * @param string[]|string|null $tags
+     *
+     * @return $this
+     */
+    public function taggedAs(array|string|null $tags): static
     {
         if (!empty($tags)) {
             $this->job->taggedAs(is_array($tags) ? $tags : [$tags]);
@@ -133,21 +144,31 @@ class JobToSchedule
     }
 
     /**
+     * @param array<mixed> $arguments
+     *
      * @throws \Exception
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): string
     {
         $this->job->methodToCallOnWorkable($name);
 
         return $this->execute();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return $this->job->export();
     }
 
-    public static function import($document, Job\Repository $repository): self
+    /**
+     * @param array<string, mixed> $document
+     *
+     * @throws \InvalidArgumentException
+     */
+    public static function import(array $document, Job\Repository $repository): self
     {
         return new self(Job::import($document, $repository));
     }

@@ -34,6 +34,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals([], $picked);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithNoSpecificSkill(): void
     {
         $callbackHasBeenCalled = false;
@@ -46,6 +49,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertCount(3, $workers);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithSameSkill(): void
     {
         $callbackHasBeenCalled = false;
@@ -95,6 +101,8 @@ class PickAvailableWorkersTest extends TestCase
     }
 
     /**
+     * @param array<string, int> $workers
+     *
      * @throws Exception
      */
     private function withAvailableWorkers(array $workers): void
@@ -126,6 +134,10 @@ class PickAvailableWorkersTest extends TestCase
         ;
     }
 
+    /**
+     * @param array<mixed> $expected
+     * @param array<mixed> $given
+     */
     private function assertArrayAreEquals(array $expected, array $given): void
     {
         sort($expected);
@@ -134,10 +146,19 @@ class PickAvailableWorkersTest extends TestCase
     }
 }
 
+/**
+ * @implements \Iterator<int, mixed>
+ */
 class FakeCursor implements CursorInterface, \Iterator
 {
+    /**
+     * @var array<int, mixed>
+     */
     private array $data;
 
+    /**
+     * @param array<mixed> $data
+     */
     public function __construct(array $data = [])
     {
         $this->data = array_values($data);
@@ -158,16 +179,25 @@ class FakeCursor implements CursorInterface, \Iterator
         throw new \LogicException('Not implemented');
     }
 
+    /**
+     * @param array<string, string> $typemap
+     */
     public function setTypeMap(array $typemap): void
     {
         throw new \LogicException('Not implemented');
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function toArray(): array
     {
         throw new \LogicException('Not implemented');
     }
 
+    /**
+     * @return object|array<mixed>|null
+     */
     public function current(): object|array|null
     {
         return current($this->data);

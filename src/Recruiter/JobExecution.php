@@ -30,13 +30,13 @@ class JobExecution
         $this->failedWith = $exception;
     }
 
-    public function completedWith($result): void
+    public function completedWith(mixed $result): void
     {
         $this->endedAt = T\now();
         $this->completedWith = $result;
     }
 
-    public function result()
+    public function result(): mixed
     {
         return $this->completedWith;
     }
@@ -63,6 +63,9 @@ class JobExecution
         return T\seconds(0);
     }
 
+    /**
+     * @param array<string, mixed> $document
+     */
     public static function import(array $document): self
     {
         $lastExecution = new self();
@@ -82,6 +85,9 @@ class JobExecution
         return $lastExecution;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         $exported = [];

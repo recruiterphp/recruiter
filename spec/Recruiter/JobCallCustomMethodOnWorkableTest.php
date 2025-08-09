@@ -68,7 +68,7 @@ class JobCallCustomMethodOnWorkableTest extends TestCase
 
 class DummyWorkableWithSendCustomMethod extends BaseWorkable
 {
-    public function send()
+    public function send(): void
     {
     }
 }

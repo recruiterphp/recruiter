@@ -96,10 +96,16 @@ class WorkableTaggable implements Workable, Taggable
 {
     use WorkableBehaviour;
 
-    public function __construct(private array $tags)
+    /**
+     * @param array<string> $tags
+     */
+    public function __construct(private readonly array $tags)
     {
     }
 
+    /**
+     * @return array<string> $tags
+     */
     public function taggedAs(): array
     {
         return $this->tags;
@@ -115,7 +121,7 @@ class WorkableTaggable implements Workable, Taggable
         return new static($parameters['tags']);
     }
 
-    public function execute()
+    public function execute(): void
     {
         // nothing is good
     }

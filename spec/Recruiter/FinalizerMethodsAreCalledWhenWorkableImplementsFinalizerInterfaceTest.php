@@ -68,6 +68,9 @@ class FinalizerMethodsAreCalledWhenWorkableImplementsFinalizerInterfaceTest exte
 
 class ListenerSpy
 {
+    /**
+     * @var array<int, array{string, ?\Throwable}>
+     */
     public array $calls = [];
 
     public function methodWasCalled(string $name, ?\Throwable $exception = null): void
@@ -81,12 +84,12 @@ class FinalizableWorkable implements Workable, Finalizable
     use WorkableBehaviour;
     use FinalizableBehaviour;
 
-    private $whatToDo;
+    private \Closure $whatToDo;
 
-    public function __construct(callable $whatToDo, private $listener)
+    public function __construct(callable $whatToDo, private readonly ListenerSpy $listener)
     {
         $this->parameters = [];
-        $this->whatToDo = $whatToDo;
+        $this->whatToDo = $whatToDo(...);
     }
 
     public function execute(): mixed

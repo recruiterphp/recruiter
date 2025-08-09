@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Recruiter\Infrastructure\Command;
 
 use ByteUnits;
+use ByteUnits\ConversionException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Recruiter\Concurrency\MongoLock;
@@ -18,6 +19,7 @@ use Recruiter\Geezer\Timing\ExponentialBackoffStrategy;
 use Recruiter\Geezer\Timing\WaitStrategy;
 use Recruiter\Infrastructure\Filesystem\BootstrapFile;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
+use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -62,6 +64,12 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         $this->log(sprintf('rolled back %d jobs in %fms', $rolledBack, ($rollbackEndAt - $rollbackStartAt) * 1000), $logLevel);
     }
 
+    /**
+     * @return array<string>
+     *
+     * @throws MemoryLimitExceededException
+     * @throws ConversionException
+     */
     private function assignJobsToWorkers(): array
     {
         $pickStartAt = microtime(true);

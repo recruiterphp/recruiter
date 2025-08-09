@@ -8,7 +8,10 @@ use Recruiter\RetryPolicy;
 
 class RetriableExceptionFilter implements RetryPolicy
 {
-    private $retriableExceptions;
+    /**
+     * @var array<class-string<\Throwable>>
+     */
+    private array $retriableExceptions;
 
     /**
      * @param class-string $exceptionClass fully qualified class or interface name
@@ -35,6 +38,12 @@ class RetriableExceptionFilter implements RetryPolicy
         }
     }
 
+    /**
+     * @return array{
+     *     retriable_exceptions: array<class-string>,
+     *     filtered_retry_policy: array{class: class-string, parameters: array<string, mixed>}
+     * }
+     */
     public function export(): array
     {
         return [
@@ -62,6 +71,13 @@ class RetriableExceptionFilter implements RetryPolicy
         return $this->filteredRetryPolicy->isLastRetry($job);
     }
 
+    /**
+     * @param array<class-string> $exceptions
+     *
+     * @return array<class-string<\Throwable>>
+     *
+     * @throws \InvalidArgumentException
+     */
     private function ensureAreAllExceptions(array $exceptions): array
     {
         foreach ($exceptions as $exception) {
@@ -73,15 +89,11 @@ class RetriableExceptionFilter implements RetryPolicy
         return $exceptions;
     }
 
-    private function isExceptionRetriable(?\Throwable $exception)
+    private function isExceptionRetriable(?\Throwable $exception): bool
     {
-        if (is_object($exception)) {
-            return array_any(
-                $this->retriableExceptions,
-                fn ($retriableExceptionType): bool => $exception instanceof $retriableExceptionType,
-            );
-        }
-
-        return false;
+        return array_any(
+            $this->retriableExceptions,
+            fn ($retriableExceptionType): bool => $exception instanceof $retriableExceptionType,
+        );
     }
 }

@@ -26,6 +26,11 @@ class Job
         );
     }
 
+    /**
+     * @param array<string, mixed> $document
+     *
+     * @throws \Exception
+     */
     public static function import(array $document, Repository $repository): self
     {
         return new self(
@@ -37,6 +42,9 @@ class Job
         );
     }
 
+    /**
+     * @param array<string, mixed> $status
+     */
     public function __construct(
         private array $status,
         private readonly Workable $workable,
@@ -46,7 +54,7 @@ class Job
     ) {
     }
 
-    public function id()
+    public function id(): ObjectId
     {
         return $this->status['_id'];
     }
@@ -69,6 +77,8 @@ class Job
     }
 
     /**
+     * @param array<string> $tags
+     *
      * @return $this
      */
     public function taggedAs(array $tags): static
@@ -80,14 +90,12 @@ class Job
         return $this;
     }
 
-    public function inGroup(array|string $group): static
+    /**
+     * @return $this
+     */
+    public function inGroup(string $group): static
     {
-        if (is_array($group)) {
-            throw new \RuntimeException('Group can be only single string, for other uses use `taggedAs` method.
-                Received group: `' . var_export($group, true) . '`');
-        }
-
-        if (!empty($group)) {
+        if ('' !== $group) {
             $this->status['group'] = $group;
         }
 
@@ -131,10 +139,10 @@ class Job
         return $this;
     }
 
-    public function methodToCallOnWorkable($method): void
+    public function methodToCallOnWorkable(string $method): void
     {
         if (!method_exists($this->workable, $method)) {
-            throw new \Exception("Unknown method '$method' on workable instance");
+            throw new \InvalidArgumentException("Unknown method '$method' on workable instance");
         }
         $this->status['workable']['method'] = $method;
     }
@@ -155,6 +163,14 @@ class Job
         return $this->lastJobExecution;
     }
 
+    /**
+     * @return array{
+     *     job_id: string,
+     *     retry_number: int,
+     *     is_last_retry: bool,
+     *     last_execution: ?array<string, mixed>
+     * }
+     */
     public function retryStatistics(): array
     {
         return [
@@ -172,7 +188,7 @@ class Job
         $this->repository->save($this);
     }
 
-    public function archive($why): void
+    public function archive(string $why): void
     {
         $this->status['why'] = $why;
         $this->status['locked'] = false;
@@ -180,6 +196,9 @@ class Job
         $this->repository->archive($this);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return array_merge(
@@ -210,7 +229,7 @@ class Job
     /**
      * @return $this
      */
-    public function afterExecution($result, EventDispatcherInterface $eventDispatcher): static
+    public function afterExecution(mixed $result, EventDispatcherInterface $eventDispatcher): static
     {
         $this->status['done'] = true;
         $this->lastJobExecution->completedWith($result);
@@ -223,12 +242,12 @@ class Job
         return $this;
     }
 
-    public function done()
+    public function done(): bool
     {
         return $this->status['done'];
     }
 
-    private function recoverFromCrash(EventDispatcherInterface $eventDispatcher)
+    private function recoverFromCrash(EventDispatcherInterface $eventDispatcher): bool
     {
         if ($this->lastJobExecution->isCrashed()) {
             return !$archived = $this->afterFailure(new WorkerDiedInTheLineOfDutyException(), $eventDispatcher);
@@ -291,6 +310,9 @@ class Job
         return null;
     }
 
+    /**
+     * @return array{tags?: array<string>}
+     */
     private function tagsToUseFor(Workable $workable): array
     {
         $tagsToUse = [];
@@ -307,6 +329,9 @@ class Job
         return [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private static function initialize(): array
     {
         return array_merge(
@@ -323,7 +348,12 @@ class Job
         );
     }
 
-    public static function pickReadyJobsForWorkers(MongoCollection $collection, $worksOn, $workers)
+    /**
+     * @param array<ObjectId> $workers
+     *
+     * @return ?array{string, array<ObjectId>, array<ObjectId>}
+     */
+    public static function pickReadyJobsForWorkers(MongoCollection $collection, string $worksOn, array $workers): ?array
     {
         $jobs = array_column(
             iterator_to_array(
@@ -350,8 +380,13 @@ class Job
         if (count($jobs) > 0) {
             return [$worksOn, $workers, $jobs];
         }
+
+        return null;
     }
 
+    /**
+     * @param array<ObjectId> $excluded
+     */
     public static function rollbackLockedNotIn(MongoCollection $collection, array $excluded): int
     {
         try {
@@ -374,7 +409,10 @@ class Job
         }
     }
 
-    public static function lockAll(MongoCollection $collection, $jobs): void
+    /**
+     * @param array<ObjectId> $jobs
+     */
+    public static function lockAll(MongoCollection $collection, array $jobs): void
     {
         $collection->updateMany(
             ['_id' => ['$in' => array_values($jobs)]],

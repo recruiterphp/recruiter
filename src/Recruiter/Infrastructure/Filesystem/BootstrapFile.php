@@ -21,7 +21,7 @@ class BootstrapFile
         return new static($filePath);
     }
 
-    public function load(Recruiter $recruiter)
+    public function load(Recruiter $recruiter): mixed
     {
         return require $this->filePath;
     }

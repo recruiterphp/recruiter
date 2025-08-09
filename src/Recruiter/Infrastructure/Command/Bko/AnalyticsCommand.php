@@ -77,6 +77,9 @@ class AnalyticsCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @param array<array<string, mixed>> $analytics
+     */
     private function calculateColumnsWidth(array $analytics): int
     {
         $maxColumns = 1;

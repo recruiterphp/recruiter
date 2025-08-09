@@ -9,6 +9,14 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI;
 
 class Factory
 {
+    /**
+     * Creates a MongoDB client and returns the selected database.
+     *
+     * @param URI                  $uri     the MongoDB URI containing the connection details
+     * @param array<string, mixed> $options additional options for the MongoDB client
+     *
+     * @throws \UnexpectedValueException if the connection to MongoDB fails
+     */
     public function getMongoDb(URI $uri, array $options = []): Database
     {
         try {

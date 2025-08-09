@@ -6,7 +6,7 @@ use Recruiter\Workable\AlwaysFail;
 use Recruiter\Workable\FactoryMethodCommand;
 use Timeless as T;
 
-class SyncronousExecutionTest extends BaseAcceptanceTestCase
+class SynchronousExecutionTest extends BaseAcceptanceTestCase
 {
     public function testJobsAreExecutedInOrderOfScheduling(): void
     {
@@ -54,12 +54,22 @@ class SyncronousExecutionTestDummyObject
         return new self();
     }
 
-    public function answer($value)
+    /**
+     * @template T1
+     *
+     * @param T1 $value
+     *
+     * @return T1
+     */
+    public function answer(mixed $value): mixed
     {
         return $value;
     }
 
-    public function myNeedyMethod(array $retryStatistics)
+    /**
+     * @param array<string, mixed> $retryStatistics
+     */
+    public function myNeedyMethod(array $retryStatistics): int
     {
         return $retryStatistics['retry_number'];
     }

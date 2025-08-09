@@ -7,6 +7,9 @@ use Recruiter\Workable\RecoverRepeatableFromException;
 class RepeatableInJob
 {
     // TODO: resolve duplication with WorkableInJob
+    /**
+     * @param array<mixed> $document ,
+     */
     public static function import(array $document): Repeatable
     {
         $dataAboutWorkableObject = [
@@ -38,23 +41,38 @@ class RepeatableInJob
         }
     }
 
-    public static function export($workable, $methodToCall): array
+    /**
+     * @return array{
+     *     workable: array{
+     *         class: class-string<Repeatable>,
+     *         parameters: array<mixed>,
+     *         method: string
+     *     }
+     * }
+     */
+    public static function export(Repeatable $repeatable, string $methodToCall): array
     {
         return [
             'workable' => [
-                'class' => self::classNameOf($workable),
-                'parameters' => $workable->export(),
+                'class' => self::classNameOf($repeatable),
+                'parameters' => $repeatable->export(),
                 'method' => $methodToCall,
             ],
         ];
     }
 
+    /**
+     * @return array{workable: array{method: string}}
+     */
     public static function initialize(): array
     {
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($repeatable): string
+    /**
+     * @return class-string<Repeatable>
+     */
+    private static function classNameOf(Repeatable $repeatable): string
     {
         $repeatableClassName = $repeatable::class;
         if (method_exists($repeatable, 'getClass')) {

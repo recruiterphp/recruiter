@@ -131,6 +131,9 @@ class EnduranceTest extends BaseAcceptanceTestCase
         usleep($milliseconds * 1000);
     }
 
+    /**
+     * @param array<string, mixed> $statistics
+     */
     protected function assertInvariantsOnStatistics(array $statistics): void
     {
         $this->assertEquals(0, $statistics['jobs']['queued']);

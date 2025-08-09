@@ -22,6 +22,9 @@ class CronTest extends TestCase
         );
     }
 
+    /**
+     * @return array<array{string, string}>
+     */
     public static function cronExpressions(): array
     {
         return [

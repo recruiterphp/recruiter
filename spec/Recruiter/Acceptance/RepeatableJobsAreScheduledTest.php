@@ -3,9 +3,11 @@
 namespace Recruiter\Acceptance;
 
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Recruiter\Job;
 use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\RetryPolicy\ExponentialBackoff;
 use Recruiter\SchedulePolicy;
+use Recruiter\Scheduler;
 use Recruiter\Scheduler\Repository as SchedulersRepository;
 use Recruiter\Workable\SampleRepeatableCommand;
 use Timeless as T;
@@ -88,7 +90,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->recruiterScheduleJobsNTimes(2);
         $jobs = $this->fetchScheduledJobs();
 
-        $this->assertEquals(2, count($jobs));
+        $this->assertCount(2, $jobs);
         $this->assertEquals(2, $jobs[0]->export()['scheduled']['executions']);
         $this->assertEquals(1, $jobs[1]->export()['scheduled']['executions']);
     }
@@ -105,7 +107,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->recruiterScheduleJobsNTimes(2);
         $jobs = $this->fetchScheduledJobs();
 
-        $this->assertEquals(1, count($jobs));
+        $this->assertCount(1, $jobs);
     }
 
     public function testSchedulersAreUniqueOnUrn(): void
@@ -120,11 +122,11 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 
         // Check that the scheduler keeps metadata intact
         $schedulers = $this->fetchSchedulers();
-        $this->assertEquals(1, count($schedulers));
+        $this->assertCount(1, $schedulers);
 
         // Check that job related data are updated
         $this->assertEquals($newSchedulingTime, $schedulers[0]->export()['schedule_policy']['parameters']['timestamps'][0]);
-        $this->assertEquals(true, $schedulers[0]->export()['unique']);
+        $this->assertTrue($schedulers[0]->export()['unique']);
 
         // Check that the scheduler keeps metadata intact
         $this->assertEquals($aSchedulerAlreadyHaveSomeAttempts, $schedulers[0]->export()['attempts']);
@@ -143,7 +145,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->recruiterScheduleJobsNTimes($attempts);
     }
 
-    private function scheduleAJob(string $urn, ?SchedulePolicy $schedulePolicy = null, bool $unique = false)
+    private function scheduleAJob(string $urn, ?SchedulePolicy $schedulePolicy = null, bool $unique = false): Scheduler
     {
         if (is_null($schedulePolicy)) {
             $schedulePolicy = new FixedSchedulePolicy(strtotime('2023-02-18T17:00:00'));
@@ -167,6 +169,9 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         }
     }
 
+    /**
+     * @return Job[]
+     */
     private function fetchScheduledJobs(): array
     {
         $jobsRepository = new JobsRepository($this->recruiterDb);
@@ -174,6 +179,9 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         return $jobsRepository->all();
     }
 
+    /**
+     * @return Scheduler[]
+     */
     private function fetchSchedulers(): array
     {
         $schedulersRepository = new SchedulersRepository($this->recruiterDb);
@@ -184,9 +192,15 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
 
 class FixedSchedulePolicy implements SchedulePolicy
 {
+    /**
+     * @var array<int>
+     */
     private array $timestamps;
 
-    public function __construct($timestamps, private int $index = 0)
+    /**
+     * @param int|array<int> $timestamps
+     */
+    public function __construct(int|array $timestamps, private int $index = 0)
     {
         if (!is_array($timestamps)) {
             $timestamps = [$timestamps];

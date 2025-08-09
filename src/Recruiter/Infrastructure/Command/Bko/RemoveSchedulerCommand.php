@@ -27,7 +27,7 @@ class RemoveSchedulerCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('scheduler:remove')
@@ -72,7 +72,12 @@ class RemoveSchedulerCommand extends Command
         return self::SUCCESS;
     }
 
-    private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output)
+    /**
+     * @param array<string> $urns
+     *
+     * @return string|false
+     */
+    private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output): mixed
     {
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
@@ -93,6 +98,9 @@ class RemoveSchedulerCommand extends Command
         return $selectedUrn;
     }
 
+    /**
+     * @param array<array<mixed>> $data
+     */
     private function printTable(array $data, OutputInterface $output): void
     {
         $rows = [];
@@ -108,9 +116,12 @@ class RemoveSchedulerCommand extends Command
         ;
 
         $table->render();
-        echo PHP_EOL;
+        $output->write(PHP_EOL);
     }
 
+    /**
+     * @return ?array<array<string, string>>
+     */
     protected function buildOutputData(): ?array
     {
         $outputData = [];

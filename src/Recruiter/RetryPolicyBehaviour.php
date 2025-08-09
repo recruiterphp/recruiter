@@ -6,19 +6,25 @@ use Recruiter\RetryPolicy\RetriableExceptionFilter;
 
 trait RetryPolicyBehaviour
 {
-    private $parameters;
-
-    public function __construct($parameters = [])
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function __construct(private readonly array $parameters = [])
     {
-        $this->parameters = $parameters;
     }
 
-    public function retryOnlyWhenExceptionIs($retriableExceptionType): RetriableExceptionFilter
+    /**
+     * @param class-string $retriableExceptionType
+     */
+    public function retryOnlyWhenExceptionIs(string $retriableExceptionType): RetriableExceptionFilter
     {
         return new RetriableExceptionFilter($this, [$retriableExceptionType]);
     }
 
-    public function retryOnlyWhenExceptionsAre($retriableExceptionTypes): RetriableExceptionFilter
+    /**
+     * @param class-string[] $retriableExceptionTypes
+     */
+    public function retryOnlyWhenExceptionsAre(array $retriableExceptionTypes): RetriableExceptionFilter
     {
         return new RetriableExceptionFilter($this, $retriableExceptionTypes);
     }
@@ -28,6 +34,9 @@ trait RetryPolicyBehaviour
         throw new \Exception('RetryPolicy::schedule(JobAfterFailure) need to be implemented');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return $this->parameters;

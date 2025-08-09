@@ -52,12 +52,22 @@ class DummyFactory
 
 class DummyObject
 {
-    public function myMethod($what, $value)
+    /**
+     * @template T1
+     *
+     * @param T1 $value
+     *
+     * @return T1
+     */
+    public function myMethod(mixed $what, mixed $value): mixed
     {
         return $value;
     }
 
-    public function myNeedyMethod(array $retryStatistics)
+    /**
+     * @param array{retry_number: int} $retryStatistics
+     */
+    public function myNeedyMethod(array $retryStatistics): int
     {
         return $retryStatistics['retry_number'];
     }

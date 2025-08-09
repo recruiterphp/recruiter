@@ -29,7 +29,7 @@ class Cleaner
         return $this->repository->cleanScheduled($upperLimit);
     }
 
-    public function bye()
+    public function bye(): void
     {
     }
 }

@@ -48,11 +48,19 @@ class TimeTable implements RetryPolicy
         return !$this->hasBeenCreatedLessThan($job, $timeSpent);
     }
 
+    /**
+     * @return array{time_table: array<string, string>}
+     */
     public function export(): array
     {
         return ['time_table' => $this->timeTable];
     }
 
+    /**
+     * @param array{time_table: array<string, string>} $parameters
+     *
+     * @throws \InvalidArgumentException
+     */
     public static function import(array $parameters): RetryPolicy
     {
         return new self($parameters['time_table']);
@@ -72,6 +80,11 @@ class TimeTable implements RetryPolicy
         );
     }
 
+    /**
+     * @param array<string, string> $timeTable
+     *
+     * @throws \InvalidArgumentException
+     */
     private static function estimateHowManyRetriesIn(array $timeTable): int
     {
         $now = T\now()->seconds();
