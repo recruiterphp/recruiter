@@ -81,6 +81,7 @@ class SelectByException implements RetryPolicy
 
                     return $exceptions;
                 },
+                [],
             ),
         );
     }

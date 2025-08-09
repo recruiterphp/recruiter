@@ -2,14 +2,17 @@
 
 namespace Recruiter\Worker;
 
-readonly class Process implements ProcessInterface
+/**
+ * Not final or readonly because of mocking.
+ */
+class Process implements ProcessInterface
 {
     public static function withPid(int $pid): self
     {
         return new self($pid);
     }
 
-    public function __construct(private int $pid)
+    public function __construct(private readonly int $pid)
     {
     }
 
