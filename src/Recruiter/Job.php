@@ -83,10 +83,8 @@ class Job
     public function inGroup(array|string $group): static
     {
         if (is_array($group)) {
-            throw new \RuntimeException(
-                "Group can be only single string, for other uses use `taggedAs` method.
-                Received group: `" . var_export($group, true) . "`"
-            );
+            throw new \RuntimeException('Group can be only single string, for other uses use `taggedAs` method.
+                Received group: `' . var_export($group, true) . '`');
         }
 
         if (!empty($group)) {
@@ -169,12 +167,12 @@ class Job
         ];
     }
 
-    public function save()
+    public function save(): void
     {
-        return $this->repository->save($this);
+        $this->repository->save($this);
     }
 
-    public function archive($why)
+    public function archive($why): void
     {
         $this->status['why'] = $why;
         $this->status['locked'] = false;
