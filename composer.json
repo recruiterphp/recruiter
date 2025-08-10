@@ -68,6 +68,13 @@
       "src/Recruiter/functions.php"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Recruiter\\": "tests/Recruiter",
+      "Sink\\": "tests/Sink",
+      "Timeless\\": "tests/Timeless"
+    }
+  },
   "bin": [
     "bin/recruiter"
   ],
