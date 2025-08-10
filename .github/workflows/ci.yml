@@ -98,4 +98,4 @@ jobs:
       run: docker load -i recruiter-php.tar
 
     - name: Run long tests
-      run: make test-long
+      run: make test-acceptance-long
