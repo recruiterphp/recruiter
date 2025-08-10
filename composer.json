@@ -31,7 +31,7 @@
     "ext-mongodb": ">=1.1",
     "ext-posix": "*",
     "dragonmantank/cron-expression": "^3.4",
-    "gabrielelana/byte-units": "^0.5",
+    "recruiterphp/byte-units": "^0.6",
     "mongodb/mongodb": "^2.1",
     "monolog/monolog": "^3.9",
     "psr/log": "^3.0",

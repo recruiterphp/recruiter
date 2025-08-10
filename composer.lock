@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8a948538624523ff6ccee8f49b89482a",
+    "content-hash": "073450e75bfac8cc29cde5aebb38864b",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -70,62 +70,6 @@
                 }
             ],
             "time": "2024-10-09T13:47:03+00:00"
-        },
-        {
-            "name": "gabrielelana/byte-units",
-            "version": "0.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/gabrielelana/byte-units.git",
-                "reference": "eaf7b998535578c7160be30b39904a8326bb9bb8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/gabrielelana/byte-units/zipball/eaf7b998535578c7160be30b39904a8326bb9bb8",
-                "reference": "eaf7b998535578c7160be30b39904a8326bb9bb8",
-                "shasum": ""
-            },
-            "require": {
-                "ext-bcmath": "*",
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": ">=4.0,<6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "src/ByteUnits/functions.php"
-                ],
-                "psr-4": {
-                    "ByteUnits\\": "src/ByteUnits"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Gabriele Lana",
-                    "email": "gabriele.lana@gmail.com"
-                }
-            ],
-            "description": "Library to parse, format and convert byte units",
-            "homepage": "https://github.com/gabrielelana/byte-units",
-            "keywords": [
-                "byte",
-                "convert",
-                "format",
-                "parse",
-                "size",
-                "units"
-            ],
-            "support": {
-                "issues": "https://github.com/gabrielelana/byte-units/issues",
-                "source": "https://github.com/gabrielelana/byte-units/tree/master"
-            },
-            "time": "2018-01-11T10:40:03+00:00"
         },
         {
             "name": "mongodb/mongodb",
@@ -507,6 +451,73 @@
                 "source": "https://github.com/php-fig/log/tree/3.0.2"
             },
             "time": "2024-09-11T13:17:53+00:00"
+        },
+        {
+            "name": "recruiterphp/byte-units",
+            "version": "v0.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/recruiterphp/byte-units.git",
+                "reference": "078847973de323b88d3de2e5be4c98c2ccdf4ea6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/recruiterphp/byte-units/zipball/078847973de323b88d3de2e5be4c98c2ccdf4ea6",
+                "reference": "078847973de323b88d3de2e5be4c98c2ccdf4ea6",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "php": "^8.4"
+            },
+            "replace": {
+                "gabrielelana/byte-units": "self.version"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.47",
+                "friendsofphp/php-cs-fixer": "^3.85",
+                "phpunit/phpunit": "^12.3",
+                "rector/rector": "^2.1",
+                "symfony/var-dumper": "^7.3",
+                "vimeo/psalm": "^6.13"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/ByteUnits/functions.php"
+                ],
+                "psr-4": {
+                    "ByteUnits\\": "src/ByteUnits"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabriele Lana",
+                    "email": "gabriele.lana@gmail.com"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/recruiterphp/byte-units/graphs/contributors"
+                }
+            ],
+            "description": "Library to parse, format and convert byte units",
+            "homepage": "https://github.com/recruiterphp/byte-units",
+            "keywords": [
+                "byte",
+                "convert",
+                "format",
+                "parse",
+                "size",
+                "units"
+            ],
+            "support": {
+                "source": "https://github.com/recruiterphp/byte-units/tree/v0.6.0"
+            },
+            "time": "2025-08-10T17:22:55+00:00"
         },
         {
             "name": "recruiterphp/clock",
