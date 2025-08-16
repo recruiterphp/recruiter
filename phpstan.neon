@@ -2,7 +2,7 @@ parameters:
   level: 5
   paths:
     - src
-    - spec
+    - tests
   scanDirectories:
     - %currentWorkingDirectory%/vendor/giorgiosironi/eris/src/
   ignoreErrors:
