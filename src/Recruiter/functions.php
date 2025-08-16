@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Recruiter;
 
 function array_group_by($array, ?callable $f = null): array

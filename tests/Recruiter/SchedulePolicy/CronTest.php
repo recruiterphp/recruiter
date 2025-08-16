@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Recruiter\SchedulePolicy;
 
 use PHPUnit\Framework\TestCase;
@@ -9,6 +11,7 @@ class CronTest extends TestCase
 {
     /**
      * @dataProvider cronExpressions
+     * @throws \DateMalformedStringException
      */
     public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate): void
     {
@@ -22,7 +25,10 @@ class CronTest extends TestCase
         );
     }
 
-    public static function cronExpressions()
+    /**
+     * @return string[][]
+     */
+    public static function cronExpressions(): array
     {
         return [
             ['10 * * * *', '2019-01-15 15:10:00'],

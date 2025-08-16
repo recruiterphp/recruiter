@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sink;
 
 use PHPUnit\Framework\TestCase;

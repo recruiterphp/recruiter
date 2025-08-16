@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Recruiter\RetryPolicy;
 
 use Recruiter\Job;
@@ -89,7 +91,7 @@ class TimeTable implements RetryPolicy
             if ($rescheduleTimeInSeconds > $timeWindowInSeconds) {
                 throw new \Exception("Reschedule time `$rescheduleTime` is invalid, must be greater than the time window");
             }
-            $howManyRetries += floor($timeWindowInSeconds / $rescheduleTimeInSeconds);
+            $howManyRetries += (int) floor($timeWindowInSeconds / $rescheduleTimeInSeconds);
         }
 
         return $howManyRetries;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Timeless;
 
 function clock(?ClockInterface $clock = null): ClockInterface

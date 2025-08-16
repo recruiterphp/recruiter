@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Recruiter\SchedulePolicy;
 
 use Cron\CronExpression;
@@ -23,7 +25,7 @@ class Cron implements SchedulePolicy
     {
         return [
             'cron_expression' => $this->cronExpression,
-            'now' => $this->now ? $this->now->getTimestamp() : null,
+            'now' => $this->now?->getTimestamp(),
         ];
     }
 
@@ -31,7 +33,7 @@ class Cron implements SchedulePolicy
     {
         $now = null;
         if (isset($parameters['now'])) {
-            $now = \DateTime::createFromFormat('U', $parameters['now']);
+            $now = \DateTime::createFromFormat('U', (string) $parameters['now']);
             $now = false === $now ? null : $now;
         }
 
