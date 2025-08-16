@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Recruiter\Infrastructure\Memory;
 
+use function ByteUnits\box;
+
 use ByteUnits\ParseException;
 use ByteUnits\System;
-use function ByteUnits\box;
 
 readonly class MemoryLimit
 {
