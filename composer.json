@@ -31,14 +31,13 @@
     "ext-mongodb": ">=1.1",
     "ext-posix": "*",
     "dragonmantank/cron-expression": "^3.4",
-    "recruiterphp/byte-units": "^0.6",
     "mongodb/mongodb": "^2.1",
     "monolog/monolog": "^3.9",
     "psr/log": "^3.0",
+    "recruiterphp/byte-units": "^0.6",
     "recruiterphp/concurrency": "^5.0",
     "recruiterphp/geezer": "^7.0",
-    "symfony/console": "^7.3",
-    "symfony/event-dispatcher": "^7.3",
+    "symfony/event-dispatcher": "^7.3 || ^8.0",
     "ulrichsg/getopt-php": "^4.0"
   },
   "require-dev": {
@@ -50,7 +49,8 @@
     "phpstan/phpstan": "*",
     "phpunit/phpunit": "^10.0",
     "rector/rector": "^2.1",
-    "symfony/var-dumper": "^7.3"
+    "symfony/console": "^7.3 || ^8.0",
+    "symfony/var-dumper": "^7.3 || ^8.0"
   },
   "suggest": {
     "symfony/console": "In order to use Recruiter\\Command\\RecruiterJobCommand."

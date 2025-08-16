@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "073450e75bfac8cc29cde5aebb38864b",
+    "content-hash": "b17209fcd20cc718b0e2980352eb7712",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -73,16 +73,16 @@
         },
         {
             "name": "mongodb/mongodb",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/mongo-php-library.git",
-                "reference": "3bbe7ba9578724c7e1f47fcd17c881c0995baaad"
+                "reference": "f399d24905dd42f97dfe0af9706129743ef247ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/3bbe7ba9578724c7e1f47fcd17c881c0995baaad",
-                "reference": "3bbe7ba9578724c7e1f47fcd17c881c0995baaad",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/f399d24905dd42f97dfe0af9706129743ef247ac",
+                "reference": "f399d24905dd42f97dfe0af9706129743ef247ac",
                 "shasum": ""
             },
             "require": {
@@ -144,9 +144,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mongodb/mongo-php-library/issues",
-                "source": "https://github.com/mongodb/mongo-php-library/tree/2.1.0"
+                "source": "https://github.com/mongodb/mongo-php-library/tree/2.1.1"
             },
-            "time": "2025-05-23T10:48:05+00:00"
+            "time": "2025-08-13T20:50:05+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -525,12 +525,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/recruiterphp/clock.git",
-                "reference": "c1346d1a5151bdc903dc38880a5c1450af791542"
+                "reference": "9a3e802e3f36a0dc6a6c1f28c880c4188b51f5df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/recruiterphp/clock/zipball/c1346d1a5151bdc903dc38880a5c1450af791542",
-                "reference": "c1346d1a5151bdc903dc38880a5c1450af791542",
+                "url": "https://api.github.com/repos/recruiterphp/clock/zipball/9a3e802e3f36a0dc6a6c1f28c880c4188b51f5df",
+                "reference": "9a3e802e3f36a0dc6a6c1f28c880c4188b51f5df",
                 "shasum": ""
             },
             "require": {
@@ -574,12 +574,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/recruiterphp/concurrency.git",
-                "reference": "68a3fedeb2cf76ac0a479cf953f653fc5b39656e"
+                "reference": "54340518e98d743240bca219a4054ac1b1b50eca"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/recruiterphp/concurrency/zipball/68a3fedeb2cf76ac0a479cf953f653fc5b39656e",
-                "reference": "68a3fedeb2cf76ac0a479cf953f653fc5b39656e",
+                "url": "https://api.github.com/repos/recruiterphp/concurrency/zipball/54340518e98d743240bca219a4054ac1b1b50eca",
+                "reference": "54340518e98d743240bca219a4054ac1b1b50eca",
                 "shasum": ""
             },
             "require": {
@@ -631,12 +631,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/recruiterphp/geezer.git",
-                "reference": "ad17dc9905f50a395a37045bf9f6687ef05ce053"
+                "reference": "e08189ca1e54be73cfb0e63e09b3a2d314fece42"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/recruiterphp/geezer/zipball/ad17dc9905f50a395a37045bf9f6687ef05ce053",
-                "reference": "ad17dc9905f50a395a37045bf9f6687ef05ce053",
+                "url": "https://api.github.com/repos/recruiterphp/geezer/zipball/e08189ca1e54be73cfb0e63e09b3a2d314fece42",
+                "reference": "e08189ca1e54be73cfb0e63e09b3a2d314fece42",
                 "shasum": ""
             },
             "require": {
@@ -2515,16 +2515,16 @@
         },
         {
             "name": "fidry/cpu-core-counter",
-            "version": "1.2.0",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/theofidry/cpu-core-counter.git",
-                "reference": "8520451a140d3f46ac33042715115e290cf5785f"
+                "reference": "db9508f7b1474469d9d3c53b86f817e344732678"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/8520451a140d3f46ac33042715115e290cf5785f",
-                "reference": "8520451a140d3f46ac33042715115e290cf5785f",
+                "url": "https://api.github.com/repos/theofidry/cpu-core-counter/zipball/db9508f7b1474469d9d3c53b86f817e344732678",
+                "reference": "db9508f7b1474469d9d3c53b86f817e344732678",
                 "shasum": ""
             },
             "require": {
@@ -2534,10 +2534,10 @@
                 "fidry/makefile": "^0.2.0",
                 "fidry/php-cs-fixer-config": "^1.1.2",
                 "phpstan/extension-installer": "^1.2.0",
-                "phpstan/phpstan": "^1.9.2",
-                "phpstan/phpstan-deprecation-rules": "^1.0.0",
-                "phpstan/phpstan-phpunit": "^1.2.2",
-                "phpstan/phpstan-strict-rules": "^1.4.4",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-deprecation-rules": "^2.0.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
                 "phpunit/phpunit": "^8.5.31 || ^9.5.26",
                 "webmozarts/strict-phpunit": "^7.5"
             },
@@ -2564,7 +2564,7 @@
             ],
             "support": {
                 "issues": "https://github.com/theofidry/cpu-core-counter/issues",
-                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.2.0"
+                "source": "https://github.com/theofidry/cpu-core-counter/tree/1.3.0"
             },
             "funding": [
                 {
@@ -2572,20 +2572,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-08-06T10:04:20+00:00"
+            "time": "2025-08-14T07:29:31+00:00"
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.85.1",
+            "version": "v3.86.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "2fb6d7f6c3398dca5786a1635b27405d73a417ba"
+                "reference": "4a952bd19dc97879b0620f495552ef09b55f7d36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/2fb6d7f6c3398dca5786a1635b27405d73a417ba",
-                "reference": "2fb6d7f6c3398dca5786a1635b27405d73a417ba",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/4a952bd19dc97879b0620f495552ef09b55f7d36",
+                "reference": "4a952bd19dc97879b0620f495552ef09b55f7d36",
                 "shasum": ""
             },
             "require": {
@@ -2669,7 +2669,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.85.1"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.86.0"
             },
             "funding": [
                 {
@@ -2677,7 +2677,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-29T22:22:50+00:00"
+            "time": "2025-08-13T22:36:21+00:00"
         },
         {
             "name": "giorgiosironi/eris",
@@ -3009,16 +3009,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.6.0",
+            "version": "v5.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56"
+                "reference": "f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/221b0d0fdf1369c71047ad1d18bb5880017bbc56",
-                "reference": "221b0d0fdf1369c71047ad1d18bb5880017bbc56",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2",
+                "reference": "f103601b29efebd7ff4a1ca7b3eeea9e3336a2a2",
                 "shasum": ""
             },
             "require": {
@@ -3037,7 +3037,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0-dev"
+                    "dev-master": "5.x-dev"
                 }
             },
             "autoload": {
@@ -3061,9 +3061,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.1"
             },
-            "time": "2025-07-27T20:03:57+00:00"
+            "time": "2025-08-13T20:13:15+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -3564,16 +3564,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.50",
+            "version": "10.5.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a858178a64d88653e94ece15b25a860d48a4644b"
+                "reference": "ace160e31aaa317a99c411410c40c502b4be42a4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a858178a64d88653e94ece15b25a860d48a4644b",
-                "reference": "a858178a64d88653e94ece15b25a860d48a4644b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ace160e31aaa317a99c411410c40c502b4be42a4",
+                "reference": "ace160e31aaa317a99c411410c40c502b4be42a4",
                 "shasum": ""
             },
             "require": {
@@ -3645,7 +3645,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.50"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.51"
             },
             "funding": [
                 {
@@ -3669,7 +3669,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-10T08:34:14+00:00"
+            "time": "2025-08-12T07:31:25+00:00"
         },
         {
             "name": "react/cache",
@@ -4199,16 +4199,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.1.2",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "40a71441dd73fa150a66102f5ca1364c44fc8fff"
+                "reference": "fe613c528819222f8686a9a037a315ef9d4915b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/40a71441dd73fa150a66102f5ca1364c44fc8fff",
-                "reference": "40a71441dd73fa150a66102f5ca1364c44fc8fff",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/fe613c528819222f8686a9a037a315ef9d4915b3",
+                "reference": "fe613c528819222f8686a9a037a315ef9d4915b3",
                 "shasum": ""
             },
             "require": {
@@ -4247,7 +4247,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.1.2"
+                "source": "https://github.com/rectorphp/rector/tree/2.1.4"
             },
             "funding": [
                 {
@@ -4255,7 +4255,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-07-17T19:30:06+00:00"
+            "time": "2025-08-15T14:41:36+00:00"
         },
         {
             "name": "sebastian/cli-parser",
