@@ -18,7 +18,7 @@ readonly class MemoryLimit
         try {
             $this->limit = box($limit);
         } catch (ParseException $e) {
-            throw new \UnexpectedValueException(sprintf("Memory limit '%s' is an invalid value: %s", $limit, $e->getMessage()));
+            throw new \UnexpectedValueException(sprintf("Memory limit '%s' is an invalid value: %s", (string) $limit, $e->getMessage()));
         }
     }
 

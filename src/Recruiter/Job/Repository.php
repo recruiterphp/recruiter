@@ -120,6 +120,7 @@ class Repository
 
         $deleted = 0;
         foreach ($documents as $document) {
+            assert(is_array($document) && isset($document['_id']));
             $this->archived->deleteOne(['_id' => $document['_id']]);
             ++$deleted;
         }
@@ -593,6 +594,7 @@ class Repository
     {
         $jobs = [];
         foreach ($cursor as $document) {
+            assert(is_array($document));
             $jobs[] = Job::import($document, $this);
         }
 

@@ -35,6 +35,7 @@ class WorkableInJob
             if (!method_exists($dataAboutWorkableObject['class'], 'import')) {
                 throw new ImportException('Unable to import Workable without method import');
             }
+            assert(isset($dataAboutWorkableObject['parameters']));
             $workable = $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
             assert($workable instanceof Workable);
 

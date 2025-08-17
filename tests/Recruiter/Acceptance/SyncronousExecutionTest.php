@@ -20,8 +20,10 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
 
         $this->assertFalse($report->isThereAFailure());
         $results = $report->toArray();
-        $this->assertEquals(42, current($results)->result());
-        $this->assertEquals(43, end($results)->result());
+        $this->assertCount(2, $results);
+        $values = array_values($results);
+        $this->assertEquals(42, $values[0]->result());
+        $this->assertEquals(43, $values[1]->result());
     }
 
     public function testAReportIsReturnedInOrderToSortOutIfAnErrorOccured(): void

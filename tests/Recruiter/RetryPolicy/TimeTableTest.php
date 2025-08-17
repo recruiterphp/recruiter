@@ -138,7 +138,9 @@ class TimeTableTest extends TestCase
 
     private function jobThatWasCreated(string $relativeTime): MockObject&JobAfterFailure
     {
-        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
+        $timestamp = strtotime($relativeTime);
+        assert(false !== $timestamp);
+        $wasCreatedAt = T\Moment::fromTimestamp($timestamp);
         $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['createdAt', 'scheduleAt'])

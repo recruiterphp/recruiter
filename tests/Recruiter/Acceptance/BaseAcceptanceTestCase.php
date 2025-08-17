@@ -123,12 +123,14 @@ abstract class BaseAcceptanceTestCase extends TestCase
 
         Timeout::inSeconds(1, 'recruiter to be up')
             ->until(function () use ($process) {
+                assert(is_resource($process));
                 $status = proc_get_status($process);
 
                 return $status['running'];
             })
         ;
 
+        assert(is_resource($process));
         $this->processRecruiter = [$process, $pipes, 'recruiter'];
 
         return $this->processRecruiter;
@@ -149,6 +151,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $this->assertIsResource($process);
         Timeout::inSeconds(1, 'cleaner to be up')
             ->until(function () use ($process) {
+                assert(is_resource($process));
                 $status = proc_get_status($process);
 
                 return $status['running'];
@@ -185,6 +188,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
 
         Timeout::inSeconds(1, 'worker to be up')
             ->until(function () use ($process) {
+                assert(is_resource($process));
                 $status = proc_get_status($process);
 
                 return $status['running'];
@@ -193,9 +197,11 @@ abstract class BaseAcceptanceTestCase extends TestCase
         // proc_get_status($process);
 
         /** @var resource[] $pipes */
-        $this->processWorkers[] = [$process, $pipes, 'worker'];
+        assert(is_resource($process));
+        $lastWorker = [$process, $pipes, 'worker'];
+        $this->processWorkers[] = $lastWorker;
 
-        return end($this->processWorkers);
+        return $lastWorker;
     }
 
     /**

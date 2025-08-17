@@ -70,12 +70,13 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $this->recruiterScheduleJobsNTimes(10);
         $jobs = $this->fetchScheduledJobs();
 
-        $this->assertEquals(1, count($jobs));
+        $this->assertCount(1, $jobs);
         $jobData = $jobs[0]->export();
+        assert(isset($jobData['scheduled_at']));
 
         $this->assertEquals(
             T\MongoDate::from(Moment::fromTimestamp($expectedScheduleDate)),
-            $jobs[0]->export()['scheduled_at'],
+            $jobData['scheduled_at'],
         );
     }
 
@@ -93,8 +94,8 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         $jobs = $this->fetchScheduledJobs();
 
         $this->assertCount(2, $jobs);
-        $this->assertEquals(2, $jobs[0]->export()['scheduled']['executions']);
-        $this->assertEquals(1, $jobs[1]->export()['scheduled']['executions']);
+        $this->assertSame(2, $jobs[0]->export()['scheduled']['executions'] ?? 0);
+        $this->assertSame(1, $jobs[1]->export()['scheduled']['executions'] ?? 0);
     }
 
     public function testANewJobIsNotScheduledIfItShouldBeUniqueAndTheOldOneIsStillRunning(): void
@@ -140,6 +141,7 @@ class RepeatableJobsAreScheduledTest extends BaseAcceptanceTestCase
         for ($i = 1; $i <= $attempts; ++$i) {
             $scheduleTimes[] = strtotime('2018-05-' . $i . 'T15:00:00');
         }
+        $scheduleTimes = array_filter($scheduleTimes); // makes PHPStan happy
 
         $schedulePolicy = new FixedSchedulePolicy($scheduleTimes);
         $this->scheduleAJob($urn, $schedulePolicy);
