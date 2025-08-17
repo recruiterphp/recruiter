@@ -11,6 +11,7 @@ class CronTest extends TestCase
 {
     /**
      * @dataProvider cronExpressions
+     *
      * @throws \DateMalformedStringException
      */
     public function testCronCanBeExportedAndImportedWithoutDataLoss(string $cronExpression, string $expectedDate): void
