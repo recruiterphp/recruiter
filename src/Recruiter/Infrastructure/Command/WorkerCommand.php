@@ -26,6 +26,8 @@ use Timeless\Interval;
 
 class WorkerCommand implements RobustCommand
 {
+    use OptionTools;
+
     /**
      * @var Worker
      */
@@ -120,30 +122,29 @@ class WorkerCommand implements RobustCommand
 
     public function init(InputInterface $input): void
     {
-        /** @var string $target */
-        $target = $input->getOption('target');
+        $target = $this->getStringOption($input, 'target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
 
         $this->waitStrategy = new ExponentialBackoffStrategy(
-            Interval::parse($input->getOption('backoff-from'))->ms(),
-            Interval::parse($input->getOption('backoff-to'))->ms(),
+            Interval::parse($this->getStringOption($input, 'backoff-from'))->ms(),
+            Interval::parse($this->getStringOption($input, 'backoff-to'))->ms(),
         );
 
-        $memoryLimit = new MemoryLimit($input->getOption('memory-limit'));
+        $memoryLimit = new MemoryLimit($this->getStringOption($input, 'memory-limit'));
 
         $this->leadershipStrategy = new Anarchy();
 
         $recruiter = new Recruiter($db);
 
-        if ($input->getOption('bootstrap')) {
-            /** @var string */
-            $bootstrap = $input->getOption('bootstrap');
+        $bootstrap = $this->getStringOptionOrNull($input, 'bootstrap');
+        if ($bootstrap) {
             BootstrapFile::fromFilePath($bootstrap)->load($recruiter);
         }
 
         $this->worker = $recruiter->hire($memoryLimit);
-        if ($input->getOption('work-on')) {
-            $this->worker->workOnJobsGroupedAs($input->getOption('work-on'));
+        $workOn = $this->getStringOptionOrNull($input, 'work-on');
+        if ($workOn) {
+            $this->worker->workOnJobsGroupedAs($workOn);
         }
     }
 
