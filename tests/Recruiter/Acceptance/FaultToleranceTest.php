@@ -119,7 +119,9 @@ class FaultToleranceTest extends BaseAcceptanceTestCase
         $jobs = iterator_to_array($this->recruiterDb->selectCollection('scheduled')->find());
         $this->assertCount(1, $jobs);
         foreach ($jobs as $job) {
+            assert(is_array($job));
             $this->assertArrayHasKey('last_execution', $job);
+            assert(is_array($job['last_execution']));
             $this->assertArrayHasKey('crashed', $job['last_execution']);
             $this->assertArrayHasKey('scheduled_at', $job['last_execution']);
             $this->assertArrayHasKey('started_at', $job['last_execution']);

@@ -50,7 +50,7 @@ class Repository
     {
         return $this->roster->find(
             ['last_seen_at' => [
-                '$lt' => new MongoUTCDateTime($consideredDeadAt->format('U') * 1000)],
+                '$lt' => new MongoUTCDateTime(intval($consideredDeadAt->format('U')) * 1000)],
             ],
             ['projection' => ['_id' => true, 'assigned_to' => true]],
         );

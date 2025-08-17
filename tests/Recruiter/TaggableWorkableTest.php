@@ -28,6 +28,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b'], $exported['tags']);
     }
 
@@ -39,6 +41,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['c'], $exported['tags']);
     }
 
@@ -50,6 +54,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b', 'c'], $exported['tags']);
     }
 
@@ -61,6 +67,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['c'], $exported['tags']);
     }
 
@@ -90,6 +98,8 @@ class TaggableWorkableTest extends TestCase
         // is always the same because tags are kept unique
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b', 'c'], $exported['tags']);
     }
 }

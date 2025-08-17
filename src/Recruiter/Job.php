@@ -31,44 +31,14 @@ class Job
     }
 
     /**
-     * @param array{
-     *     _id: ObjectId,
-     *     done: bool,
-     *     created_at: UTCDateTime,
-     *     scheduled_at?: UTCDateTime,
-     *     locked: bool,
-     *     attempts: int,
-     *     group: string,
-     *     tags?: string[],
-     *     workable: array{
-     *         method: string,
-     *         class?: class-string,
-     *         parameters?: array<mixed>,
-     *     },
-     *     last_execution?: array{
-     *         started_at: UTCDateTime,
-     *         ended_at: UTCDateTime,
-     *         crashed: bool,
-     *         duration: int,
-     *         result: mixed,
-     *         class?: class-string,
-     *         message?: string,
-     *         trace?: string,
-     *     },
-     *     scheduled?: array{
-     *         by: array{
-     *             namespace: string,
-     *             urn: string,
-     *         },
-     *         executions: int,
-     *     },
-     * } $document
+     * @param array<string, mixed> $document
      *
      * @throws ImportException
      */
     public static function import(array $document, Repository $repository): self
     {
         return new self(
+            // @phpstan-ignore-next-line
             $document,
             WorkableInJob::import($document),
             RetryPolicyInJob::import($document),
@@ -315,6 +285,7 @@ class Job
      */
     public function export(): array
     {
+        // @phpstan-ignore-next-line
         return array_merge(
             $this->status,
             $this->lastJobExecution->export(),
@@ -423,6 +394,8 @@ class Job
     private function scheduledAt(): ?Moment
     {
         if ($this->hasBeenScheduled()) {
+            assert(isset($this->status['scheduled_at']));
+
             return T\MongoDate::toMoment($this->status['scheduled_at']);
         }
 
@@ -464,6 +437,7 @@ class Job
      */
     private static function initialize(): array
     {
+        // @phpstan-ignore-next-line
         return array_merge(
             [
                 '_id' => new ObjectId(),

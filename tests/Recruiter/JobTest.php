@@ -55,6 +55,8 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('class', $lastExecution);
         $this->assertArrayHasKey('message', $lastExecution);
         $this->assertArrayHasKey('trace', $lastExecution);
+        // Makes PHPStan happy
+        assert(isset($lastExecution['message'], $lastExecution['trace']));
         $this->assertEquals("Sorry, I'm good for nothing", $lastExecution['message']);
         $this->assertMatchesRegularExpression('/.*AlwaysFail->execute.*/', $lastExecution['trace']);
     }

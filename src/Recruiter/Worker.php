@@ -60,6 +60,7 @@ class Worker
     {
         $this->refresh();
         if ($this->hasBeenAssignedToDoSomething()) {
+            assert(isset($this->status['assigned_to']));
             $this->workOn(
                 $job = $this->recruiter->scheduledJob(
                     $this->status['assigned_to'][(string) $this->status['_id']],
@@ -96,23 +97,11 @@ class Worker
     }
 
     /**
-     * @param array{
-     *     _id: ObjectId,
-     *     work_on: string,
-     *     available: bool,
-     *     available_since: UTCDateTime,
-     *     last_seen_at: UTCDateTime,
-     *     created_at: UTCDateTime,
-     *     working: bool,
-     *     pid: int,
-     *     working_on?: ObjectId,
-     *     working_since?: UTCDateTime,
-     *     assigned_to?: array<string, ObjectId>,
-     *     assigned_since?: UTCDateTime,
-     * } $document
+     * @param array<mixed> $document
      */
     public function updateWith(array $document): void
     {
+        // @phpstan-ignore-next-line
         $this->status = $document;
     }
 
@@ -294,6 +283,7 @@ class Worker
         $cursor = $collection->find([], ['projection' => ['assigned_to' => 1]]);
         $jobs = [];
         foreach ($cursor as $document) {
+            assert(is_array($document));
             if (array_key_exists('assigned_to', $document)) {
                 $jobs = array_merge($jobs, array_values($document['assigned_to']));
             }
@@ -311,6 +301,7 @@ class Worker
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);
         $jobsToReassign = [];
         foreach ($deadWorkers as $deadWorker) {
+            assert(is_array($deadWorker) && isset($deadWorker['_id']));
             $roster->retireWorkerWithId($deadWorker['_id']);
             if (array_key_exists('assigned_to', $deadWorker)) {
                 if (array_key_exists((string) $deadWorker['_id'], $deadWorker['assigned_to'])) {

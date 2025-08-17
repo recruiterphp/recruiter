@@ -64,15 +64,20 @@ class TimeTable implements RetryPolicy
 
     private function hasBeenCreatedLessThan(Job|JobAfterFailure $job, string $relativeTime): bool
     {
+        $timestamp = strtotime($relativeTime, T\now()->seconds());
+        assert(false !== $timestamp);
+
         return $job->createdAt()->isAfter(
-            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
+            T\Moment::fromTimestamp($timestamp),
         );
     }
 
     private function rescheduleIn(JobAfterFailure $job, string $relativeTime): void
     {
+        $timestamp = strtotime($relativeTime, T\now()->seconds());
+        assert(false !== $timestamp);
         $job->scheduleAt(
-            T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
+            T\Moment::fromTimestamp($timestamp),
         );
     }
 

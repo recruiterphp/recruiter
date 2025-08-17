@@ -81,8 +81,10 @@ class EnduranceTest extends BaseAcceptanceTestCase
                     if (is_array($action)) {
                         $arguments = $action;
                         $method = array_shift($arguments);
+                        $callable = [$this, $method];
+                        $this->assertIsCallable($callable);
                         call_user_func_array(
-                            [$this, $method],
+                            $callable,
                             $arguments,
                         );
                     } else {

@@ -72,6 +72,7 @@ class Repository
     {
         $schedulers = [];
         foreach ($cursor as $document) {
+            assert(is_array($document));
             $schedulers[] = Scheduler::import($document, $this);
         }
 
