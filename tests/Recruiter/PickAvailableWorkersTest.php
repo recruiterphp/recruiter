@@ -201,7 +201,7 @@ class FakeCursor implements CursorInterface, \Iterator
      */
     public function current(): object|array|null
     {
-        return current($this->data) ?: null;
+        return current($this->data) !== false ? current($this->data) : null;
     }
 
     public function next(): void
