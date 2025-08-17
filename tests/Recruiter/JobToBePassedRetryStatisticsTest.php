@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use MongoDB\BSON\UTCDateTime;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -46,7 +47,24 @@ class WorkableThatUsesRetryStatistics implements Workable, Retriable
         return new DoNotDoItAgain();
     }
 
-    public function execute(array $retryStatistics)
+    /**
+     * @param array{
+     *     job_id: string,
+     *     retry_number: int,
+     *     is_last_retry: bool,
+     *     last_execution: ?array{
+     *         started_at: UTCDateTime,
+     *         ended_at: UTCDateTime,
+     *         crashed: bool,
+     *         duration: int,
+     *         result: mixed,
+     *         class?: class-string,
+     *         message?: string,
+     *         trace?: string,
+     *     },
+     * } $retryStatistics
+     */
+    public function execute(array $retryStatistics): void
     {
     }
 }

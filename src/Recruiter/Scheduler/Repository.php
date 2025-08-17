@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace Recruiter\Scheduler;
 
-use MongoDB;
+use MongoDB\Collection;
+use MongoDB\Database;
+use MongoDB\Driver\CursorInterface;
 use Recruiter\Scheduler;
 
 class Repository
 {
-    private $schedulers;
+    private Collection $schedulers;
 
-    public function __construct(MongoDB\Database $db)
+    public function __construct(Database $db)
     {
         $this->schedulers = $db->selectCollection('schedulers');
     }
 
-    public function all()
+    /**
+     * @return Scheduler[]
+     */
+    public function all(): array
     {
         return $this->map(
             $this->schedulers->find([], [
@@ -25,7 +30,7 @@ class Repository
         );
     }
 
-    public function save(Scheduler $scheduler)
+    public function save(Scheduler $scheduler): void
     {
         $document = $scheduler->export();
         $this->schedulers->replaceOne(
@@ -35,7 +40,7 @@ class Repository
         );
     }
 
-    public function create(Scheduler $scheduler)
+    public function create(Scheduler $scheduler): void
     {
         $document = $scheduler->export();
 
@@ -55,15 +60,19 @@ class Repository
         }
     }
 
-    public function deleteByUrn(string $urn)
+    public function deleteByUrn(string $urn): void
     {
         $this->schedulers->deleteOne(['urn' => $urn]);
     }
 
-    private function map($cursor)
+    /**
+     * @return Scheduler[]
+     */
+    private function map(CursorInterface $cursor): array
     {
         $schedulers = [];
         foreach ($cursor as $document) {
+            assert(is_array($document));
             $schedulers[] = Scheduler::import($document, $this);
         }
 

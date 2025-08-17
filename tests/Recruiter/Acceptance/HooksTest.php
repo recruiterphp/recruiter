@@ -13,6 +13,9 @@ use Recruiter\Workable\AlwaysSucceed;
 class HooksTest extends BaseAcceptanceTestCase
 {
     private MemoryLimit $memoryLimit;
+    /**
+     * @var Event[]
+     */
     private array $events;
 
     #[\Override]
@@ -45,9 +48,9 @@ class HooksTest extends BaseAcceptanceTestCase
         $this->recruiter->assignJobsToWorkers();
         $worker->work();
 
-        $this->assertEquals(1, count($this->events));
+        $this->assertCount(1, $this->events);
         $this->assertInstanceOf(Event::class, $this->events[0]);
-        $this->assertEquals('not-scheduled-by-retry-policy', $this->events[0]->export()['why']);
+        $this->assertEquals('not-scheduled-by-retry-policy', $this->events[0]->export()['why'] ?? null);
     }
 
     public function testAfterLastFailureEventIsFired(): void
@@ -83,9 +86,9 @@ class HooksTest extends BaseAcceptanceTestCase
         $worker = $this->recruiter->hire($this->memoryLimit);
         $runAJob(2, $worker);
 
-        $this->assertEquals(1, count($this->events));
+        $this->assertCount(1, $this->events);
         $this->assertInstanceOf(Event::class, $this->events[0]);
-        $this->assertEquals('tried-too-many-times', $this->events[0]->export()['why']);
+        $this->assertEquals('tried-too-many-times', $this->events[0]->export()['why'] ?? null);
     }
 
     public function testJobStartedIsFired(): void

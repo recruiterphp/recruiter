@@ -11,9 +11,11 @@ class RepeatableInJob
 {
     // TODO: resolve duplication with WorkableInJob
     /**
+     * @param array<string, mixed> $document
+     *
      * @throws ImportException
      */
-    public static function import($document): Repeatable
+    public static function import(array $document): Repeatable
     {
         $dataAboutWorkableObject = [
             'parameters' => null,
@@ -44,7 +46,10 @@ class RepeatableInJob
         }
     }
 
-    public static function export($workable, $methodToCall): array
+    /**
+     * @return array<string, mixed>
+     */
+    public static function export(Workable $workable, string $methodToCall): array
     {
         return [
             'workable' => [
@@ -55,12 +60,15 @@ class RepeatableInJob
         ];
     }
 
+    /**
+     * @return array{workable: array{method: string}}
+     */
     public static function initialize(): array
     {
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($repeatable): string
+    private static function classNameOf(object $repeatable): string
     {
         $repeatableClassName = $repeatable::class;
         if (method_exists($repeatable, 'getClass')) {

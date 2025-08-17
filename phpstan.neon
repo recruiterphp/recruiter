@@ -1,5 +1,5 @@
 parameters:
-  level: 5
+  level: 7
   paths:
     - src
     - tests
@@ -9,6 +9,7 @@ parameters:
     - '#is_callable.*recruiter_#'
     - '#recruiter_became_master#'
     - '#recruiter_stept_back#'
-    - '#afterSuccess.*0 required#'
     - '#Unsafe usage of new static\(\).#'
+    - '#Call to an undefined method.*FactoryMethodCommand::#'
   inferPrivatePropertyTypeFromConstructor: true
+  treatPhpDocTypesAsCertain: false

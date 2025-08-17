@@ -28,7 +28,10 @@ class Repository
         );
     }
 
-    public function atomicUpdate($worker, array $changeSet)
+    /**
+     * @param array<string, mixed> $changeSet
+     */
+    public function atomicUpdate(Worker $worker, array $changeSet): void
     {
         $this->roster->updateOne(
             ['_id' => $worker->id()],
@@ -43,11 +46,11 @@ class Repository
         $worker->updateWith($updated);
     }
 
-    public function deadWorkers($consideredDeadAt)
+    public function deadWorkers(\DateTimeImmutable $consideredDeadAt): MongoDB\Driver\CursorInterface
     {
         return $this->roster->find(
             ['last_seen_at' => [
-                '$lt' => new MongoUTCDateTime($consideredDeadAt->format('U') * 1000)],
+                '$lt' => new MongoUTCDateTime(intval($consideredDeadAt->format('U')) * 1000)],
             ],
             ['projection' => ['_id' => true, 'assigned_to' => true]],
         );

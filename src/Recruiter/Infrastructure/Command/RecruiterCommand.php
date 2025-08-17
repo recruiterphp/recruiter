@@ -18,6 +18,7 @@ use Recruiter\Geezer\Timing\ExponentialBackoffStrategy;
 use Recruiter\Geezer\Timing\WaitStrategy;
 use Recruiter\Infrastructure\Filesystem\BootstrapFile;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
+use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
 use Recruiter\Infrastructure\Persistence\Mongodb\URI as MongoURI;
 use Recruiter\Recruiter;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -42,6 +43,9 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         return new RobustCommandRunner(new static($factory, $logger), $logger);
     }
 
+    /**
+     * @throws MemoryLimitExceededException
+     */
     public function execute(): bool
     {
         $this->rollbackLockedJobs();
@@ -62,6 +66,11 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         $this->log(sprintf('rolled back %d jobs in %fms', $rolledBack, ($rollbackEndAt - $rollbackStartAt) * 1000), $logLevel);
     }
 
+    /**
+     * @return array<string, string>
+     *
+     * @throws MemoryLimitExceededException
+     */
     private function assignJobsToWorkers(): array
     {
         $pickStartAt = microtime(true);
@@ -182,7 +191,7 @@ class RecruiterCommand implements RobustCommand, LeadershipEventsHandler
         $this->recruiter->createCollectionsAndIndexes();
 
         if ($input->getOption('bootstrap')) {
-            /** @var string */
+            /** @var string $bootstrap */
             $bootstrap = $input->getOption('bootstrap');
             BootstrapFile::fromFilePath($bootstrap)->load($this->recruiter);
         }

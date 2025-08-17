@@ -11,15 +11,16 @@ class WorkableInJob
 {
     // TODO: resolve the duplication with RepeatableInJob
     /**
+     * @param array{workable?: array{
+     *     method?: string,
+     *     class?: class-string,
+     *     parameters?: array<mixed>,
+     * }} $document
+     *
      * @throws ImportException
      */
-    public static function import($document): Workable
+    public static function import(array $document): Workable
     {
-        $dataAboutWorkableObject = [
-            'parameters' => null,
-            'class' => null,
-        ];
-
         try {
             if (!array_key_exists('workable', $document)) {
                 throw new ImportException('Unable to import Job without data about Workable object');
@@ -34,16 +35,26 @@ class WorkableInJob
             if (!method_exists($dataAboutWorkableObject['class'], 'import')) {
                 throw new ImportException('Unable to import Workable without method import');
             }
+            assert(isset($dataAboutWorkableObject['parameters']));
             $workable = $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
             assert($workable instanceof Workable);
 
             return $workable;
         } catch (\Throwable $e) {
-            return new RecoverWorkableFromException($dataAboutWorkableObject['parameters'], $dataAboutWorkableObject['class'], $e);
+            return new RecoverWorkableFromException($dataAboutWorkableObject['parameters'] ?? null, $dataAboutWorkableObject['class'] ?? null, $e);
         }
     }
 
-    public static function export($workable, $methodToCall)
+    /**
+     * @return array{
+     *     workable: array{
+     *         class: class-string,
+     *         parameters: array<mixed>,
+     *         method: string,
+     *     }
+     * }
+     */
+    public static function export(Workable $workable, string $methodToCall): array
     {
         return [
             'workable' => [
@@ -54,12 +65,22 @@ class WorkableInJob
         ];
     }
 
-    public static function initialize()
+    /**
+     * @return array{
+     *     workable: array{
+     *         method: string,
+     *     }
+     * }
+     */
+    public static function initialize(): array
     {
         return ['workable' => ['method' => 'execute']];
     }
 
-    private static function classNameOf($workable)
+    /**
+     * @return class-string
+     */
+    private static function classNameOf(Workable $workable): string
     {
         $workableClassName = $workable::class;
         if (method_exists($workable, 'getClass')) {

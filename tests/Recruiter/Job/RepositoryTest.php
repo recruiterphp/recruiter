@@ -164,7 +164,9 @@ class RepositoryTest extends TestCase
         $jobs = $this->repository->delayedScheduledJobs($lowerLimit);
         $jobsFounds = 0;
         foreach ($jobs as $job) {
-            $this->assertEquals('delayed_and_unpicked', reset($job->export()['workable']['parameters']));
+            $workable = $job->export()['workable'];
+            assert(isset($workable['parameters']));
+            $this->assertEquals('delayed_and_unpicked', reset($workable['parameters']));
             ++$jobsFounds;
         }
         $this->assertEquals(2, $jobsFounds);
@@ -244,9 +246,12 @@ class RepositoryTest extends TestCase
         $jobs = $this->repository->recentJobsWithManyAttempts($lowerLimit, $upperLimit);
         $jobsFounds = 0;
         foreach ($jobs as $job) {
+            $workable = $job->export()['workable'];
+            // Makes PHPStan happy
+            assert(isset($workable['parameters']));
             $this->assertMatchesRegularExpression(
                 '/many_attempts_and_archived|many_attempts_and_scheduled/',
-                reset($job->export()['workable']['parameters']),
+                reset($workable['parameters']),
             );
             ++$jobsFounds;
         }
@@ -390,9 +395,10 @@ class RepositoryTest extends TestCase
         $jobs = $this->repository->slowRecentJobs($lowerLimit, $upperLimit);
         $jobsFounds = 0;
         foreach ($jobs as $job) {
+            $parameters = $job->export()['workable']['parameters'] ?? [];
             $this->assertMatchesRegularExpression(
                 '/slow_job_recent_archived|slow_job_recent_scheduled/',
-                reset($job->export()['workable']['parameters']),
+                reset($parameters),
             );
             ++$jobsFounds;
         }
@@ -421,7 +427,7 @@ class RepositoryTest extends TestCase
         $this->assertEquals(1, $this->repository->countArchived());
     }
 
-    private function aJob($workable = null)
+    private function aJob(?Workable $workable = null): Job
     {
         if (is_null($workable)) {
             $workable = $this->workableMock();
@@ -432,7 +438,7 @@ class RepositoryTest extends TestCase
         ;
     }
 
-    private function aJobToSchedule($job = null)
+    private function aJobToSchedule(?Job $job = null): JobToSchedule
     {
         if (is_null($job)) {
             $job = $this->aJob();
@@ -449,6 +455,9 @@ class RepositoryTest extends TestCase
         ;
     }
 
+    /**
+     * @param array<string, mixed> $parameters
+     */
     private function workableMockWithCustomParameters(array $parameters): MockObject&Workable
     {
         $workable = $this->workableMock();
@@ -461,9 +470,12 @@ class RepositoryTest extends TestCase
         return $workable;
     }
 
+    /**
+     * @param array<string, mixed>|null $workableParameters
+     */
     private function jobMockWithAttemptsAndCustomParameters(
-        ?Moment $createdAt = null,
-        ?Moment $endedAt = null,
+        Moment $createdAt,
+        Moment $endedAt,
         ?array $workableParameters = null,
     ): Job&MockObject {
         $parameters = [

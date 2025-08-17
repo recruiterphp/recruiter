@@ -15,13 +15,15 @@ interface Workable
 
     /**
      * Export parameters that need to be persisted.
+     *
+     * @return array<mixed>
      */
     public function export(): array;
 
     /**
      * Import an array of parameters as a Workable instance.
      *
-     * @param array $parameters Previously exported parameters
+     * @param array<mixed> $parameters Previously exported parameters
      *
      * @throws ImportException
      */

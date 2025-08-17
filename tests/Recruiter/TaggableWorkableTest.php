@@ -28,6 +28,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b'], $exported['tags']);
     }
 
@@ -39,6 +41,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['c'], $exported['tags']);
     }
 
@@ -50,6 +54,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b', 'c'], $exported['tags']);
     }
 
@@ -61,6 +67,8 @@ class TaggableWorkableTest extends TestCase
 
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['c'], $exported['tags']);
     }
 
@@ -90,6 +98,8 @@ class TaggableWorkableTest extends TestCase
         // is always the same because tags are kept unique
         $exported = $job->export();
         $this->assertArrayHasKey('tags', $exported);
+        // Makes PHPStan happy
+        assert(isset($exported['tags']));
         $this->assertEquals(['a', 'b', 'c'], $exported['tags']);
     }
 }
@@ -98,26 +108,38 @@ class WorkableTaggable implements Workable, Taggable
 {
     use WorkableBehaviour;
 
-    public function __construct(private array $tags)
+    /**
+     * @param string[] $tags
+     */
+    public function __construct(private readonly array $tags)
     {
     }
 
+    /**
+     * @return string[]
+     */
     public function taggedAs(): array
     {
         return $this->tags;
     }
 
+    /**
+     * @return array{tags: string[]}
+     */
     public function export(): array
     {
         return ['tags' => $this->tags];
     }
 
+    /**
+     * @param array{tags: string[]} $parameters
+     */
     public static function import(array $parameters): static
     {
         return new static($parameters['tags']);
     }
 
-    public function execute()
+    public function execute(): void
     {
         // nothing is good
     }

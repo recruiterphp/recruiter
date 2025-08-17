@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Recruiter\RetryPolicy;
 
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Recruiter\Job;
@@ -12,8 +13,11 @@ use Timeless as T;
 
 class TimeTableTest extends TestCase
 {
-    private $scheduler;
+    private TimeTable $scheduler;
 
+    /**
+     * @throws \Exception
+     */
     protected function setUp(): void
     {
         $this->scheduler = new TimeTable([
@@ -66,6 +70,9 @@ class TimeTableTest extends TestCase
         $this->scheduler->schedule($job);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsLastRetryReturnTrueIfJobWasCreatedMoreThanLastTimeSpen(): void
     {
         $job = $this->createMock(Job::class);
@@ -131,7 +138,9 @@ class TimeTableTest extends TestCase
 
     private function jobThatWasCreated(string $relativeTime): MockObject&JobAfterFailure
     {
-        $wasCreatedAt = T\Moment::fromTimestamp(strtotime($relativeTime));
+        $timestamp = strtotime($relativeTime);
+        assert(false !== $timestamp);
+        $wasCreatedAt = T\Moment::fromTimestamp($timestamp);
         $job = $this->getMockBuilder(JobAfterFailure::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['createdAt', 'scheduleAt'])

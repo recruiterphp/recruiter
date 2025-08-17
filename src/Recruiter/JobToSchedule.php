@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use Recruiter\Job\Repository;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;
 use Timeless\Interval;
@@ -27,9 +28,11 @@ class JobToSchedule
     }
 
     /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     *
      * @return $this
      */
-    public function retryManyTimes($howManyTimes, Interval $timeToWaitBeforeRetry, $retriableExceptionTypes = []): static
+    public function retryManyTimes(int $howManyTimes, Interval $timeToWaitBeforeRetry, string|array $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -42,9 +45,11 @@ class JobToSchedule
     }
 
     /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     *
      * @return $this
      */
-    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = []): static
+    public function retryWithPolicy(RetryPolicy $retryPolicy, string|array $retriableExceptionTypes = []): static
     {
         $this->job->retryWithPolicy(
             $this->filterForRetriableExceptions(
@@ -84,6 +89,8 @@ class JobToSchedule
     }
 
     /**
+     * @param array<string>|string|null $group
+     *
      * @return $this
      */
     public function inGroup(array|string|null $group): static
@@ -95,6 +102,9 @@ class JobToSchedule
         return $this;
     }
 
+    /**
+     * @param array<string>|string $tags
+     */
     public function taggedAs(array|string $tags): static
     {
         if (!empty($tags)) {
@@ -135,26 +145,37 @@ class JobToSchedule
     }
 
     /**
+     * @param array<mixed> $arguments
+     *
      * @throws \Exception
      */
-    public function __call(string $name, array $arguments)
+    public function __call(string $name, array $arguments): mixed
     {
         $this->job->methodToCallOnWorkable($name);
 
         return $this->execute();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function export(): array
     {
         return $this->job->export();
     }
 
-    public static function import($document, $repository): self
+    /**
+     * @param array<string, mixed> $document
+     */
+    public static function import(array $document, Repository $repository): self
     {
         return new self(Job::import($document, $repository));
     }
 
-    private function filterForRetriableExceptions($retryPolicy, $retriableExceptionTypes)
+    /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     */
+    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, string|array $retriableExceptionTypes): RetryPolicy
     {
         if (!is_array($retriableExceptionTypes)) {
             $retriableExceptionTypes = [$retriableExceptionTypes];

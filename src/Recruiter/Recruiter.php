@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Recruiter;
 
 use MongoDB;
+use MongoDB\BSON\ObjectId;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Timeless as T;
@@ -53,15 +54,38 @@ class Recruiter
         return $this->jobs->scheduledCount();
     }
 
-    public function queuedGroupedBy($field, array $query = [], $group = null): array
+    /**
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, int>
+     */
+    public function queuedGroupedBy(string $field, array $query = [], ?string $group = null): array
     {
         return $this->jobs->queuedGroupedBy($field, $query, $group);
     }
 
     /**
-     * @return array<string,mixed>
+     * @param array<string, mixed> $query
+     *
+     * @return array{
+     *     jobs: array{
+     *         queued: int,
+     *         postponed: int,
+     *         zombies: int,
+     *     },
+     *     throughput: array{
+     *         value: float,
+     *         value_per_second: float,
+     *     },
+     *     latency: array{
+     *         average: float,
+     *     },
+     *     execution_time: array{
+     *         average: float,
+     *     },
+     * }
      */
-    public function analytics($group = null, ?Moment $at = null, array $query = []): array
+    public function analytics(?string $group = null, ?Moment $at = null, array $query = []): array
     {
         $totalsScheduledJobs = $this->jobs->scheduledCount($group, $query);
         $queued = $this->jobs->queued($group, $at, $at?->before(T\hour(24)), $query);
@@ -103,6 +127,9 @@ class Recruiter
     {
     }
 
+    /**
+     * @return array{array<string, string>, int}
+     */
     public function assignJobsToWorkers(): array
     {
         return $this->assignLockedJobsToWorkers($this->bookJobsForWorkers());
@@ -118,6 +145,8 @@ class Recruiter
 
     /**
      * @step
+     *
+     * @return array<int, array{ObjectId[], ObjectId[]}>
      */
     public function bookJobsForWorkers(): array
     {
@@ -144,6 +173,10 @@ class Recruiter
 
     /**
      * @step
+     *
+     * @param array<int, array{ObjectId[], ObjectId[]}> $bookedJobs
+     *
+     * @return array{array<string, string>, int}
      */
     public function assignLockedJobsToWorkers(array $bookedJobs): array
     {
@@ -169,7 +202,7 @@ class Recruiter
         ];
     }
 
-    public function scheduledJob($id)
+    public function scheduledJob(string|ObjectId $id): Job
     {
         return $this->jobs->scheduled($id);
     }
@@ -261,7 +294,13 @@ class Recruiter
         );
     }
 
-    private function combineJobsWithWorkers($jobs, $workers): array
+    /**
+     * @param ObjectId[] $jobs
+     * @param ObjectId[] $workers
+     *
+     * @return array{int, ObjectId[], ObjectId[]}
+     */
+    private function combineJobsWithWorkers(array $jobs, array $workers): array
     {
         $assignments = min(count($workers), count($jobs));
         $workers = array_slice($workers, 0, $assignments);

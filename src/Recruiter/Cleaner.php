@@ -14,14 +14,14 @@ class Cleaner
     {
     }
 
-    public function cleanArchived(Interval $gracePeriod)
+    public function cleanArchived(Interval $gracePeriod): int
     {
         $upperLimit = T\now()->before($gracePeriod);
 
         return $this->repository->cleanArchived($upperLimit);
     }
 
-    public function cleanScheduled(?Interval $gracePeriod = null)
+    public function cleanScheduled(?Interval $gracePeriod = null): int
     {
         $upperLimit = T\now();
         if (!is_null($gracePeriod)) {
@@ -31,7 +31,7 @@ class Cleaner
         return $this->repository->cleanScheduled($upperLimit);
     }
 
-    public function bye()
+    public function bye(): void
     {
     }
 }

@@ -8,6 +8,9 @@ use Recruiter\Exception\ImportException;
 
 trait WorkableBehaviour
 {
+    /**
+     * @param array<mixed> $parameters
+     */
     final public function __construct(protected array $parameters = [])
     {
     }
@@ -22,12 +25,17 @@ trait WorkableBehaviour
         throw new \Exception('Workable::execute() need to be implemented');
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function export(): array
     {
         return $this->parameters;
     }
 
     /**
+     * @param array<mixed> $parameters
+     *
      * @throws ImportException
      */
     public static function import(array $parameters): static

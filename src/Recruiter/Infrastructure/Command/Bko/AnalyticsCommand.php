@@ -45,11 +45,12 @@ class AnalyticsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string */
+        /** @var string $target */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
         $recruiter = new Recruiter($db);
 
+        /** @var ?string $group */
         $group = $input->getOption('group');
         $analytics = $recruiter->analytics($group);
 
@@ -77,6 +78,14 @@ class AnalyticsCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @param array{
+     *     jobs: array{queued: int, postponed: int, zombies: int},
+     *     throughput: array{value: float, value_per_second: float},
+     *     latency: array{average: float},
+     *     execution_time: array{average: float}
+     * } $analytics
+     */
     private function calculateColumnsWidth(array $analytics): int
     {
         $maxColumns = 1;

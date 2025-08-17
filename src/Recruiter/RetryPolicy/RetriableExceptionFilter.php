@@ -8,23 +8,24 @@ use Recruiter\Job;
 use Recruiter\JobAfterFailure;
 use Recruiter\RetryPolicy;
 
-class RetriableExceptionFilter implements RetryPolicy
+readonly class RetriableExceptionFilter implements RetryPolicy
 {
-    private $retriableExceptions;
-
     /**
-     * @param string $exceptionClass fully qualified class or interface name
+     * @param class-string $exceptionClass fully qualified class or interface name
      *
      * @return self
      */
-    public static function onlyFor($exceptionClass, RetryPolicy $retryPolicy)
+    public static function onlyFor(string $exceptionClass, RetryPolicy $retryPolicy)
     {
         return new self($retryPolicy, [$exceptionClass]);
     }
 
-    public function __construct(private readonly RetryPolicy $filteredRetryPolicy, array $retriableExceptions = ['Exception'])
+    /**
+     * @param class-string[] $retriableExceptions
+     */
+    public function __construct(private RetryPolicy $filteredRetryPolicy, private array $retriableExceptions = ['Exception'])
     {
-        $this->retriableExceptions = $this->ensureAreAllExceptions($retriableExceptions);
+        $this->ensureAreAllExceptions($retriableExceptions);
     }
 
     public function schedule(JobAfterFailure $job): void
@@ -36,6 +37,15 @@ class RetriableExceptionFilter implements RetryPolicy
         }
     }
 
+    /**
+     * @return array{
+     *     retriable_exceptions: class-string[],
+     *     filtered_retry_policy: array{
+     *         class: class-string,
+     *         parameters: array<mixed>,
+     *     },
+     * }
+     */
     public function export(): array
     {
         return [
@@ -47,6 +57,15 @@ class RetriableExceptionFilter implements RetryPolicy
         ];
     }
 
+    /**
+     * @param array{
+     *     retriable_exceptions: class-string[],
+     *     filtered_retry_policy: array{
+     *         class: class-string,
+     *         parameters: array<mixed>,
+     *     },
+     * } $parameters
+     */
     public static function import(array $parameters): RetryPolicy
     {
         $filteredRetryPolicy = $parameters['filtered_retry_policy'];
@@ -63,26 +82,27 @@ class RetriableExceptionFilter implements RetryPolicy
         return $this->filteredRetryPolicy->isLastRetry($job);
     }
 
-    private function ensureAreAllExceptions($exceptions)
+    /**
+     * @param class-string[] $exceptions
+     */
+    private function ensureAreAllExceptions(array $exceptions): void
     {
         foreach ($exceptions as $exception) {
             if (!is_a($exception, 'Throwable', true)) {
                 throw new \InvalidArgumentException("Only subclasses of Exception can be retriable exceptions, '{$exception}' is not");
             }
         }
-
-        return $exceptions;
     }
 
-    private function isExceptionRetriable($exception)
+    private function isExceptionRetriable(?\Throwable $exception): bool
     {
-        if (is_object($exception)) {
-            return array_any(
-                $this->retriableExceptions,
-                fn ($retriableExceptionType) => $exception instanceof $retriableExceptionType,
-            );
+        if (null === $exception) {
+            return false;
         }
 
-        return false;
+        return array_any(
+            $this->retriableExceptions,
+            fn ($retriableExceptionType) => $exception instanceof $retriableExceptionType,
+        );
     }
 }

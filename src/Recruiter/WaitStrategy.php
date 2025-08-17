@@ -8,25 +8,36 @@ use Timeless\Interval;
 
 class WaitStrategy
 {
-    private $timeToWaitAtLeast;
-    private $timeToWaitAtMost;
-    private $timeToWait;
+    private int $timeToWaitAtLeast;
+    private int $timeToWaitAtMost;
+    private int $timeToWait;
+    private \Closure $howToWait;
 
-    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, private $howToWait = 'usleep')
+    /**
+     * @param callable|callable-string $howToWait
+     */
+    public function __construct(Interval $timeToWaitAtLeast, Interval $timeToWaitAtMost, callable|string $howToWait = 'usleep')
     {
         $this->timeToWaitAtLeast = $timeToWaitAtLeast->milliseconds();
         $this->timeToWaitAtMost = $timeToWaitAtMost->milliseconds();
         $this->timeToWait = $timeToWaitAtLeast->milliseconds();
+        $this->howToWait = $howToWait(...);
     }
 
-    public function reset()
+    /**
+     * @return $this
+     */
+    public function reset(): static
     {
         $this->timeToWait = $this->timeToWaitAtLeast;
 
         return $this;
     }
 
-    public function goForward()
+    /**
+     * @return $this
+     */
+    public function goForward(): static
     {
         $this->timeToWait = max(
             $this->timeToWait / 2,
@@ -36,7 +47,10 @@ class WaitStrategy
         return $this;
     }
 
-    public function backOff()
+    /**
+     * @return $this
+     */
+    public function backOff(): static
     {
         $this->timeToWait = min(
             $this->timeToWait * 2,
@@ -46,19 +60,22 @@ class WaitStrategy
         return $this;
     }
 
-    public function wait()
+    /**
+     * @return $this
+     */
+    public function wait(): static
     {
         call_user_func($this->howToWait, $this->timeToWait * 1000);
 
         return $this;
     }
 
-    public function timeToWait()
+    public function timeToWait(): Interval
     {
         return new Interval($this->timeToWait);
     }
 
-    public function timeToWaitAtMost()
+    public function timeToWaitAtMost(): Interval
     {
         return new Interval($this->timeToWaitAtMost);
     }

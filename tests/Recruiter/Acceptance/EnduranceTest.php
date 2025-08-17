@@ -72,7 +72,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
             ->hook(Listener\log('/tmp/recruiter-test-iterations.log'))
             ->hook(Listener\collectFrequencies())
             ->disableShrinking()
-            ->then(function ($tuple): void {
+            ->then(function (array $tuple): void {
                 [$workers, $actions] = $tuple;
                 $this->clean();
                 $this->start($workers);
@@ -81,8 +81,10 @@ class EnduranceTest extends BaseAcceptanceTestCase
                     if (is_array($action)) {
                         $arguments = $action;
                         $method = array_shift($arguments);
+                        $callable = [$this, $method];
+                        $this->assertIsCallable($callable);
                         call_user_func_array(
-                            [$this, $method],
+                            $callable,
                             $arguments,
                         );
                     } else {
@@ -115,7 +117,7 @@ class EnduranceTest extends BaseAcceptanceTestCase
         ;
     }
 
-    private function logAction($action)
+    private function logAction(mixed $action): void
     {
         file_put_contents(
             $this->actionLog,
@@ -128,12 +130,31 @@ class EnduranceTest extends BaseAcceptanceTestCase
         );
     }
 
-    protected function sleep($milliseconds)
+    protected function sleep(int $milliseconds): void
     {
         usleep($milliseconds * 1000);
     }
 
-    protected function assertInvariantsOnStatistics($statistics)
+    /**
+     * @param array{
+     *      jobs: array{
+     *          queued: int,
+     *          postponed: int,
+     *          zombies: int,
+     *      },
+     *      throughput: array{
+     *          value: float,
+     *          value_per_second: float,
+     *      },
+     *      latency: array{
+     *          average: float,
+     *      },
+     *      execution_time: array{
+     *          average: float,
+     *      },
+     * } $statistics
+     */
+    protected function assertInvariantsOnStatistics(array $statistics): void
     {
         $this->assertEquals(0, $statistics['jobs']['queued']);
         $this->assertEquals(0, $statistics['jobs']['zombies']);
