@@ -7,6 +7,7 @@ namespace Recruiter;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Collection as MongoCollection;
 use MongoDB\Driver\Exception\BulkWriteException;
+use Recruiter\Exception\ImportException;
 use Recruiter\Job\Event;
 use Recruiter\Job\EventListener;
 use Recruiter\Job\Repository;
@@ -28,6 +29,9 @@ class Job
         );
     }
 
+    /**
+     * @throws ImportException
+     */
     public static function import($document, Repository $repository): self
     {
         return new self(

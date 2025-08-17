@@ -4,22 +4,27 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use Recruiter\Exception\ImportException;
+
 class SchedulePolicyInJob
 {
+    /**
+     * @throws ImportException
+     */
     public static function import($document): SchedulePolicy
     {
         if (!array_key_exists('schedule_policy', $document)) {
-            throw new \Exception('Unable to import Job without data about SchedulePolicy object');
+            throw new ImportException('Unable to import Job without data about SchedulePolicy object');
         }
         $dataAboutSchedulePolicyObject = $document['schedule_policy'];
         if (!array_key_exists('class', $dataAboutSchedulePolicyObject)) {
-            throw new \Exception('Unable to import Job without a SchedulePolicy class');
+            throw new ImportException('Unable to import Job without a SchedulePolicy class');
         }
         if (!class_exists($dataAboutSchedulePolicyObject['class'])) {
-            throw new \Exception('Unable to import Job with unknown SchedulePolicy class');
+            throw new ImportException('Unable to import Job with unknown SchedulePolicy class');
         }
         if (!method_exists($dataAboutSchedulePolicyObject['class'], 'import')) {
-            throw new \Exception('Unable to import SchedulePolicy without method import');
+            throw new ImportException('Unable to import SchedulePolicy without method import');
         }
 
         return $dataAboutSchedulePolicyObject['class']::import($dataAboutSchedulePolicyObject['parameters']);

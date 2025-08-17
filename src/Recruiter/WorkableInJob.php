@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use Recruiter\Exception\ImportException;
 use Recruiter\Workable\RecoverWorkableFromException;
 
 class WorkableInJob
 {
     // TODO: resolve the duplication with RepeatableInJob
+    /**
+     * @throws ImportException
+     */
     public static function import($document): Workable
     {
         $dataAboutWorkableObject = [
@@ -18,17 +22,17 @@ class WorkableInJob
 
         try {
             if (!array_key_exists('workable', $document)) {
-                throw new \Exception('Unable to import Job without data about Workable object');
+                throw new ImportException('Unable to import Job without data about Workable object');
             }
             $dataAboutWorkableObject = $document['workable'];
             if (!array_key_exists('class', $dataAboutWorkableObject)) {
-                throw new \Exception('Unable to import Job without a class');
+                throw new ImportException('Unable to import Job without a class');
             }
             if (!class_exists($dataAboutWorkableObject['class'])) {
-                throw new \Exception('Unable to import Job with unknown Workable class');
+                throw new ImportException('Unable to import Job with unknown Workable class');
             }
             if (!method_exists($dataAboutWorkableObject['class'], 'import')) {
-                throw new \Exception('Unable to import Workable without method import');
+                throw new ImportException('Unable to import Workable without method import');
             }
             $workable = $dataAboutWorkableObject['class']::import($dataAboutWorkableObject['parameters']);
             assert($workable instanceof Workable);

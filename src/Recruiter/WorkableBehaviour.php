@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use Recruiter\Exception\ImportException;
+
 trait WorkableBehaviour
 {
     final public function __construct(protected array $parameters = [])
@@ -25,6 +27,9 @@ trait WorkableBehaviour
         return $this->parameters;
     }
 
+    /**
+     * @throws ImportException
+     */
     public static function import(array $parameters): static
     {
         return new static($parameters);

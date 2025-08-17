@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use Recruiter\Exception\ImportException;
+
 interface Workable
 {
     /**
@@ -20,6 +22,8 @@ interface Workable
      * Import an array of parameters as a Workable instance.
      *
      * @param array $parameters Previously exported parameters
+     *
+     * @throws ImportException
      */
     public static function import(array $parameters): static;
 }
