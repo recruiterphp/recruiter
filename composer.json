@@ -34,7 +34,7 @@
     "mongodb/mongodb": "^2.1",
     "monolog/monolog": "^3.9",
     "psr/log": "^3.0",
-    "recruiterphp/byte-units": "^0.6",
+    "recruiterphp/byte-units": "^0.7.0",
     "recruiterphp/concurrency": "^5.0",
     "recruiterphp/geezer": "^7.0",
     "symfony/event-dispatcher": "^7.3 || ^8.0",

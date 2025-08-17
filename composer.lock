@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b17209fcd20cc718b0e2980352eb7712",
+    "content-hash": "7b0240463b2a0a040155b91a96b61a03",
     "packages": [
         {
             "name": "dragonmantank/cron-expression",
@@ -454,16 +454,16 @@
         },
         {
             "name": "recruiterphp/byte-units",
-            "version": "v0.6.0",
+            "version": "v0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/recruiterphp/byte-units.git",
-                "reference": "078847973de323b88d3de2e5be4c98c2ccdf4ea6"
+                "reference": "1147a644f6f0dc57015fcd5238b392afa3364d40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/recruiterphp/byte-units/zipball/078847973de323b88d3de2e5be4c98c2ccdf4ea6",
-                "reference": "078847973de323b88d3de2e5be4c98c2ccdf4ea6",
+                "url": "https://api.github.com/repos/recruiterphp/byte-units/zipball/1147a644f6f0dc57015fcd5238b392afa3364d40",
+                "reference": "1147a644f6f0dc57015fcd5238b392afa3364d40",
                 "shasum": ""
             },
             "require": {
@@ -478,16 +478,16 @@
                 "friendsofphp/php-cs-fixer": "^3.85",
                 "phpunit/phpunit": "^12.3",
                 "rector/rector": "^2.1",
-                "symfony/var-dumper": "^7.3",
+                "symfony/var-dumper": "^7.3 || ^8.0",
                 "vimeo/psalm": "^6.13"
             },
             "type": "library",
             "autoload": {
                 "files": [
-                    "src/ByteUnits/functions.php"
+                    "src/functions.php"
                 ],
                 "psr-4": {
-                    "ByteUnits\\": "src/ByteUnits"
+                    "ByteUnits\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -515,9 +515,9 @@
                 "units"
             ],
             "support": {
-                "source": "https://github.com/recruiterphp/byte-units/tree/v0.6.0"
+                "source": "https://github.com/recruiterphp/byte-units/tree/v0.7.0"
             },
-            "time": "2025-08-10T17:22:55+00:00"
+            "time": "2025-08-17T23:12:09+00:00"
         },
         {
             "name": "recruiterphp/clock",
@@ -3564,16 +3564,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.51",
+            "version": "10.5.52",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "ace160e31aaa317a99c411410c40c502b4be42a4"
+                "reference": "5be558244941fba07788b6bb42dc5fc84429580c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ace160e31aaa317a99c411410c40c502b4be42a4",
-                "reference": "ace160e31aaa317a99c411410c40c502b4be42a4",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5be558244941fba07788b6bb42dc5fc84429580c",
+                "reference": "5be558244941fba07788b6bb42dc5fc84429580c",
                 "shasum": ""
             },
             "require": {
@@ -3645,7 +3645,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.51"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.52"
             },
             "funding": [
                 {
@@ -3669,7 +3669,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-12T07:31:25+00:00"
+            "time": "2025-08-16T05:17:33+00:00"
         },
         {
             "name": "react/cache",
