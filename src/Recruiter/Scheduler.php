@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use MongoDB\BSON\UTCDateTime;
 use Recruiter\Job\Repository as JobsRepository;
 use Recruiter\Scheduler\Repository;
 use Timeless as T;
+use Timeless\Moment;
 
 class Scheduler
 {
@@ -25,6 +27,9 @@ class Scheduler
         );
     }
 
+    /**
+     * @param array<string, mixed> $document
+     */
     public static function import(array $document, Repository $repository): self
     {
         return new self(
@@ -36,25 +41,50 @@ class Scheduler
         );
     }
 
-    public function __construct(private array $status, private readonly Repeatable $repeatable, private ?SchedulePolicy $schedulePolicy, private ?RetryPolicy $retryPolicy, private readonly Repository $schedulers)
-    {
+    /**
+     * @param array<string, mixed> $status
+     */
+    public function __construct(
+        private array $status,
+        private readonly Repeatable $repeatable,
+        private ?SchedulePolicy $schedulePolicy,
+        private ?RetryPolicy $retryPolicy,
+        private readonly Repository $schedulers,
+    ) {
     }
 
-    public function create()
+    /**
+     * @return $this
+     */
+    public function create(): static
     {
         $this->schedulers->create($this);
 
         return $this;
     }
 
-    public function repeatWithPolicy(SchedulePolicy $schedulePolicy)
+    /**
+     * @return $this
+     */
+    public function repeatWithPolicy(SchedulePolicy $schedulePolicy): static
     {
         $this->schedulePolicy = $schedulePolicy;
 
         return $this;
     }
 
-    private static function initialize()
+    /**
+     * @return array{
+     *     urn: null,
+     *     created_at: UTCDateTime,
+     *     last_scheduling: array{
+     *         scheduled_at: null,
+     *         job_id: null,
+     *     },
+     *     attempts: 0,
+     * }
+     */
+    private static function initialize(): array
     {
         return [
             'urn' => null,
@@ -67,7 +97,10 @@ class Scheduler
         ];
     }
 
-    public function export()
+    /**
+     * @return array<string, mixed>
+     */
+    public function export(): array
     {
         return array_merge(
             $this->status,
@@ -81,7 +114,7 @@ class Scheduler
         );
     }
 
-    private function wasAlreadyScheduled($nextScheduling)
+    private function wasAlreadyScheduled(Moment $nextScheduling): bool
     {
         if (!$this->status['last_scheduling']['scheduled_at']) {
             return false;
@@ -89,10 +122,10 @@ class Scheduler
 
         $lastScheduling = T\MongoDate::toMoment($this->status['last_scheduling']['scheduled_at']);
 
-        return $lastScheduling == $nextScheduling;
+        return $lastScheduling->equals($nextScheduling);
     }
 
-    private function aJobIsStillRunning(JobsRepository $jobs)
+    private function aJobIsStillRunning(JobsRepository $jobs): bool
     {
         if (!$this->status['last_scheduling']['job_id']) {
             return false;
@@ -107,7 +140,7 @@ class Scheduler
         }
     }
 
-    public function schedule(JobsRepository $jobs)
+    public function schedule(JobsRepository $jobs): void
     {
         if (!$this->schedulePolicy) {
             throw new \RuntimeException('You need to assign a `SchedulePolicy` (use `repeatWithPolicy` to inject it) in order to schedule a job');
@@ -138,7 +171,12 @@ class Scheduler
         $this->schedulers->save($this);
     }
 
-    public function retryWithPolicy(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
+    /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     *
+     * @return $this
+     */
+    public function retryWithPolicy(RetryPolicy $retryPolicy, array|string $retriableExceptionTypes = []): static
     {
         $this->retryPolicy = $this->filterForRetriableExceptions(
             $retryPolicy,
@@ -148,31 +186,40 @@ class Scheduler
         return $this;
     }
 
-    public function withUrn(string $urn)
+    /**
+     * @return $this
+     */
+    public function withUrn(string $urn): static
     {
         $this->status['urn'] = $urn;
 
         return $this;
     }
 
-    public function unique(bool $unique)
+    /**
+     * @return $this
+     */
+    public function unique(bool $unique): static
     {
         $this->status['unique'] = $unique;
 
         return $this;
     }
 
-    public function urn()
+    public function urn(): string
     {
         return $this->status['urn'];
     }
 
-    public function schedulePolicy()
+    public function schedulePolicy(): ?SchedulePolicy
     {
         return $this->schedulePolicy;
     }
 
-    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, $retriableExceptionTypes = [])
+    /**
+     * @param class-string|class-string[] $retriableExceptionTypes
+     */
+    private function filterForRetriableExceptions(RetryPolicy $retryPolicy, array|string $retriableExceptionTypes = []): RetryPolicy
     {
         if (!is_array($retriableExceptionTypes)) {
             $retriableExceptionTypes = [$retriableExceptionTypes];

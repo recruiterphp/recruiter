@@ -18,7 +18,7 @@ class MongoDateTest extends TestCase
             ->forAll(
                 Generator\choose(0, 1500 * 1000 * 1000),
             )
-            ->then(function ($milliseconds): void {
+            ->then(function (int $milliseconds): void {
                 $moment = new Moment($milliseconds);
                 $this->assertEquals(
                     $moment,

@@ -60,6 +60,11 @@ readonly class Moment
         return $this->ms <= $m->ms();
     }
 
+    public function equals(Moment $m): bool
+    {
+        return $this->ms === $m->ms;
+    }
+
     public function toSecondPrecision(): Moment
     {
         return new self($this->s() * 1000);

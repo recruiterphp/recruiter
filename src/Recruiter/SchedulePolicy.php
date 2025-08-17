@@ -15,13 +15,15 @@ interface SchedulePolicy
 
     /**
      * Export schedule policy parameters.
+     *
+     * @return array<mixed>
      */
     public function export(): array;
 
     /**
      * Import schedule policy parameters.
      *
-     * @param array $parameters Previously exported parameters
+     * @param array<mixed> $parameters Previously exported parameters
      */
     public static function import(array $parameters): SchedulePolicy;
 }

@@ -24,7 +24,10 @@ class JobAfterFailure
         return $this->job->createdAt();
     }
 
-    public function inGroup($group): void
+    /**
+     * @param string|string[] $group
+     */
+    public function inGroup(array|string $group): void
     {
         $this->job->inGroup($group);
         $this->job->save();
@@ -42,7 +45,7 @@ class JobAfterFailure
         $this->job->save();
     }
 
-    public function archive($why): void
+    public function archive(string $why): void
     {
         $this->hasBeenArchived = true;
         $this->job->archive($why);
@@ -58,7 +61,7 @@ class JobAfterFailure
         return $this->lastJobExecution->duration();
     }
 
-    public function numberOfAttempts()
+    public function numberOfAttempts(): int
     {
         return $this->job->numberOfAttempts();
     }

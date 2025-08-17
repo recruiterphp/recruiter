@@ -37,7 +37,7 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
         $this->assertTrue($report->isThereAFailure());
     }
 
-    private function enqueueAnAnswerJob($answer, $scheduledAt)
+    private function enqueueAnAnswerJob(mixed $answer, T\Moment $scheduledAt): void
     {
         FactoryMethodCommand::from('Recruiter\Acceptance\SyncronousExecutionTestDummyObject::create')
             ->answer($answer)
@@ -51,17 +51,20 @@ class SyncronousExecutionTest extends BaseAcceptanceTestCase
 
 class SyncronousExecutionTestDummyObject
 {
-    public static function create()
+    public static function create(): self
     {
         return new self();
     }
 
-    public function answer($value)
+    public function answer(mixed $value): mixed
     {
         return $value;
     }
 
-    public function myNeedyMethod(array $retryStatistics)
+    /**
+     * @param array{retry_number: int} $retryStatistics
+     */
+    public function myNeedyMethod(array $retryStatistics): int
     {
         return $retryStatistics['retry_number'];
     }

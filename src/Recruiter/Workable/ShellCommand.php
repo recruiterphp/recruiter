@@ -11,12 +11,12 @@ class ShellCommand implements Workable
 {
     use WorkableBehaviour;
 
-    public static function fromCommandLine($commandLine): self
+    public static function fromCommandLine(string $commandLine): self
     {
         return new self($commandLine);
     }
 
-    private function __construct(private $commandLine)
+    private function __construct(private string $commandLine)
     {
     }
 

@@ -11,10 +11,16 @@ class EventTest extends TestCase
     public function testHasTagReturnsTrueWhenTheExportedJobContainsTheTag(): void
     {
         $event = new Event([
+            '_id' => new \MongoDB\BSON\ObjectId(),
+            'done' => false,
+            'created_at' => new \MongoDB\BSON\UTCDateTime(),
+            'locked' => false,
+            'attempts' => 0,
             'group' => 'generic',
             'tags' => [
                 1 => 'billing-notification',
             ],
+            'workable' => ['method' => 'execute'],
         ]);
 
         $this->assertTrue($event->hasTag('billing-notification'));
@@ -23,10 +29,16 @@ class EventTest extends TestCase
     public function testHasTagReturnsFalseWhenTheExportedJobDoesNotContainTheTag(): void
     {
         $event = new Event([
+            '_id' => new \MongoDB\BSON\ObjectId(),
+            'done' => false,
+            'created_at' => new \MongoDB\BSON\UTCDateTime(),
+            'locked' => false,
+            'attempts' => 0,
             'group' => 'generic',
             'tags' => [
                 1 => 'billing-notification',
             ],
+            'workable' => ['method' => 'execute'],
         ]);
 
         $this->assertFalse($event->hasTag('inexistant-tag'));
@@ -35,6 +47,13 @@ class EventTest extends TestCase
     public function testHasTagReturnsFalseWhenTheExportedJobDoesNotContainTags(): void
     {
         $event = new Event([
+            '_id' => new \MongoDB\BSON\ObjectId(),
+            'done' => false,
+            'created_at' => new \MongoDB\BSON\UTCDateTime(),
+            'locked' => false,
+            'attempts' => 0,
+            'group' => 'generic',
+            'workable' => ['method' => 'execute'],
         ]);
 
         $this->assertFalse($event->hasTag('inexistant-tag'));

@@ -52,7 +52,7 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
         $this->parameters = [];
     }
 
-    public function onEvent($channel, Event $ev): void
+    public function onEvent(string $channel, Event $ev): void
     {
         $this->listener->onEvent($channel, $ev);
     }
@@ -65,9 +65,12 @@ class WorkableThatIsAlsoAnEventListener implements Workable, EventListener
 
 class EventListenerSpy implements EventListener
 {
+    /**
+     * @var array<array{string, Event}>
+     */
     public array $events = [];
 
-    public function onEvent($channel, Event $ev): void
+    public function onEvent(string $channel, Event $ev): void
     {
         $this->events[] = [$channel, $ev];
     }

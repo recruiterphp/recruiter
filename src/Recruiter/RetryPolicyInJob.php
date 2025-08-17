@@ -9,9 +9,11 @@ use Recruiter\Exception\ImportException;
 class RetryPolicyInJob
 {
     /**
+     * @param array<string, mixed> $document
+     *
      * @throws ImportException
      */
-    public static function import($document)
+    public static function import(array $document): RetryPolicy
     {
         if (!array_key_exists('retry_policy', $document)) {
             throw new ImportException('Unable to import Job without data about RetryPolicy object');
@@ -30,7 +32,10 @@ class RetryPolicyInJob
         return $dataAboutRetryPolicyObject['class']::import($dataAboutRetryPolicyObject['parameters']);
     }
 
-    public static function export($retryPolicy)
+    /**
+     * @return array<string, mixed>
+     */
+    public static function export(RetryPolicy $retryPolicy): array
     {
         return [
             'retry_policy' => [
@@ -40,7 +45,10 @@ class RetryPolicyInJob
         ];
     }
 
-    public static function initialize()
+    /**
+     * @return array<mixed>
+     */
+    public static function initialize(): array
     {
         return [];
     }

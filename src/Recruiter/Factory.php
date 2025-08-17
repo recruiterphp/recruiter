@@ -11,6 +11,9 @@ use Recruiter\Infrastructure\Persistence\Mongodb\URI;
 
 class Factory
 {
+    /**
+     * @param array<string, mixed> $options
+     */
     public function getMongoDb(URI $uri, array $options = []): Database
     {
         try {

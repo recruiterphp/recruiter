@@ -11,7 +11,11 @@ class RecoverRepeatableFromException implements Repeatable
 {
     use WorkableBehaviour;
 
-    public function __construct($parameters, protected $recoverForClass, protected $recoverForException)
+    /**
+     * @param array<mixed> $parameters
+     * @param class-string $recoverForClass
+     */
+    public function __construct(array $parameters, protected string $recoverForClass, protected \Throwable $recoverForException)
     {
         $this->parameters = $parameters;
     }
@@ -21,7 +25,7 @@ class RecoverRepeatableFromException implements Repeatable
         throw new \Exception('This job failed while instantiating a workable of class: ' . $this->recoverForClass . PHP_EOL . 'Original exception: ' . $this->recoverForException::class . PHP_EOL . $this->recoverForException->getMessage() . PHP_EOL . $this->recoverForException->getTraceAsString() . PHP_EOL);
     }
 
-    public function getClass()
+    public function getClass(): string
     {
         return $this->recoverForClass;
     }

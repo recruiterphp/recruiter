@@ -98,7 +98,7 @@ class IntervalParseTest extends TestCase
     {
         $this->expectException(InvalidIntervalFormat::class);
         $this->expectExceptionMessage("Maybe you mean '5 seconds' or something like that?");
-        Interval::parse(5);
+        Interval::parse('5');
     }
 
     public function testBadString(): void

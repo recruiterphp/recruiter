@@ -10,16 +10,21 @@ use Recruiter\Workable;
 
 class FactoryMethodCommand implements Workable
 {
-    public static function from(/* $callable[, $argument, $argument...] */)
+    /**
+     * @param callable-string $callable
+     */
+    public static function from(string $callable, mixed ...$arguments): self
     {
-        $arguments = func_get_args();
-        $callable = array_shift($arguments);
-        [$class, $method] = explode('::', (string) $callable);
+        /** @var class-string $class */
+        [$class, $method] = explode('::', $callable);
 
         return self::singleStep(self::stepFor($class, $method, $arguments));
     }
 
-    private static function singleStep($step): self
+    /**
+     * @param array{class?: class-string, method: string, arguments?: array<mixed>} $step
+     */
+    private static function singleStep(array $step): self
     {
         return new self([
             $step,
@@ -30,7 +35,7 @@ class FactoryMethodCommand implements Workable
      * @param class-string $class
      * @param array<mixed> $arguments
      *
-     * @return array<string, mixed>
+     * @return array{class: class-string, method: string, arguments?: array<mixed>}
      */
     private static function stepFor(string $class, string $method, array $arguments): array
     {
@@ -45,6 +50,9 @@ class FactoryMethodCommand implements Workable
         return $step;
     }
 
+    /**
+     * @param array<array{class?: class-string, method: string, arguments?: array<mixed>}> $steps
+     */
     private function __construct(private array $steps = [])
     {
     }
@@ -54,7 +62,7 @@ class FactoryMethodCommand implements Workable
         return $recruiter->jobOf($this);
     }
 
-    public function execute($retryOptions = null)
+    public function execute(mixed $retryOptions = null): mixed
     {
         $result = null;
         $lastStepIndex = count($this->steps) - 1;
@@ -86,14 +94,22 @@ class FactoryMethodCommand implements Workable
         return $result;
     }
 
-    private function arguments($step)
+    /**
+     * @param array{arguments?: array<mixed>} $step
+     *
+     * @return array<mixed>
+     */
+    private function arguments(array $step): array
     {
-        $arguments = $step['arguments'] ?? [];
-
-        return $arguments;
+        return $step['arguments'] ?? [];
     }
 
-    public function __call($method, $arguments)
+    /**
+     * @param array<mixed> $arguments
+     *
+     * @return $this
+     */
+    public function __call(string $method, array $arguments): self
     {
         $step = [
             'method' => $method,
@@ -106,6 +122,9 @@ class FactoryMethodCommand implements Workable
         return $this;
     }
 
+    /**
+     * @return array{steps: array<array<string, mixed>>}
+     */
     public function export(): array
     {
         return [
@@ -113,6 +132,9 @@ class FactoryMethodCommand implements Workable
         ];
     }
 
+    /**
+     * @param array{steps: array<array<string, mixed>>} $parameters
+     */
     public static function import(array $parameters): static
     {
         return new static($parameters['steps']);

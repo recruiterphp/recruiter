@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use MongoDB\BSON\ObjectId;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -21,6 +22,11 @@ class JobToScheduleTest extends TestCase
     {
         $this->clock = T\clock()->stop();
         $this->job = $this->createMock(Job::class);
+        $this->job
+            ->expects($this->any())
+            ->method('id')
+            ->willReturnCallback(fn () => new ObjectId())
+        ;
     }
 
     protected function tearDown(): void
@@ -141,14 +147,8 @@ class JobToScheduleTest extends TestCase
 
     public function testReturnsJobId(): void
     {
-        $this->job
-            ->expects($this->any())
-            ->method('id')
-            ->will($this->returnValue('42'))
-        ;
-
-        $this->assertEquals(
-            '42',
+        $this->assertMatchesRegularExpression(
+            '/^[a-f0-9]{24}$/',
             new JobToSchedule($this->job)->execute(),
         );
     }

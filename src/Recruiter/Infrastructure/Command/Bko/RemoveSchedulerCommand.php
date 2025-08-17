@@ -20,17 +20,14 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class RemoveSchedulerCommand extends Command
 {
-    /**
-     * @var SchedulerRepository
-     */
-    private $schedulerRepository;
+    private SchedulerRepository $schedulerRepository;
 
     public function __construct(private readonly Factory $factory, private readonly LoggerInterface $logger)
     {
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('scheduler:remove')
@@ -45,9 +42,9 @@ class RemoveSchedulerCommand extends Command
         ;
     }
 
-    protected function initialize(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        /** @var string */
+        /** @var string $target */
         $target = $input->getOption('target');
         $db = $this->factory->getMongoDb(MongoURI::from($target));
         $this->schedulerRepository = new SchedulerRepository($db);
@@ -75,7 +72,10 @@ class RemoveSchedulerCommand extends Command
         return self::SUCCESS;
     }
 
-    private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output)
+    /**
+     * @param string[] $urns
+     */
+    private function selectUrnToDelete(array $urns, InputInterface $input, OutputInterface $output): string|false
     {
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
@@ -96,6 +96,9 @@ class RemoveSchedulerCommand extends Command
         return $selectedUrn;
     }
 
+    /**
+     * @param array<array<string, string>> $data
+     */
     private function printTable(array $data, OutputInterface $output): void
     {
         $rows = [];
@@ -114,6 +117,9 @@ class RemoveSchedulerCommand extends Command
         echo PHP_EOL;
     }
 
+    /**
+     * @return ?array<array<string, string>>
+     */
     protected function buildOutputData(): ?array
     {
         $outputData = [];

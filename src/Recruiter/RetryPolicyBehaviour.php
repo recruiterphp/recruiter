@@ -8,19 +8,25 @@ use Recruiter\RetryPolicy\RetriableExceptionFilter;
 
 trait RetryPolicyBehaviour
 {
-    private $parameters;
-
-    public function __construct($parameters = [])
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function __construct(private readonly array $parameters = [])
     {
-        $this->parameters = $parameters;
     }
 
-    public function retryOnlyWhenExceptionIs($retriableExceptionType)
+    /**
+     * @param class-string $retriableExceptionType
+     */
+    public function retryOnlyWhenExceptionIs(string $retriableExceptionType): RetryPolicy
     {
         return new RetriableExceptionFilter($this, [$retriableExceptionType]);
     }
 
-    public function retryOnlyWhenExceptionsAre($retriableExceptionTypes)
+    /**
+     * @param class-string[] $retriableExceptionTypes
+     */
+    public function retryOnlyWhenExceptionsAre(array $retriableExceptionTypes): RetryPolicy
     {
         return new RetriableExceptionFilter($this, $retriableExceptionTypes);
     }
@@ -35,7 +41,10 @@ trait RetryPolicyBehaviour
         return $this->parameters;
     }
 
-    public static function import(array $parameters): RetryPolicy
+    /**
+     * @param array<mixed> $parameters
+     */
+    public static function import(array $parameters): static
     {
         return new static($parameters);
     }

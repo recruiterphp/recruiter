@@ -21,9 +21,9 @@ class BootstrapFile
         return new static($filePath);
     }
 
-    public function load(Recruiter $recruiter)
+    public function load(Recruiter $recruiter): void
     {
-        return require $this->filePath;
+        require $this->filePath;
     }
 
     private function validate(string $filePath): void

@@ -25,7 +25,7 @@ class RetryManyTimes implements RetryPolicy
         $this->timeToWaitBeforeRetry = $timeToWaitBeforeRetry;
     }
 
-    public static function forTimes($retryHowManyTimes, int|Interval $timeToWaitBeforeRetry = 60): static
+    public static function forTimes(int $retryHowManyTimes, int|Interval $timeToWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToWaitBeforeRetry);
     }

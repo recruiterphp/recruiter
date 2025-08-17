@@ -10,14 +10,14 @@ namespace Recruiter;
 class SynchronousExecutionReport
 {
     /**
-     * @param array $data = []
+     * @param array<string, JobExecution> $data
      */
-    public function __construct(private readonly array $data = [])
+    private function __construct(private readonly array $data)
     {
     }
 
     /**
-     *. @params array $data : key value array where key are the id of the job and value is the JobExecution.
+     * @param array<string, JobExecution> $data the key is the Job ID
      */
     public static function fromArray(array $data): SynchronousExecutionReport
     {
@@ -29,7 +29,10 @@ class SynchronousExecutionReport
         return array_any($this->data, fn ($jobExecution, $jobId) => $jobExecution->isFailed());
     }
 
-    public function toArray()
+    /**
+     * @return array<string, JobExecution> the key is the Job ID
+     */
+    public function toArray(): array
     {
         return $this->data;
     }

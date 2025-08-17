@@ -24,7 +24,7 @@ class MongoDate
         return new Moment(intval($mongoDate->__toString()));
     }
 
-    public static function now()
+    public static function now(): MongoUTCDateTime
     {
         return self::from(now());
     }
