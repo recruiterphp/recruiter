@@ -41,12 +41,12 @@ class FactoryMethodCommandTest extends TestCase
 
 class DummyFactory
 {
-    public static function create()
+    public static function create(): self
     {
         return new self();
     }
 
-    public function myObject()
+    public function myObject(): DummyObject
     {
         return new DummyObject();
     }
@@ -54,12 +54,15 @@ class DummyFactory
 
 class DummyObject
 {
-    public function myMethod($what, $value)
+    public function myMethod(string $what, int $value): int
     {
         return $value;
     }
 
-    public function myNeedyMethod(array $retryStatistics)
+    /**
+     * @param array{retry_number: int} $retryStatistics
+     */
+    public function myNeedyMethod(array $retryStatistics): int
     {
         return $retryStatistics['retry_number'];
     }

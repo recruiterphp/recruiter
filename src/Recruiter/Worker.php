@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Recruiter;
 
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection as MongoCollection;
 use Recruiter\Infrastructure\Memory\MemoryLimit;
 use Recruiter\Infrastructure\Memory\MemoryLimitExceededException;
@@ -25,6 +26,22 @@ class Worker
         return $worker;
     }
 
+    /**
+     * @param array{
+     *     _id: ObjectId,
+     *     work_on: string,
+     *     available: bool,
+     *     available_since: UTCDateTime,
+     *     last_seen_at: UTCDateTime,
+     *     created_at: UTCDateTime,
+     *     working: bool,
+     *     pid: int,
+     *     working_on?: ObjectId,
+     *     working_since?: UTCDateTime,
+     *     assigned_to?: array<string, ObjectId>,
+     *     assigned_since?: UTCDateTime,
+     * } $status
+     */
     public function __construct(private array $status, private readonly Recruiter $recruiter, private readonly Repository $repository, private readonly MemoryLimit $memoryLimit)
     {
     }
@@ -57,14 +74,46 @@ class Worker
         }
     }
 
+    /**
+     * @return array{
+     *     _id: ObjectId,
+     *     work_on: string,
+     *     available: bool,
+     *     available_since: UTCDateTime,
+     *     last_seen_at: UTCDateTime,
+     *     created_at: UTCDateTime,
+     *     working: bool,
+     *     pid: int,
+     *     working_on?: ObjectId,
+     *     working_since?: UTCDateTime,
+     *     assigned_to?: array<string, ObjectId>,
+     *     assigned_since?: UTCDateTime,
+     * }
+     */
     public function export(): array
     {
         return $this->status;
     }
 
+    /**
+     * @param array{
+     *     _id: ObjectId,
+     *     work_on: string,
+     *     available: bool,
+     *     available_since: UTCDateTime,
+     *     last_seen_at: UTCDateTime,
+     *     created_at: UTCDateTime,
+     *     working: bool,
+     *     pid: int,
+     *     working_on?: ObjectId,
+     *     working_since?: UTCDateTime,
+     *     assigned_to?: array<string, ObjectId>,
+     *     assigned_since?: UTCDateTime,
+     * } $document
+     */
     public function updateWith(array $document): void
     {
-        $this->status = self::fromMongoDocumentToInternalStatus($document);
+        $this->status = $document;
     }
 
     public function workOnJobsGroupedAs(string $group): void
@@ -93,14 +142,14 @@ class Worker
         $this->repository->atomicUpdate($this, ['last_seen_at' => $lastSeenAt]);
     }
 
-    private function workOn($job): void
+    private function workOn(Job $job): void
     {
         $this->beforeExecutionOf($job);
         $job->execute($this->recruiter->getEventDispatcher());
         $this->afterExecutionOf($job);
     }
 
-    private function beforeExecutionOf($job): void
+    private function beforeExecutionOf(Job $job): void
     {
         $this->status['working'] = true;
         $this->status['working_on'] = $job->id();
@@ -109,7 +158,7 @@ class Worker
         $this->save();
     }
 
-    private function afterExecutionOf($job): void
+    private function afterExecutionOf(Job $job): void
     {
         try {
             $this->memoryLimit->ensure(memory_get_usage());
@@ -138,7 +187,7 @@ class Worker
         $this->save();
     }
 
-    private function retireAfterMemoryLimitIsExceeded()
+    private function retireAfterMemoryLimitIsExceeded(): void
     {
         $this->repository->retireWorkerWithId($this->id());
     }
@@ -158,11 +207,18 @@ class Worker
         $this->repository->save($this);
     }
 
-    private static function fromMongoDocumentToInternalStatus($document)
-    {
-        return $document;
-    }
-
+    /**
+     * @return array{
+     *     _id: ObjectId,
+     *     work_on: string,
+     *     available: bool,
+     *     available_since: UTCDateTime,
+     *     last_seen_at: UTCDateTime,
+     *     created_at: UTCDateTime,
+     *     working: bool,
+     *     pid: int,
+     * }
+     */
     private static function initialize(): array
     {
         return [
@@ -182,14 +238,18 @@ class Worker
         return '*' === $worksOn;
     }
 
-    public static function pickAvailableWorkers(MongoCollection $collection, $workersPerUnit): array
+    /**
+     * @return array<int, array{string, ObjectId[]}>
+     */
+    public static function pickAvailableWorkers(MongoCollection $collection, int $workersPerUnit): array
     {
         $result = [];
+        /** @var array<array{_id: ObjectId, work_on: string}> $workers */
         $workers = iterator_to_array($collection->find(['available' => true], ['projection' => ['_id' => 1, 'work_on' => 1]]));
         if (count($workers) > 0) {
             $unitsOfWorkers = array_group_by(
                 $workers,
-                fn ($worker) => $worker['work_on'],
+                fn (array $worker) => $worker['work_on'],
             );
             foreach ($unitsOfWorkers as $workOn => $workersInUnit) {
                 $workersInUnit = array_column($workersInUnit, '_id');
@@ -201,7 +261,13 @@ class Worker
         return $result;
     }
 
-    public static function tryToAssignJobsToWorkers(MongoCollection $collection, $jobs, $workers): array
+    /**
+     * @param ObjectId[] $jobs
+     * @param ObjectId[] $workers
+     *
+     * @return array{array<string, ObjectId>, int}
+     */
+    public static function tryToAssignJobsToWorkers(MongoCollection $collection, array $jobs, array $workers): array
     {
         $assignment = array_combine(
             array_map(fn ($id) => (string) $id, $workers),
@@ -236,7 +302,10 @@ class Worker
         return array_values(array_unique($jobs));
     }
 
-    public static function retireDeadWorkers(Repository $roster, \DateTimeImmutable $now, Interval $consideredDeadAfter)
+    /**
+     * @return ObjectId[]
+     */
+    public static function retireDeadWorkers(Repository $roster, \DateTimeImmutable $now, Interval $consideredDeadAfter): array
     {
         $consideredDeadAt = $now->sub($consideredDeadAfter->toDateInterval());
         $deadWorkers = $roster->deadWorkers($consideredDeadAt);

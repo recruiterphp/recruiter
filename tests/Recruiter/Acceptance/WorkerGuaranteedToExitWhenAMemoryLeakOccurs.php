@@ -15,7 +15,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
      *
      * @dataProvider provideMemoryConsumptions
      */
-    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak($withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive): void
+    public function testWorkerKillItselfAfterAMemoryLeakButNotAfterABigMemoryConsumptionWithoutLeak(bool $withMemoryLeak, int $howManyItems, string $memoryLimit, bool $expectedWorkerAlive): void
     {
         new ConsumingMemoryCommand([
             'withMemoryLeak' => $withMemoryLeak,
@@ -59,7 +59,10 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         );
     }
 
-    public static function provideMemoryConsumptions()
+    /**
+     * @return array{bool, int, string, bool}[]
+     */
+    public static function provideMemoryConsumptions(): array
     {
         return [
             // legend: [$withMemoryLeak, $howManyItems, $memoryLimit, $expectedWorkerAlive],

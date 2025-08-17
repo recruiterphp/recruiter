@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
-function array_group_by($array, ?callable $f = null): array
+/**
+ * @template T
+ *
+ * @param array<T>                $array
+ * @param ?callable(T): array-key $f
+ *
+ * @return array<T>
+ */
+function array_group_by(array $array, ?callable $f = null): array
 {
     $f = $f ?: (fn ($value) => $value);
 
     return array_reduce(
         $array,
-        function ($buckets, $x) use ($f) {
+        function (array $buckets, mixed $x) use ($f) {
+            /** @var array-key $key */
             $key = call_user_func($f, $x);
-            if (!array_key_exists($key, $buckets)) {
+            if (!is_array($buckets[$key] ?? null)) {
                 $buckets[$key] = [];
             }
             $buckets[$key][] = $x;

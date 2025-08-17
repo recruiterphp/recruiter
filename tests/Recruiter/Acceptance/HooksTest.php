@@ -13,6 +13,9 @@ use Recruiter\Workable\AlwaysSucceed;
 class HooksTest extends BaseAcceptanceTestCase
 {
     private MemoryLimit $memoryLimit;
+    /**
+     * @var Event[]
+     */
     private array $events;
 
     #[\Override]

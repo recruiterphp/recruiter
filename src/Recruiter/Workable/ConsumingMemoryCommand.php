@@ -11,7 +11,7 @@ class ConsumingMemoryCommand implements Workable
 {
     use WorkableBehaviour;
 
-    public function execute()
+    public function execute(): void
     {
         if ($this->parameters['withMemoryLeak']) {
             global $occupied;

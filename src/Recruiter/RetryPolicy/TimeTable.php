@@ -17,6 +17,8 @@ class TimeTable implements RetryPolicy
     public readonly int $howManyRetries;
 
     /**
+     * @param array<string, string>|null $timeTable
+     *
      * @throws \Exception
      */
     public function __construct(private ?array $timeTable)
@@ -60,20 +62,23 @@ class TimeTable implements RetryPolicy
         return new self($parameters['time_table']);
     }
 
-    private function hasBeenCreatedLessThan($job, $relativeTime)
+    private function hasBeenCreatedLessThan(Job|JobAfterFailure $job, string $relativeTime): bool
     {
         return $job->createdAt()->isAfter(
             T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
         );
     }
 
-    private function rescheduleIn($job, $relativeTime): void
+    private function rescheduleIn(JobAfterFailure $job, string $relativeTime): void
     {
         $job->scheduleAt(
             T\Moment::fromTimestamp(strtotime((string) $relativeTime, T\now()->seconds())),
         );
     }
 
+    /**
+     * @param array<string, string> $timeTable
+     */
     private static function estimateHowManyRetriesIn(array $timeTable): int
     {
         $now = T\now()->seconds();

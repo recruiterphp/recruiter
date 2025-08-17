@@ -98,26 +98,38 @@ class WorkableTaggable implements Workable, Taggable
 {
     use WorkableBehaviour;
 
-    public function __construct(private array $tags)
+    /**
+     * @param string[] $tags
+     */
+    public function __construct(private readonly array $tags)
     {
     }
 
+    /**
+     * @return string[]
+     */
     public function taggedAs(): array
     {
         return $this->tags;
     }
 
+    /**
+     * @return array{tags: string[]}
+     */
     public function export(): array
     {
         return ['tags' => $this->tags];
     }
 
+    /**
+     * @param array{tags: string[]} $parameters
+     */
     public static function import(array $parameters): static
     {
         return new static($parameters['tags']);
     }
 
-    public function execute()
+    public function execute(): void
     {
         // nothing is good
     }

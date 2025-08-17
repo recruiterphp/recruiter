@@ -20,13 +20,15 @@ interface RetryPolicy
 
     /**
      * Export retry policy parameters.
+     *
+     * @return array<string, mixed>
      */
     public function export(): array;
 
     /**
      * Import retry policy parameters.
      *
-     * @param array $parameters Previously exported parameters
+     * @param array<string, mixed> $parameters Previously exported parameters
      */
     public static function import(array $parameters): RetryPolicy;
 

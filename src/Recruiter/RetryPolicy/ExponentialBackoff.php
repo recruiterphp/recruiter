@@ -17,12 +17,12 @@ class ExponentialBackoff implements RetryPolicy
 
     private Interval $timeToInitiallyWaitBeforeRetry;
 
-    public static function forTimes($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry = 60): static
+    public static function forTimes(int $retryHowManyTimes, int|Interval $timeToInitiallyWaitBeforeRetry = 60): static
     {
         return new static($retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function atFirstWaiting($timeToInitiallyWaitBeforeRetry): static
+    public function atFirstWaiting(int|Interval $timeToInitiallyWaitBeforeRetry): static
     {
         return new static($this->retryHowManyTimes, $timeToInitiallyWaitBeforeRetry);
     }
@@ -31,12 +31,12 @@ class ExponentialBackoff implements RetryPolicy
      * @params integer $interval  in seconds
      * @params integer $timeToWaitBeforeRetry  in seconds
      */
-    public static function forAnInterval($interval, $timeToInitiallyWaitBeforeRetry): static
+    public static function forAnInterval(int $interval, int|Interval $timeToInitiallyWaitBeforeRetry): static
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);
         }
-        $numberOfRetries = round(
+        $numberOfRetries = (int) round(
             log($interval / $timeToInitiallyWaitBeforeRetry->seconds())
             / log(2),
         );
@@ -44,7 +44,7 @@ class ExponentialBackoff implements RetryPolicy
         return new static($numberOfRetries, $timeToInitiallyWaitBeforeRetry);
     }
 
-    public function __construct(private $retryHowManyTimes, int|Interval $timeToInitiallyWaitBeforeRetry)
+    public function __construct(private int $retryHowManyTimes, int|Interval $timeToInitiallyWaitBeforeRetry)
     {
         if (!($timeToInitiallyWaitBeforeRetry instanceof Interval)) {
             $timeToInitiallyWaitBeforeRetry = T\seconds($timeToInitiallyWaitBeforeRetry);

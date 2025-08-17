@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Recruiter;
 
+use MongoDB\BSON\UTCDateTime;
 use Timeless as T;
 
 class JobExecution
@@ -32,13 +33,13 @@ class JobExecution
         $this->failedWith = $exception;
     }
 
-    public function completedWith($result): void
+    public function completedWith(mixed $result): void
     {
         $this->endedAt = T\now();
         $this->completedWith = $result;
     }
 
-    public function result()
+    public function result(): mixed
     {
         return $this->completedWith;
     }
@@ -65,6 +66,16 @@ class JobExecution
         return T\seconds(0);
     }
 
+    /**
+     * @param array{
+     *     last_execution?: array{
+     *         crashed?: bool,
+     *         scheduled_at?: UTCDateTime,
+     *         started_at?: UTCDateTime,
+     *         ended_at?: UTCDateTime,
+     *     }
+     * } $document
+     */
     public static function import(array $document): self
     {
         $lastExecution = new self();
@@ -84,6 +95,18 @@ class JobExecution
         return $lastExecution;
     }
 
+    /**
+     * @return array{
+     *     last_execution?: array{
+     *         scheduled_at?: UTCDateTime,
+     *         started_at?: UTCDateTime,
+     *         ended_at?: UTCDateTime,
+     *         class?: string,
+     *         message?: string,
+     *         trace?: string,
+     *     }
+     * }
+     */
     public function export(): array
     {
         $exported = [];
@@ -117,6 +140,7 @@ class JobExecution
         if ($result instanceof \Throwable) {
             $trace = $result->getTraceAsString();
         } elseif (is_object($result) && method_exists($result, 'trace')) {
+            /** @var scalar $trace */
             $trace = $result->trace();
         } elseif (is_object($result)) {
             $trace = $result::class;

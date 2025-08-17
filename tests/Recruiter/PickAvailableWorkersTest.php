@@ -36,6 +36,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals([], $picked);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithNoSpecificSkill(): void
     {
         $callbackHasBeenCalled = false;
@@ -48,6 +51,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertCount(3, $workers);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithSameSkill(): void
     {
         $callbackHasBeenCalled = false;
@@ -57,9 +63,12 @@ class PickAvailableWorkersTest extends TestCase
 
         [$worksOn, $workers] = $picked[0];
         $this->assertEquals('send-emails', $worksOn);
-        $this->assertEquals(3, count($workers));
+        $this->assertCount(3, $workers);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testFewWorkersWithSomeDifferentSkills(): void
     {
         $this->withAvailableWorkers(['send-emails' => 3, 'count-transactions' => 3]);
@@ -76,6 +85,9 @@ class PickAvailableWorkersTest extends TestCase
         $this->assertEquals(6, $totalWorkersGiven);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testMoreWorkersThanAllowedPerUnit(): void
     {
         $this->withAvailableWorkers(['send-emails' => $this->workersPerUnit + 10]);
@@ -91,9 +103,11 @@ class PickAvailableWorkersTest extends TestCase
     }
 
     /**
+     * @param array<string, int> $workers
+     *
      * @throws Exception
      */
-    private function withAvailableWorkers($workers): void
+    private function withAvailableWorkers(array $workers): void
     {
         $workersThatShouldBeFound = [];
         foreach ($workers as $skill => $quantity) {
@@ -109,11 +123,11 @@ class PickAvailableWorkersTest extends TestCase
         $this->repository
             ->expects($this->any())
             ->method('find')
-            ->willReturn(new FakeCursor($workersThatShouldBeFound))
+            ->willReturn(new FakeCursor(array_values($workersThatShouldBeFound)))
         ;
     }
 
-    private function withNoAvailableWorkers()
+    private function withNoAvailableWorkers(): void
     {
         $this->repository
             ->expects($this->any())
@@ -122,7 +136,13 @@ class PickAvailableWorkersTest extends TestCase
         ;
     }
 
-    private function assertArrayAreEquals($expected, $given)
+    /**
+     * @template T
+     *
+     * @param array<T> $expected
+     * @param array<T> $given
+     */
+    private function assertArrayAreEquals(array $expected, array $given): void
     {
         sort($expected);
         sort($given);
@@ -130,10 +150,19 @@ class PickAvailableWorkersTest extends TestCase
     }
 }
 
+/**
+ * @implements \Iterator<int, array<string, mixed>>
+ */
 class FakeCursor implements CursorInterface, \Iterator
 {
+    /**
+     * @var array<int, array<string, mixed>>
+     */
     private array $data;
 
+    /**
+     * @param array<int, array<string, mixed>> $data
+     */
     public function __construct(array $data = [])
     {
         $this->data = array_values($data);
@@ -154,19 +183,25 @@ class FakeCursor implements CursorInterface, \Iterator
         throw new \LogicException('Not implemented');
     }
 
+    /**
+     * @param array<string, string> $typemap
+     */
     public function setTypeMap(array $typemap): void
     {
         throw new \LogicException('Not implemented');
     }
 
-    public function toArray(): array
+    public function toArray(): never
     {
         throw new \LogicException('Not implemented');
     }
 
+    /**
+     * @return object|array<mixed>|null
+     */
     public function current(): object|array|null
     {
-        return current($this->data);
+        return current($this->data) ?: null;
     }
 
     public function next(): void
