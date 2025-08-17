@@ -96,7 +96,7 @@ readonly class RetriableExceptionFilter implements RetryPolicy
 
     private function isExceptionRetriable(?\Throwable $exception): bool
     {
-        if (null == $exception) {
+        if (null === $exception) {
             return false;
         }
 
