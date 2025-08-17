@@ -38,7 +38,7 @@ class WorkerGuaranteedToExitWhenAMemoryLeakOccurs extends BaseAcceptanceTestCase
         })
             ->until(function () {
                 $at = T\now();
-                $statistics = $this->recruiter->statistics($tag = null, $at);
+                $statistics = $this->recruiter->analytics($tag = null, $at);
 
                 return 0 == $statistics['jobs']['queued'];
             })

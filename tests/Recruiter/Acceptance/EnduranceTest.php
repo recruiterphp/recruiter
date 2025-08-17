@@ -99,13 +99,13 @@ class EnduranceTest extends BaseAcceptanceTestCase
                 ;
 
                 $at = T\now();
-                $statistics = $this->recruiter->statistics($tag = null, $at);
+                $statistics = $this->recruiter->analytics($tag = null, $at);
                 $this->assertInvariantsOnStatistics($statistics);
                 // TODO: remove duplication
                 $statisticsByTag = [];
                 $cumulativeThroughput = 0;
                 foreach (['generic', 'fast-lane'] as $tag) {
-                    $statisticsByTag[$tag] = $this->recruiter->statistics($tag, $at);
+                    $statisticsByTag[$tag] = $this->recruiter->analytics($tag, $at);
                     $this->assertInvariantsOnStatistics($statisticsByTag[$tag]);
                     $cumulativeThroughput += $statisticsByTag[$tag]['throughput']['value'];
                 }

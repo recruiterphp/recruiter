@@ -58,12 +58,6 @@ class Recruiter
         return $this->jobs->queuedGroupedBy($field, $query, $group);
     }
 
-    #[\Deprecated(message: 'use the method `analytics` instead')]
-    public function statistics($group = null, ?Moment $at = null, array $query = []): array
-    {
-        return $this->analytics($group, $at, $query);
-    }
-
     /**
      * @return array<string,mixed>
      */
