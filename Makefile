@@ -52,7 +52,7 @@ test-acceptance-long: up
 
 .PHONY: phpstan
 phpstan: up
-	docker compose exec php vendor/bin/phpstan --memory-limit=2G
+	docker compose exec php vendor/bin/phpstan --memory-limit=2G analyse $(args)
 
 .PHONY: rector
 rector: up
