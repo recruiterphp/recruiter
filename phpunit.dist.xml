@@ -14,14 +14,12 @@
     <testsuites>
         <testsuite name="unit">
             <directory>tests/Recruiter/Infrastructure</directory>
-            <directory>tests/Sink</directory>
             <directory>tests/Timeless</directory>
         </testsuite>
         <testsuite name="integration">
             <directory>tests/Recruiter</directory>
             <exclude>tests/Recruiter/Acceptance</exclude>
             <exclude>tests/Recruiter/Infrastructure</exclude>
-            <directory>tests/Sink</directory>
         </testsuite>
         <testsuite name="acceptance">
             <directory>tests/Recruiter/Acceptance</directory>

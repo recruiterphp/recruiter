@@ -60,7 +60,6 @@
   "autoload": {
     "psr-4": {
       "Recruiter\\": "src/Recruiter",
-      "Sink\\": "src/Sink",
       "Timeless\\": "src/Timeless"
     },
     "files": [
@@ -71,7 +70,6 @@
   "autoload-dev": {
     "psr-4": {
       "Recruiter\\": "tests/Recruiter",
-      "Sink\\": "tests/Sink",
       "Timeless\\": "tests/Timeless"
     }
   },
