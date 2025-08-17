@@ -173,7 +173,7 @@ class Worker
             'last_seen_at' => T\MongoDate::now(),
             'created_at' => T\MongoDate::now(),
             'working' => false,
-            'pid' => getmypid(),
+            'pid' => posix_getpid(),
         ];
     }
 
