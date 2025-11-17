@@ -101,7 +101,6 @@ class Worker
      */
     public function updateWith(array $document): void
     {
-        // @phpstan-ignore-next-line
         $this->status = $document;
     }
 

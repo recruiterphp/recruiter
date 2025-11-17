@@ -38,7 +38,6 @@ class Job
     public static function import(array $document, Repository $repository): self
     {
         return new self(
-            // @phpstan-ignore-next-line
             $document,
             WorkableInJob::import($document),
             RetryPolicyInJob::import($document),
@@ -285,7 +284,6 @@ class Job
      */
     public function export(): array
     {
-        // @phpstan-ignore-next-line
         return array_merge(
             $this->status,
             $this->lastJobExecution->export(),
@@ -437,7 +435,6 @@ class Job
      */
     private static function initialize(): array
     {
-        // @phpstan-ignore-next-line
         return array_merge(
             [
                 '_id' => new ObjectId(),
