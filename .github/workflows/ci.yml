@@ -27,9 +27,12 @@ jobs:
       run: composer validate --strict
 
   build-image:
-    name: 'Build Docker Image'
+    name: 'Build Docker Image (PHP ${{ matrix.php_version }})'
     needs: validate-composer
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ['8.4', '8.5']
     steps:
     - uses: actions/checkout@v4
 
@@ -45,9 +48,9 @@ jobs:
         load: true
         tags: recruiterphp/recruiter-php:latest
         build-args: |
-          PHP_VERSION=8.4
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+          PHP_VERSION=${{ matrix.php_version }}
+        cache-from: type=gha,scope=php-${{ matrix.php_version }}
+        cache-to: type=gha,scope=php-${{ matrix.php_version }},mode=max
 
     - name: Save Docker image to tar
       run: docker save recruiterphp/recruiter-php:latest -o recruiter-php.tar
@@ -55,13 +58,16 @@ jobs:
     - name: Upload image as artifact
       uses: actions/upload-artifact@v4
       with:
-        name: docker-image
+        name: docker-image-${{ matrix.php_version }}
         path: recruiter-php.tar
 
   test-fast:
-    name: 'Run fast tests'
+    name: 'Run fast tests (PHP ${{ matrix.php_version }})'
     needs: build-image
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php_version: ['8.4', '8.5']
     env:
       COMPOSE_FILE: compose.yaml
     steps:
@@ -69,7 +75,7 @@ jobs:
 
     - uses: actions/download-artifact@v4
       with:
-        name: docker-image
+        name: docker-image-${{ matrix.php_version }}
         path: .
 
     - name: Load Docker image
@@ -79,11 +85,14 @@ jobs:
       run: make test
 
   test-long:
-    name: 'Run long tests'
+    name: 'Run long tests (PHP ${{ matrix.php_version }})'
     needs: build-image
     runs-on: ubuntu-latest
     timeout-minutes: 90
     if: github.event.inputs.run_long_tests == 'true'
+    strategy:
+      matrix:
+        php_version: ['8.4', '8.5']
     env:
       COMPOSE_FILE: compose.yaml
     steps:
@@ -91,7 +100,7 @@ jobs:
 
     - uses: actions/download-artifact@v4
       with:
-        name: docker-image
+        name: docker-image-${{ matrix.php_version }}
         path: .
 
     - name: Load Docker image
