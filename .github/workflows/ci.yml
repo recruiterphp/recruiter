@@ -86,6 +86,13 @@ jobs:
     - name: Pre-pull MongoDB image
       run: docker pull mongo:8
 
+    - name: Start services and wait for MongoDB
+      run: |
+        docker compose up -d
+        until docker compose exec -T mongodb mongosh --quiet --eval "db.adminCommand('ping')" >/dev/null 2>&1; do
+          sleep 1
+        done
+
     - name: Run fast tests
       run: make test
 
