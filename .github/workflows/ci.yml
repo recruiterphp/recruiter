@@ -83,8 +83,15 @@ jobs:
     - name: Load Docker image
       run: docker load -i recruiter-php.tar
 
+    - name: Pre-pull MongoDB image
+      run: docker pull mongo:8
+
     - name: Run fast tests
       run: make test
+
+    - name: Dump worker log on failure
+      if: failure()
+      run: docker compose exec -T php cat /tmp/worker.log 2>/dev/null || echo "(no worker log)"
 
   test-long:
     name: 'Run long tests (PHP ${{ matrix.php_version }})'
