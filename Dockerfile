@@ -5,10 +5,21 @@ FROM php:${PHP_VERSION}-cli AS base
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
+# PHP 8.4: use pecl (known-working); PHP 8.5+: use install-php-extensions (pecl fails on 8.5)
 COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions mongodb bcmath pdo_mysql opcache pcntl
+RUN case "${PHP_VERSION}" in \
+      8.4*) \
+        pecl install mongodb \
+        && docker-php-ext-enable mongodb \
+        && docker-php-ext-install -j$(nproc) bcmath pdo_mysql opcache pcntl ;; \
+      *) \
+        install-php-extensions mongodb bcmath pdo_mysql opcache pcntl ;; \
+    esac
 
 # Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
