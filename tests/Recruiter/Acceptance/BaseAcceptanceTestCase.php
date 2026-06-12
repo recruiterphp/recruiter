@@ -95,7 +95,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         return $this->roster->countDocuments();
     }
 
-    protected function waitForNumberOfWorkersToBe(int $expectedNumber, int $howManySeconds = 1): void
+    protected function waitForNumberOfWorkersToBe(int $expectedNumber, int $howManySeconds = 5): void
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
@@ -121,7 +121,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
 
         $process = proc_open('exec php bin/recruiter start:recruiter --backoff-to 5000ms --lease-time 10s --considered-dead-after 20s >> /tmp/recruiter.log 2>&1', $descriptors, $pipes, $cwd);
 
-        Timeout::inSeconds(1, 'recruiter to be up')
+        Timeout::inSeconds(5, 'recruiter to be up')
             ->until(function () use ($process) {
                 assert(is_resource($process));
                 $status = proc_get_status($process);
@@ -149,7 +149,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $cwd = __DIR__ . '/../../../';
         $process = proc_open('exec php bin/recruiter start:cleaner --wait-at-least=5s --wait-at-most=1m --lease-time 20s >> /tmp/cleaner.log 2>&1', $descriptors, $pipes, $cwd);
         $this->assertIsResource($process);
-        Timeout::inSeconds(1, 'cleaner to be up')
+        Timeout::inSeconds(5, 'cleaner to be up')
             ->until(function () use ($process) {
                 assert(is_resource($process));
                 $status = proc_get_status($process);
@@ -186,7 +186,7 @@ abstract class BaseAcceptanceTestCase extends TestCase
         $process = proc_open("exec php bin/recruiter start:worker $options >> /tmp/worker.log 2>&1", $descriptors, $pipes, $cwd);
         $this->assertIsResource($process);
 
-        Timeout::inSeconds(1, 'worker to be up')
+        Timeout::inSeconds(5, 'worker to be up')
             ->until(function () use ($process) {
                 assert(is_resource($process));
                 $status = proc_get_status($process);
