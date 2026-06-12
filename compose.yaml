@@ -12,7 +12,8 @@ services:
       - COMPOSER_ALLOW_SUPERUSER=1
       - MONGODB_URI=mongodb://mongodb:27017/recruiter
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 
   mongodb:
     image: mongo:8
@@ -20,6 +21,12 @@ services:
     restart: unless-stopped
     volumes:
       - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
 volumes:
   mongodb_data:
