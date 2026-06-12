@@ -5,18 +5,10 @@ FROM php:${PHP_VERSION}-cli AS base
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libssl-dev \
-    libcurl4-openssl-dev \
-    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pecl install mongodb \
-    && docker-php-ext-enable mongodb \
-    && docker-php-ext-install -j$(nproc) \
-        bcmath \
-        pdo_mysql \
-        opcache \
-        pcntl
+COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions mongodb bcmath pdo_mysql opcache pcntl
 
 # Copy Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
