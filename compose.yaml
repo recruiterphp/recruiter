@@ -15,9 +15,10 @@ services:
       - mongodb
 
   mongodb:
-    # Not `mongo:8`: that image refuses to start on Linux >= 6.19, which is what
-    # GitHub's runners now ship (SERVER-121912). 8.2.12+ starts fine.
-    image: mongo:8.2
+    # Only MongoDB 9.0+ is supported. Don't go back to the `mongo:8` tag: that
+    # image refuses to start on Linux >= 6.19, which GitHub's runners now ship
+    # (SERVER-121912).
+    image: mongo:9.0
     container_name: recruiter_mongodb
     restart: unless-stopped
     volumes:
