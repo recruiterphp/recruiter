@@ -83,6 +83,20 @@ jobs:
     - name: Load Docker image
       run: docker load -i recruiter-php.tar
 
+    - name: Start services and check MongoDB resolves from the PHP container
+      run: |
+        make up
+        for attempt in $(seq 1 30); do
+          if docker compose exec -T php getent hosts mongodb; then
+            echo "mongodb resolved after ${attempt} attempt(s)"
+            exit 0
+          fi
+          sleep 1
+        done
+        docker compose ps
+        docker compose logs mongodb
+        exit 1
+
     - name: Run fast tests
       run: make test
 
