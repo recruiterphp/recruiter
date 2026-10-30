@@ -3,10 +3,10 @@
 build:
 	docker compose build
 
-# Start the services
+# Start the services and wait until MongoDB is healthy
 .PHONY: up
 up:
-	docker compose up -d
+	docker compose up -d --wait
 
 # Stop the services
 .PHONY: down

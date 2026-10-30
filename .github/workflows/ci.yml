@@ -83,6 +83,17 @@ jobs:
     - name: Load Docker image
       run: docker load -i recruiter-php.tar
 
+    - name: Start services
+      run: |
+        uname -r
+        if ! make up; then
+          docker version
+          docker compose ps -a
+          docker inspect --format '{{json .State}}' recruiter_mongodb
+          docker compose logs mongodb
+          exit 1
+        fi
+
     - name: Run fast tests
       run: make test
 
