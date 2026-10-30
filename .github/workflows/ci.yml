@@ -85,17 +85,25 @@ jobs:
 
     - name: Start services and check MongoDB resolves from the PHP container
       run: |
-        make up
+        failed=0
+        make up || failed=1
         for attempt in $(seq 1 30); do
           if docker compose exec -T php getent hosts mongodb; then
             echo "mongodb resolved after ${attempt} attempt(s)"
-            exit 0
+            break
+          fi
+          if [ "${attempt}" -eq 30 ]; then
+            failed=1
           fi
           sleep 1
         done
-        docker compose ps
-        docker compose logs mongodb
-        exit 1
+        if [ "${failed}" -ne 0 ]; then
+          docker version
+          docker compose ps -a
+          docker inspect --format '{{json .State}}' recruiter_mongodb
+          docker compose logs mongodb
+          exit 1
+        fi
 
     - name: Run fast tests
       run: make test
