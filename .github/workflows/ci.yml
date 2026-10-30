@@ -65,9 +65,7 @@ jobs:
   test-fast:
     name: 'Run fast tests (PHP ${{ matrix.php_version }})'
     needs: build-image
-    # Not ubuntu-latest: ubuntu-26.04 ships Linux >= 6.19, on which mongod 8
-    # refuses to start (SERVER-121912). Switch back once MongoDB fixes it.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -102,8 +100,7 @@ jobs:
   test-long:
     name: 'Run long tests (PHP ${{ matrix.php_version }})'
     needs: build-image
-    # Not ubuntu-latest: see test-fast.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     if: github.event.inputs.run_long_tests == 'true'
     strategy:

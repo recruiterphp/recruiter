@@ -1,0 +1,45 @@
+name: Mongo kernel probe (temporary, delete before merge)
+
+on:
+  push:
+    branches: [fix/mongodb-readiness]
+    paths: ['.github/workflows/mongo-probe.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: 'probe ${{ matrix.label }}'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { label: 'mongo:8', image: 'mongo:8', env: '' }
+          - { label: 'mongo:8 + glibc rseq=0', image: 'mongo:8', env: 'GLIBC_TUNABLES=glibc.pthread.rseq=0' }
+          - { label: 'mongo:7.0', image: 'mongo:7.0', env: '' }
+          - { label: 'mongo:8.2', image: 'mongo:8.2', env: '' }
+    steps:
+    - name: Kernel
+      run: uname -r
+
+    - name: Probe
+      run: |
+        extra=()
+        if [ -n "${{ matrix.env }}" ]; then
+          extra=(-e "${{ matrix.env }}")
+        fi
+        docker run -d --name probe "${extra[@]}" "${{ matrix.image }}"
+        for attempt in $(seq 1 30); do
+          if docker exec probe mongosh --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -qx 1; then
+            echo "RESULT: ${{ matrix.label }} is UP after ${attempt}s"
+            docker exec probe mongod --version | head -1
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "RESULT: ${{ matrix.label }} is DOWN"
+        docker ps -a --filter name=probe --format '{{.Status}}'
+        docker logs probe 2>&1 | tail -2 | cut -c1-300
+        exit 1
