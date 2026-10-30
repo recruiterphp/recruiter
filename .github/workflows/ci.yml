@@ -65,7 +65,9 @@ jobs:
   test-fast:
     name: 'Run fast tests (PHP ${{ matrix.php_version }})'
     needs: build-image
-    runs-on: ubuntu-latest
+    # Not ubuntu-latest: ubuntu-26.04 ships Linux >= 6.19, on which mongod 8
+    # refuses to start (SERVER-121912). Switch back once MongoDB fixes it.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -83,21 +85,10 @@ jobs:
     - name: Load Docker image
       run: docker load -i recruiter-php.tar
 
-    - name: Start services and check MongoDB resolves from the PHP container
+    - name: Start services
       run: |
-        failed=0
-        make up || failed=1
-        for attempt in $(seq 1 30); do
-          if docker compose exec -T php getent hosts mongodb; then
-            echo "mongodb resolved after ${attempt} attempt(s)"
-            break
-          fi
-          if [ "${attempt}" -eq 30 ]; then
-            failed=1
-          fi
-          sleep 1
-        done
-        if [ "${failed}" -ne 0 ]; then
+        uname -r
+        if ! make up; then
           docker version
           docker compose ps -a
           docker inspect --format '{{json .State}}' recruiter_mongodb
@@ -111,7 +102,8 @@ jobs:
   test-long:
     name: 'Run long tests (PHP ${{ matrix.php_version }})'
     needs: build-image
-    runs-on: ubuntu-latest
+    # Not ubuntu-latest: see test-fast.
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     if: github.event.inputs.run_long_tests == 'true'
     strategy:
