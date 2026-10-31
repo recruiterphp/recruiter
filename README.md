@@ -20,7 +20,7 @@ A **battle-tested** job queue manager for PHP, with **billions of jobs processed
 
 - PHP 8.4+
 - MongoDB Extension >=1.15
-- MongoDB Server 4.0+
+- MongoDB Server 9.0+
 
 ## Installation
 

@@ -15,11 +15,23 @@ services:
       - mongodb
 
   mongodb:
-    image: mongo:8
+    # Only MongoDB 9.0+ is supported. Don't go back to the `mongo:8` tag: that
+    # image refuses to start on Linux >= 6.19, which GitHub's runners now ship
+    # (SERVER-121912).
+    image: mongo:9.0
     container_name: recruiter_mongodb
     restart: unless-stopped
     volumes:
       - mongodb_data:/data/db
+    # Lets `docker compose up --wait` block until mongod accepts connections.
+    # Deliberately not wired into php's depends_on: `condition: service_healthy`
+    # was reported to break worker spawning in the acceptance tests (8794825).
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 1s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
 
 volumes:
   mongodb_data:
