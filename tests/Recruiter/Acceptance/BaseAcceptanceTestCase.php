@@ -99,7 +99,13 @@ abstract class BaseAcceptanceTestCase extends TestCase
     {
         Timeout::inSeconds($howManySeconds, "workers to be $expectedNumber")
             ->until(function () use ($expectedNumber) {
-                $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
+                // Retire only while the roster has to shrink: with a 0s
+                // threshold (truncated to the second) this would also retire
+                // a live worker that has just registered, deleting its
+                // document and making it crash on the next refresh.
+                if ($this->numberOfWorkers() > $expectedNumber) {
+                    $this->recruiter->retireDeadWorkers(new \DateTimeImmutable(), T\seconds(0));
+                }
 
                 return $this->numberOfWorkers() == $expectedNumber;
             })
