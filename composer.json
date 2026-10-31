@@ -43,7 +43,7 @@
   "require-dev": {
     "ext-pcntl": "*",
     "dms/phpunit-arraysubset-asserts": "^0.5",
-    "ergebnis/composer-normalize": "^2.47",
+    "ergebnis/composer-normalize": "^2.56",
     "friendsofphp/php-cs-fixer": "^3.85",
     "giorgiosironi/eris": "^1.0",
     "phpstan/phpstan": "*",
